@@ -1,13 +1,28 @@
+
+set(PROJECT_NAME "BlockEditor")
+project(${PROJECT_NAME} C CXX)
 cmake_minimum_required(VERSION 2.8)
-set (PROJECT_NAME "BlockEditor")
-project(${PROJECT_NAME})
 
-set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
+# --------------
+# Build settings
+# --------------
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH} )
 
 # Install destinations
 set( CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/_install CACHE PATH "Installation Destination" FORCE)
 set( INSTALL_DES ./ CACHE PATH "Where to install to." )
+
+# Warnings for Debug mode
+option( USE_STRICT_COMPILE_WARNINGS "Use strict compilation warnings in debug mode." ON )
+if( USE_STRICT_COMPILE_WARNINGS )
+    if( CMAKE_COMPILER_IS_GNUCXX )
+        #~ set( CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror" )
+        set( CMAKE_CXX_FLAGS_DEBUG "-pedantic -Wall -Wextra -Wwrite-strings -Winit-self -Wcast-align -Wcast-qual -Wpointer-arith -Wstrict-aliasing -Wformat=2 -Wmissing-declarations -Wmissing-include-dirs -Wuninitialized -Werror-implicit-function-declaration -Wfloat-equal -Wundef -Wstrict-overflow=5 -Wswitch-default -Wswitch-enum -Wconversion -Wunreachable-code -Wno-unused-parameter" )
+        # use to suppress unused stuff: -Wno-unused-parameter -Wno-unused-result
+    endif()
+endif()
 
 # Debug is default
 if( NOT CMAKE_BUILD_TYPE )
@@ -21,44 +36,38 @@ add_definitions(
     #-DUSING_PCH
 )
 
-# ============================================
-### Source files
-file(GLOB SRC_DET "src/*.cpp")
-file(GLOB INCL_DET "include/*.h")
 
-# Create nice groups in IDEs
-#source_group("UI Files" FILES ${UI_FILES})
-#source_group("UI Headers" FILES ${UI_HEADERS})
-
-set(SRC ${SRC_DET})
-set(INCL ${INCL_DET})
-
-message("SRC ::" ${SRC})
-message("INCL ::" ${INCL})
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/include
-                    )
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#aux_source_directory(. SOURCE_FILES)
+# --------------
+# Build settings - COTIRE module
+# --------------
+include(cotire)
+if(COMMAND cotire)
+    if( NOT COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES )
+        include( ProcessorCount )
+        ProcessorCount( N )
+        if( NOT N EQUAL 0 )
+            set( COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES "-j${N}" )
+        endif()
+    endif()
+    set( COTIRE_VERBOSE FALSE )
+    set( COTIRE_DEBUG FALSE )
+endif()
 
 
-# ============================================
-# Find includes in corresponding build directories
-# Find packages
+# ------------
+# Dependencies
+# ------------
 
 ### Qt5
 find_package(Qt5Widgets REQUIRED)
-#INCLUDE(${QT_USE_FILE})
-set(CMAKE_AUTOMOC ON)
-#add_definitions(${QT_DEFINITIONS})
+#set(QT_USE_QTOPENGL 1)
 #set(QT_USE_QMAIN true)
-#set(QT_PRECOMPILED_HEADER ${PC_HEADER}.h)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
+#include( ${QT_USE_FILE} )
+set(CMAKE_AUTOMOC ON)
+
 # Use Qt UI files
 #qt5_wrap_ui(UI_HEADERS ${UI_FILES})
-
 
 ### Lua State
 include_directories("libs/LuaState/include")
@@ -72,20 +81,48 @@ find_package(LuaJIT REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 
-# ============================================
+# ------------
+# Source files
+# ------------
 
-MESSAGE("add_executable of ::" ${PROJECT_NAME})
-MESSAGE("SRC ::" ${SRC})
-MESSAGE("INCLUDE ::" ${INCL})
-SET( SRCS ${INCL} ${SRC})
-ADD_EXECUTABLE(${PROJECT_NAME} ${SRCS} )
+file(GLOB SRC_DET "src/*.cpp")
+set(SRC ${SRC_DET})
+
+file(GLOB INCL_DET "include/*.h")
+set(INCL ${INCL_DET})
+
+file(GLOB_RECURSE SCRIPT "scripts/*")
+set_source_files_properties(${SCRIPT} PROPERTIES HEADER_FILE_ONLY TRUE)
+
+message("SRC ::" ${SRC})
+message("INCL ::" ${INCL})
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include
+                    )
+
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#aux_source_directory(. SOURCE_FILES)
 
 
+# --------------
+# Build and link
+# --------------
+
+message("add_executable of ::" ${PROJECT_NAME})
+
+add_executable( ${PROJECT_NAME} ${INCL} ${SRC} ${SCRIPT} )
+
+target_link_libraries( ${PROJECT_NAME}
+                        ${QT_LIBRARIES}
+                        #Qt5::Widgets
+                        ${Boost_LIBRARIES}
+                        ${LUA_LIBRARY}
+                        )
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
-#TARGET_LINK_LIBRARIES(${PROJECT} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
-
+#target_link_libraries(${PROJECT} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
 
 # Must be after executable is created!
 #qt5_use_modules (
@@ -93,30 +130,42 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 #        Widgets
 #)
 
+# 'cotire' the executable
+if(COMMAND cotire)
+    # this needs CMake 2.8.11 and greater
+    if(${CMAKE_VERSION} VERSION_GREATER "2.8.10")
+        set_target_properties(${PROJECT_NAME} PROPERTIES COTIRE_UNITY_LINK_LIBRARIES_INIT "COPY")
+    endif()
+    cotire( ${PROJECT_NAME} )
+    if(${CMAKE_VERSION} VERSION_LESS "2.8.11")
+        target_link_libraries(  ${PROJECT_NAME}_unity
+                                ${QT_LIBRARIES}
+                                #Qt5::Widgets
+                                ${Boost_LIBRARIES}
+                                ${LUA_LIBRARY}
+                                )
+    endif()
+    if( MSVC )
+        ### Fix virtual memory range
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm200" CACHE STRING "" FORCE)
+    endif()
+endif()
 
 
-# Boost
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARY})
+# -------
+# Install
+# -------
+install(DIRECTORY scripts/ DESTINATION ${INSTALL_DES}/scripts COMPONENT Data)
 
-# Add precompiled header
-#add_precompiled_header(${PROJECT} ${PC_HEADER}.h FORCEINCLUDE)
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION ${INSTALL_DES}
+        COMPONENT Runtime )
 
-
-# Compile lua files
-#add_custom_command(
-#	TARGET ${PROJECT}
-#	PRE_BUILD
-#	COMMAND ${CMAKE_COMMAND} -E copy_directory
-#		${CMAKE_SOURCE_DIR}/scripts $<TARGET_FILE_DIR:Grapedit>/scripts)
-
-
-
-# =============================================
-### install
-INSTALL(TARGETS ${PROJECT_NAME}
-RUNTIME DESTINATION ${INSTALL_DES} COMPONENT Runtime )
-
+if(COMMAND cotire)
+    add_custom_target(  install_unity
+                        COMMAND ${CMAKE_COMMAND} -P "cmake_install.cmake")
+    add_dependencies(install_unity ${PROJECT_NAME}_unity)
+endif()
 
 
 
