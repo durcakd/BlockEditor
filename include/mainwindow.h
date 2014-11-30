@@ -7,6 +7,9 @@ class BlockScene;
 class QGraphicsView;
 class QTextEdit;
 class QGraphicsScene;
+class LineNumberArea;
+class LineEditor;
+class Highlighter;
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +18,16 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
+public slots:
+    void about();
+    void newFile();
+    void openFile(const QString &path = QString());
+
 private:
+    //void setupEditor();
+    //void setupFileMenu();
+    //void setupHelpMenu();
+
     void createActions();
     void createMenus();
     void createToolbars();
@@ -24,6 +36,9 @@ private:
     QTextEdit *textEdit;
     BlockScene *scene;
     QGraphicsView *view;
+    LineNumberArea *lineNumberArea;
+    LineEditor *lineEditor;
+    Highlighter *highlighter;
 
     QMenu *fileMenu;
     QMenu *itemMenu;
