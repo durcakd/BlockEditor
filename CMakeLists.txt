@@ -19,7 +19,7 @@ option( USE_STRICT_COMPILE_WARNINGS "Use strict compilation warnings in debug mo
 if( USE_STRICT_COMPILE_WARNINGS )
     if( CMAKE_COMPILER_IS_GNUCXX )
         #~ set( CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror" )
-        set( CMAKE_CXX_FLAGS_DEBUG "-pedantic -Wall -Wextra -Wwrite-strings -Winit-self -Wcast-align -Wcast-qual -Wpointer-arith -Wstrict-aliasing -Wformat=2 -Wmissing-declarations -Wmissing-include-dirs -Wuninitialized -Werror-implicit-function-declaration -Wfloat-equal -Wundef -Wstrict-overflow=5 -Wswitch-default -Wswitch-enum -Wconversion -Wunreachable-code -Wno-unused-parameter" )
+        #set( CMAKE_CXX_FLAGS_DEBUG "-pedantic -Wall -Wextra -Wwrite-strings -Winit-self -Wcast-align -Wcast-qual -Wpointer-arith -Wstrict-aliasing -Wformat=2 -Wmissing-declarations -Wmissing-include-dirs -Wuninitialized -Werror-implicit-function-declaration -Wfloat-equal -Wundef -Wstrict-overflow=5 -Wswitch-default -Wswitch-enum -Wconversion -Wunreachable-code -Wno-unused-parameter" )
         # use to suppress unused stuff: -Wno-unused-parameter -Wno-unused-result
     endif()
 endif()
@@ -31,7 +31,7 @@ endif()
 message("CMAKE_BUILD_TYPE ::" ${CMAKE_BUILD_TYPE})
 
 add_definitions(
-    #-fPIC
+    -fPIC
     -std=c++11
     #-DUSING_PCH
 )
@@ -59,15 +59,9 @@ endif()
 # ------------
 
 ### Qt5
+set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets REQUIRED)
 #set(QT_USE_QTOPENGL 1)
-#set(QT_USE_QMAIN true)
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-#include( ${QT_USE_FILE} )
-set(CMAKE_AUTOMOC ON)
-
-# Use Qt UI files
-#qt5_wrap_ui(UI_HEADERS ${UI_FILES})
 
 ### Lua State
 include_directories("libs/LuaState/include")
@@ -115,20 +109,11 @@ message("add_executable of ::" ${PROJECT_NAME})
 add_executable( ${PROJECT_NAME} ${INCL} ${SRC} ${SCRIPT} )
 
 target_link_libraries( ${PROJECT_NAME}
-                        ${QT_LIBRARIES}
-                        #Qt5::Widgets
+                        #${QT_LIBRARIES}
+                        Qt5::Widgets
                         ${Boost_LIBRARIES}
                         ${LUA_LIBRARY}
                         )
-
-# Use the Widgets module from Qt 5.
-#target_link_libraries(${PROJECT} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} )
-
-# Must be after executable is created!
-#qt5_use_modules (
-#       ${PROJECT}
-#        Widgets
-#)
 
 # 'cotire' the executable
 if(COMMAND cotire)

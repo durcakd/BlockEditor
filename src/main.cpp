@@ -1,10 +1,16 @@
-#include <iostream>
+#include "mainwindow.h"
 
-using namespace std;
+#include <QApplication>
 
-int main()
+int main(int argc, char *argv[])
 {
-    cout << "Hello World!" << endl;
-    return 0;
-}
 
+    QApplication app(argc, argv);
+    //app.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+
+    MainWindow window;
+    window.setGeometry(100, 100, 800, 500);
+    window.show();
+
+    return app.exec();
+}
