@@ -19,6 +19,7 @@
 #include "lineeditor.h"
 #include "blockscene.h"
 #include "highlighter.h"
+#include "parser.h"
 
 
 MainWindow::MainWindow()
@@ -29,6 +30,7 @@ MainWindow::MainWindow()
 
     lineEditor = new LineEditor(this);
     highlighter = new Highlighter(lineEditor->document());
+
 
     scene = new BlockScene();
     view = new QGraphicsView(scene);
@@ -41,6 +43,10 @@ MainWindow::MainWindow()
     setCentralWidget(widget);
     setWindowTitle(tr("BlockEditor"));
     setUnifiedTitleAndToolBarOnMac(true);
+
+    _textType = "lua";
+    parser = new Parser(_textType);
+
 }
 
 void MainWindow::createMenus()
@@ -86,37 +92,15 @@ void MainWindow::openFile(const QString &path)
         QFile file(fileName);
         if (file.open(QFile::ReadOnly | QFile::Text)) {
 
-            QFileInfo fileInfo(file);
+            //QFileInfo fileInfo(file);
 
-            _textType = fileInfo.suffix();
+            //_textType = fileInfo.suffix();
 
             QTextStream in(&file);
             _text = in.readAll();
             lineEditor->setPlainText(_text);
             file.close();
-
-
-            // Nacitame core
-            _state.doFile("scripts/init.lua");
-            _state.doFile("scripts/core.lua");
-            //_state->setUpdateCallback(std::bind(&GraphicText::updateElementsOnScene, this, _1, _2, _3));
-            try {
-
-                _state["loadGrammarAndStyle"].call( _textType.toStdString().c_str());
-            }
-            catch (lua::RuntimeError ex) {
-                QMessageBox msgBox;
-                msgBox.setText(QString("Error while loading grammar style: ").append(_textType));
-                msgBox.setInformativeText(ex.what());
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.exec();
-
-                throw std::runtime_error(ex.what());
-            }
-
-           qDebug() << "Request text reparse...";
-
-            _state["parseText"]( _text.toStdString().c_str());
+            parser->parse(_text);
         }
     }
 }
