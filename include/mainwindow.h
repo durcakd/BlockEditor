@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <LuaState.h>
 
 class BlockScene;
 class QGraphicsView;
@@ -39,6 +40,10 @@ private:
     LineNumberArea *lineNumberArea;
     LineEditor *lineEditor;
     Highlighter *highlighter;
+
+    lua::State _state;
+    QString _textType;
+    QString _text;
 
     QMenu *fileMenu;
     QMenu *itemMenu;
