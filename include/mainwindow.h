@@ -10,6 +10,7 @@ class QGraphicsScene;
 class LineNumberArea;
 class LineEditor;
 class Highlighter;
+class Parser;
 
 class MainWindow : public QMainWindow
 {
@@ -32,13 +33,17 @@ private:
     void createMenus();
     void createToolbars();
 
-
     QTextEdit *textEdit;
     BlockScene *scene;
     QGraphicsView *view;
     LineNumberArea *lineNumberArea;
     LineEditor *lineEditor;
     Highlighter *highlighter;
+    Parser *parser;
+
+
+    QString _textType;
+    QString _text;
 
     QMenu *fileMenu;
     QMenu *itemMenu;
