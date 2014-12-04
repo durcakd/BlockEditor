@@ -4,12 +4,22 @@
 
 #include <LuaState.h>
 #include <QString>
+#include <QObject>
 
-class Parser {
+class Item;
+class Layout;
+
+class Parser : public QObject {
+    Q_OBJECT
 
 public:
     Parser(QString type);
     void parse(QString text);
+
+signals:
+    void addElementItem( Item* item);
+    void addElementLayout( Layout* layout);
+
 
 private:
 

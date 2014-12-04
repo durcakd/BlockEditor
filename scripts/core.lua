@@ -32,11 +32,13 @@ function parseTextNew(newText)
         -- Add Item
         function(index, element, parent)
             print('ADD ITEM: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            element.instance = addBasicItem( element.type, element.value, parent.instance, index)
         end,
 
         -- Add Grid
         function(index, element, parent)
             print('ADD GRID: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            element.instance = addBasicLayout( element.type, parent.instance, index)
         end
         )
 end

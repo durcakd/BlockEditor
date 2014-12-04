@@ -1,7 +1,10 @@
 #include "parser.h"
+#include "scene/item.h"
+#include "scene/layout.h"
 #include <QDebug>
 
-Parser::Parser(QString type)
+Parser::Parser(QString type) :
+    QObject()
 {
     _textType = type;
     init();
@@ -11,15 +14,34 @@ Parser::Parser(QString type)
 
 
 void Parser::init() {
-     //_state.set("send_addItem");
-     //_state.set("send_addGrid");
-      //_state.set("send_updateItem");
-      //_state.set("send_removeItem");
       //_state.set("send_commit");
+    _state.set("addBasicItem",
+               [this] (lua::String elementType,
+                       lua::String elementText,
+                       lua::Pointer parentPointer,
+                       lua::Integer elementIndex)
+               -> lua::Pointer
+    {
+        Item *newItem= new Item( elementType, elementText, static_cast<Layout*>(parentPointer));
+        emit addElementItem(newItem);
+        return newItem;
+    });
+    _state.set("addBasicLayout",
+               [this] (lua::String elementType,
+                       lua::Pointer parentPointer,
+                       lua::Integer elementIndex)
+               -> lua::Pointer
+    {
+
+        Layout *newLayout= new Layout( elementType, static_cast<Layout*>(parentPointer));
+        emit addElementLayout(newLayout);
+
+        return newLayout;
+    });
+
     _state.doFile("scripts/init.lua");
     _state.doFile("scripts/core.lua");
 
-    //setUpdateCallback(std::bind(&GraphicText::updateElementsOnScene, this, _1, _2, _3));
 }
 
 void Parser::loadGrammar() {
