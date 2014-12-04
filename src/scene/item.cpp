@@ -6,10 +6,10 @@
 
 #include <QGraphicsLinearLayout>
 
-Item::Item(QString type, QString text, QGraphicsLinearLayout *parent)
-    : QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, parent)
+Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
+    : QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
 {
-    _text = text;
+    _text = text.trimmed();
 
     QTextDocument *document = new QTextDocument();
 
@@ -21,7 +21,6 @@ Item::Item(QString type, QString text, QGraphicsLinearLayout *parent)
 
     // setGeometry();
 }
-
 void Item::setGeometry(const QRectF &geom) {
 
     //qDebug() << "GG" << geom.size().width() <<"  "<< geom.size().height() << _type ;

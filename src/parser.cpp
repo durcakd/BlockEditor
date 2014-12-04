@@ -24,7 +24,7 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-        Item *newItem= new Item( elementType, elementText, static_cast<Layout*>(parentPointer));
+        Item *newItem= new Item( elementType, elementText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementItem(newItem);
         return newItem;
     });
@@ -34,7 +34,7 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-        Layout *newLayout= new Layout( elementType, static_cast<Layout*>(parentPointer));
+        Layout *newLayout= new Layout( elementType, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementLayout(newLayout);
 
         return newLayout;

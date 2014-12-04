@@ -3,10 +3,11 @@
 
 #include <QGraphicsLinearLayout>
 
-AbstractElement::AbstractElement(QString type, QGraphicsLinearLayout *layoutParrent)
+AbstractElement::AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent)
 {
     _type = type;
     _layoutParrentor = layoutParrent;
+    _style = style;
 }
 
 QString AbstractElement::getType() const

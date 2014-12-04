@@ -1,12 +1,17 @@
 #include "scene/layout.h"
+#include "style/style.h"
 #include <QDebug>
 
 
-Layout::Layout(QString type, QGraphicsLayoutItem *parent)
-    : QGraphicsLinearLayout( parent), AbstractElement(type, dynamic_cast<QGraphicsLinearLayout*>(parent))
+Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
+    : QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
 {
-
-    this->setOrientation( Qt::Vertical);
+    //qDebug() << "---------   "<< type << " " << style;
+    if (OrientationEnum::horizontal == _style->getOrientation()) {
+        this->setOrientation( Qt::Horizontal);
+    } else {
+        this->setOrientation( Qt::Vertical);
+    }
     //_childLayouts = new  QList<Layout*>();
     // setGeometry();
 }
@@ -20,8 +25,8 @@ QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
     foreach (AbstractElement* child, _childLayouts) {
         QSizeF size = child->elementSizeHint(which);
         if( Qt::Vertical == orientation()) {
-           h += size.height();
-           w = w < size.width() ? size.width() : w;
+            h += size.height();
+            w = w < size.width() ? size.width() : w;
         } else {
             w += size.width();
             h = h < size.height() ? size.height() : h;

@@ -10,7 +10,7 @@
 class Item : public QGraphicsLayoutItem, public QGraphicsTextItem, public AbstractElement
 {
 public:
-    explicit Item(QString type, QString text, QGraphicsLinearLayout *parent = 0);
+    explicit Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent = 0);
 
     void setGeometry(const QRectF &geom);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;

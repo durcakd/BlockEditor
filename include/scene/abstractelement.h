@@ -4,12 +4,14 @@
 #include <QGraphicsTextItem>
 #include <QSizeF>
 
+
 class QGraphicsLinearLayout;
+class Style;
 
 class AbstractElement
 {
 public:
-    explicit AbstractElement(QString type, QGraphicsLinearLayout *layoutParrent = 0);
+    explicit AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent = 0);
 
     QString getType() const;
     QGraphicsLinearLayout *getLayoutParrent() const;
@@ -21,6 +23,7 @@ public:
 protected:
     QString _type;
     bool _elementType;
+    Style *_style;
     QGraphicsLinearLayout *_layoutParrentor;
 };
 

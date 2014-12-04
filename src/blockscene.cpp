@@ -66,6 +66,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
 
 void BlockScene::test()
 {
+    /*
     Item *i1 =  new Item("-1-", "-");
     Item *i2 =  new Item("-2-", "-");
     Item *i3 =  new Item("-3-", "-");
@@ -119,5 +120,5 @@ void BlockScene::test()
     addItem(i10);
 
     qDebug() << "test" << vv4->isLayout();
-
+*/
 }
