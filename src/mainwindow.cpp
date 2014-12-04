@@ -32,8 +32,9 @@ MainWindow::MainWindow()
     highlighter = new Highlighter(lineEditor->document());
 
 
-    scene = new BlockScene();
-    view = new QGraphicsView(scene);
+    view = new QGraphicsView();
+    scene = new BlockScene(view);
+    view->setScene(scene);
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(lineEditor);
@@ -46,6 +47,11 @@ MainWindow::MainWindow()
 
     _textType = "lua";
     parser = new Parser(_textType);
+
+    QObject::connect( parser, &Parser::addElementItem,
+                     scene, &BlockScene::addParserItem );
+    QObject::connect( parser, &Parser::addElementLayout,
+                     scene, &BlockScene::addParserLayout );
 
 }
 

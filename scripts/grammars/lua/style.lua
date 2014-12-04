@@ -50,7 +50,7 @@ local LINE = {
 }
 
 return {
-
+        root = COLOR_BLOCK({ 0.5, 0.5, 1.0, 0.1 }),
 	block = COLOR_BLOCK({ 0.5, 0.5, 1.0, 0.1 }),
 	do_stat = COLOR_BLOCK({ 0.5, 0.5, 1.0, 0.1 }),
 	if_stat = COLOR_BLOCK({ 0.5, 0.5, 1.0, 0.1 }),

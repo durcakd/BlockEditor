@@ -75,7 +75,7 @@ function parseASTNew(parser, text, addItemFnc, addGridFnc)
     --printTree(nil, root, " ")
 
     print "ADDING ......."
-    sendNode(1, root, nil);
+    sendNode(1, root, {});
 
 end
 
