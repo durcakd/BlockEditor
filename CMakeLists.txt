@@ -8,6 +8,7 @@ cmake_minimum_required(VERSION 2.8)
 # Build settings
 # --------------
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH} )
 
 # Install destinations
@@ -18,7 +19,8 @@ set( INSTALL_DES ./ CACHE PATH "Where to install to." )
 option( USE_STRICT_COMPILE_WARNINGS "Use strict compilation warnings in debug mode." ON )
 if( USE_STRICT_COMPILE_WARNINGS )
     if( CMAKE_COMPILER_IS_GNUCXX )
-        #~ set( CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror" )
+        set( CMAKE_CXX_FLAGS_DEBUG "-Wall" )
+        #set( CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Werror" )
         #set( CMAKE_CXX_FLAGS_DEBUG "-pedantic -Wall -Wextra -Wwrite-strings -Winit-self -Wcast-align -Wcast-qual -Wpointer-arith -Wstrict-aliasing -Wformat=2 -Wmissing-declarations -Wmissing-include-dirs -Wuninitialized -Werror-implicit-function-declaration -Wfloat-equal -Wundef -Wstrict-overflow=5 -Wswitch-default -Wswitch-enum -Wconversion -Wunreachable-code -Wno-unused-parameter" )
         # use to suppress unused stuff: -Wno-unused-parameter -Wno-unused-result
     endif()
@@ -80,10 +82,14 @@ include_directories(${LUA_INCLUDE_DIR})
 # ------------
 
 file(GLOB SRC_DET "src/*.cpp")
-set(SRC ${SRC_DET})
+file(GLOB SRC_SCENE "src/scene/*.cpp")
+file(GLOB SRC_STYLE "src/style/*.cpp")
+set(SRC ${SRC_DET} ${SRC_SCENE} ${SRC_STYLE})
 
 file(GLOB INCL_DET "include/*.h")
-set(INCL ${INCL_DET})
+file(GLOB INCL_SCENE "include/scene/*.h")
+file(GLOB INCL_STYLE "include/style/*.h")
+set(INCL ${INCL_DET} ${INCL_SCENE}  ${INCL_STYLE})
 
 file(GLOB_RECURSE SCRIPT "scripts/*")
 set_source_files_properties(${SCRIPT} PROPERTIES HEADER_FILE_ONLY TRUE)
@@ -96,7 +102,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/include
                     )
 
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 #aux_source_directory(. SOURCE_FILES)
 
 
@@ -106,10 +112,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 
 message("add_executable of ::" ${PROJECT_NAME})
 
-add_executable( ${PROJECT_NAME} ${INCL} ${SRC} ${SCRIPT} )
+add_executable( ${PROJECT_NAME}  ${INCL} ${SRC} ${SCRIPT} )
 
 target_link_libraries( ${PROJECT_NAME}
-                        #${QT_LIBRARIES}
                         Qt5::Widgets
                         ${Boost_LIBRARIES}
                         ${LUA_LIBRARY}
@@ -122,14 +127,15 @@ if(COMMAND cotire)
         set_target_properties(${PROJECT_NAME} PROPERTIES COTIRE_UNITY_LINK_LIBRARIES_INIT "COPY")
     endif()
     cotire( ${PROJECT_NAME} )
+
     if(${CMAKE_VERSION} VERSION_LESS "2.8.11")
         target_link_libraries(  ${PROJECT_NAME}_unity
-                                ${QT_LIBRARIES}
-                                #Qt5::Widgets
+                                Qt5::Widgets
                                 ${Boost_LIBRARIES}
                                 ${LUA_LIBRARY}
                                 )
     endif()
+
     if( MSVC )
         ### Fix virtual memory range
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm200" CACHE STRING "" FORCE)
