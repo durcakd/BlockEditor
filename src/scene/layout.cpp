@@ -6,7 +6,7 @@ Layout::Layout(QString type, QGraphicsLayoutItem *parent)
     : QGraphicsLinearLayout( parent), AbstractElement(type, dynamic_cast<QGraphicsLinearLayout*>(parent))
 {
 
-    this->setOrientation(Qt::Vertical);
+    this->setOrientation( Qt::Vertical);
     //_childLayouts = new  QList<Layout*>();
     // setGeometry();
 }
@@ -15,7 +15,7 @@ Layout::Layout(QString type, QGraphicsLayoutItem *parent)
 
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {
-    qDebug() << "childrenSizeHint";
+    //qDebug() << "childrenSizeHint";
     qreal h = 0, w = 0;
     foreach (AbstractElement* child, _childLayouts) {
         QSizeF size = child->elementSizeHint(which);
@@ -28,7 +28,7 @@ QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
         }
 
     }
-    qDebug() <<"CHSH  "<< w << "  " << h;
+    //qDebug() <<"CHSH  "<< w << "  " << h;
     return QSizeF(w,h);
 }
 

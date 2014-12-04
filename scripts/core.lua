@@ -43,6 +43,19 @@ function parseTextNew(newText)
         )
 end
 
+function loadStyles()
+    print ("\nLoad styles ===============================")
+    for k,v in pairs(currentActiveStyle) do
+        if type(v) == "table" then
+            print ( k.." >>  "..v.object)
+            local isItem = v.item or false;
+            local isLayout = v.grid or false;
+
+            addStyle( k, v.object, isItem, isLayout)
+        end
+    end
+end
+
 function parseText(newText)
 
     print ('\nParsing text...')

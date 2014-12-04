@@ -6,8 +6,12 @@
 #include <QString>
 #include <QObject>
 
+#include "style/styleutil.h"
+
+
 class Item;
 class Layout;
+class Style;
 
 class Parser : public QObject {
     Q_OBJECT
@@ -19,16 +23,18 @@ public:
 signals:
     void addElementItem( Item* item);
     void addElementLayout( Layout* layout);
-
+    void addElementStyle( Style* style);
 
 private:
 
     void init();
     void loadGrammar();
+    void loadStyle();
 
     lua::State _state;
     QString _textType;
     QString _text;
+    StyleUtil _styleUtil;
 
 };
 

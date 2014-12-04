@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "scene/item.h"
 #include "scene/layout.h"
+#include "style/style.h"
 #include <QDebug>
 
 Parser::Parser(QString type) :
@@ -9,6 +10,7 @@ Parser::Parser(QString type) :
     _textType = type;
     init();
     loadGrammar();
+    loadStyle();
 }
 
 
@@ -32,7 +34,6 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-
         Layout *newLayout= new Layout( elementType, static_cast<Layout*>(parentPointer));
         emit addElementLayout(newLayout);
 
@@ -42,6 +43,30 @@ void Parser::init() {
     _state.doFile("scripts/init.lua");
     _state.doFile("scripts/core.lua");
 
+}
+
+void Parser::loadStyle()
+{
+    _state.set("addStyle",
+               [this] (lua::String elementType,
+                       lua::String orientation,
+                       lua::Boolean isItem,
+                       lua::Boolean isLayout)
+               -> lua::Pointer
+    {
+        Style *newStyle = new Style(elementType);
+        newStyle->setIsItem(isItem);
+        newStyle->setIsLayout(isLayout);
+        newStyle->setOrientation( orientation);
+
+        _styleUtil.addStyle(newStyle);
+        //emit addElementStyle( newStyle);
+
+        return newStyle;
+    });
+
+    qDebug() << "Load styles...";
+    _state["loadStyles"]();
 }
 
 void Parser::loadGrammar() {
