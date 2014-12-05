@@ -9,7 +9,7 @@
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {
-
+   //setSceneRect(0, 0, 800, 600);
     _form = new QGraphicsWidget;
     addItem(_form);
 

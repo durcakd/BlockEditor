@@ -19,8 +19,12 @@ public:
     QSizeF elementSizeHint(Qt::SizeHint which) const;
 
     QTextDocument *_document;
+
+
 public slots:
     void textUpdatedSlot();
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 protected:
     QString _text;

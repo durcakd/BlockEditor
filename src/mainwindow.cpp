@@ -33,8 +33,10 @@ MainWindow::MainWindow()
 
 
     view = new QGraphicsView();
+    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     scene = new BlockScene(view);
     view->setScene(scene);
+    view->showMaximized();
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(lineEditor);
