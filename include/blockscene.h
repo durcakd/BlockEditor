@@ -24,11 +24,11 @@ public slots:
     Item* addParserItem( Item *item);
     Layout* addParserLayout( Layout *layout);
 
-
 private:
 
     QGraphicsLinearLayout *_vLayout;
     QGraphicsWidget *_form;
+    Layout *_root;
 
 };
 

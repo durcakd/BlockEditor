@@ -42,7 +42,8 @@ Item *BlockScene::addParserItem(Item *item)
     }
     addItem( item);
 
-    update();
+    QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+
     return item;
 }
 
@@ -51,6 +52,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
     if( layout->parentLayoutItem() == NULL){
         qDebug() << "also in scene";
         _form->setLayout(layout);
+        _root = layout;
     } else {
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
@@ -59,9 +61,6 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
 
     return layout;
 }
-
-
-
 
 
 void BlockScene::test()

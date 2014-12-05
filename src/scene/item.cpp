@@ -5,19 +5,21 @@
 #include <QTextCursor>
 
 #include <QGraphicsLinearLayout>
+#include <scene/layout.h>
 
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    : QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
+    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
 {
     _text = text.trimmed();
 
-    QTextDocument *document = new QTextDocument();
+    _document = new QTextDocument();
 
-    QTextCursor cursor = QTextCursor(document);
+    QTextCursor cursor = QTextCursor(_document);
     cursor.insertText( _text);
-    setDocument(document);
+    setDocument(_document);
     setTextInteractionFlags( Qt::TextEditable);
 
+    QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
 
     // setGeometry();
 }
@@ -31,6 +33,10 @@ void Item::setGeometry(const QRectF &geom) {
     setPos(geom.bottomLeft());
 
 }
+
+ void Item::textUpdatedSlot() {
+    updateGeometry();
+ }
 
 QSizeF Item::elementSizeHint(Qt::SizeHint which) const
 {

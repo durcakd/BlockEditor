@@ -4,13 +4,16 @@
 #include <QGraphicsLinearLayout>
 #include <QSizeF>
 #include <QList>
+#include <QObject>
 
 #include "abstractelement.h"
 
 class Style;
 
-class Layout : public QGraphicsLinearLayout, public AbstractElement
+class Layout : public QObject, public QGraphicsLinearLayout, public AbstractElement
 {
+    Q_OBJECT
+
 public:
     explicit Layout(QString type, Style *style, QGraphicsLayoutItem *parent = 0);
 
@@ -20,6 +23,9 @@ public:
     QList<AbstractElement*> getChildLayouts() const;
     void addLayoutChild(AbstractElement *child);
 
+public slots:
+
+    void childItemChanged();
 
 protected:
     QString _layoutType;

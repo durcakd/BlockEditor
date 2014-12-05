@@ -4,7 +4,7 @@
 
 
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
-    : QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
+    : QObject(), QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {
@@ -13,7 +13,11 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
         this->setOrientation( Qt::Vertical);
     }
     //_childLayouts = new  QList<Layout*>();
-    // setGeometry();
+}
+
+
+void Layout::childItemChanged() {
+    this->updateGeometry();
 }
 
 
