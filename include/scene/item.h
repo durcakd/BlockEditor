@@ -25,6 +25,7 @@ public slots:
     void textUpdatedSlot();
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void keyPressEvent ( QKeyEvent * event );
 
 protected:
     QString _text;

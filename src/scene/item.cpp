@@ -15,10 +15,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
 {
     _text = text.trimmed();
 
-    _document = new QTextDocument();
-
-    QTextCursor cursor = QTextCursor(_document);
-    cursor.insertText( _text);
+    _document = new QTextDocument(_text);
     setDocument(_document);
     setTextInteractionFlags( Qt::TextEditable);
 
@@ -27,7 +24,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     setFlag(ItemIsSelectable);
     setAcceptDrops(true);
 
-    QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
+QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
 
     // setGeometry();
 }
@@ -70,6 +67,30 @@ QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
     }
     return this->boundingRect().size();
     //return constraint;
+}
+
+void Item::keyPressEvent ( QKeyEvent * event )
+{
+    QTextCursor cursor = textCursor();
+
+    switch (event->key()){
+    case Qt::Key_Left:
+        cursor.movePosition(QTextCursor::PreviousCharacter);
+        setTextCursor(cursor);
+        break;
+    case Qt::Key_Right:
+        cursor.movePosition(QTextCursor::NextCharacter);
+        setTextCursor(cursor);
+        break;
+    case Qt::Key_Up:
+        qDebug() << "  UP cursor";
+        break;
+    case Qt::Key_Down:
+        qDebug() << "  DOWN cursor";
+        break;
+    default:
+        QGraphicsTextItem::keyPressEvent(event);
+    }
 }
 
 /*
