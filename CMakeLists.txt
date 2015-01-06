@@ -35,7 +35,6 @@ message("CMAKE_BUILD_TYPE ::" ${CMAKE_BUILD_TYPE})
 add_definitions(
     -fPIC
     -std=c++11
-    #-DUSING_PCH
 )
 
 

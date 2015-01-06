@@ -44,6 +44,7 @@ void Item::setGeometry(const QRectF &geom) {
 
 void Item::textUpdatedSlot() {
     updateGeometry();
+
 }
 
 QSizeF Item::elementSizeHint(Qt::SizeHint which) const
@@ -55,6 +56,8 @@ QSizeF Item::elementSizeHint(Qt::SizeHint which) const
 QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     QFontMetrics fm(font());
+    QString text = toPlainText();
+    //text.
     //qDebug() << "basicBlock.sizeHint" << boundingRect().size().width() << "  " << boundingRect().size().height() << _type;
     //qDebug() << "basicBlock.sizeHint" << fm.width(toPlainText()) << "  " << fm.height();
 
@@ -63,13 +66,13 @@ QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
     case Qt::PreferredSize:
     case Qt::MaximumSize:
         //return this->boundingRect().size();
-        return QSize(fm.width(toPlainText()), fm.height());
+        return QSize(fm.width(text), fm.height());
     }
     return this->boundingRect().size();
     //return constraint;
 }
 
-
+/*
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
@@ -89,3 +92,4 @@ void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
 }
+*/

@@ -28,7 +28,7 @@ MainWindow::MainWindow()
     createMenus();
     createToolbars();
 
-    lineEditor = new LineEditor(this);
+    lineEditor = new LineEditor(/*this*/);
     highlighter = new Highlighter(lineEditor->document());
 
 
@@ -39,8 +39,8 @@ MainWindow::MainWindow()
     view->showMaximized();
 
     QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(lineEditor);
     layout->addWidget(view);
+    //layout->addWidget(lineEditor);
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
     setCentralWidget(widget);

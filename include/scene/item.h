@@ -24,7 +24,7 @@ public:
 public slots:
     void textUpdatedSlot();
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 protected:
     QString _text;

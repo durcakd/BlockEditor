@@ -8,8 +8,8 @@
 class QGraphicsLinearLayout;
 class Style;
 class Layout;
-class AbstractElement
-{
+
+class AbstractElement {
 public:
     explicit AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent = 0);
 

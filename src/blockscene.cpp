@@ -53,6 +53,8 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
+        setSceneRect(0, 0, 800, 600);
+
     } else {
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
