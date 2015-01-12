@@ -25,11 +25,17 @@ public:
     void updateChildNeighbors();
     bool isLayoutE() const;
 
+    QGraphicsLayoutItem  *firstLastItem(bool first) const;
+
 public slots:
 
     void childItemChanged();
 
 protected:
+
+
+
+
     QString _layoutType;
     //QList<AbstractElement*> _childLayouts;
 

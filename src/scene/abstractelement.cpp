@@ -24,3 +24,13 @@ Layout* AbstractElement::getLayoutParrent() const
 {
     return _layoutParrentor;
 }
+
+AbstractElement *AbstractElement::nextPrevius(bool next) const {
+    if(next) {
+        qDebug() << "next";
+        return getNext();
+    } else {
+        qDebug() << "previous";
+        return getPrevius();
+    }
+}

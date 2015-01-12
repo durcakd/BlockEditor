@@ -75,6 +75,15 @@ bool Layout::isLayoutE() const
     return true;
 }
 
+QGraphicsLayoutItem  *Layout::firstLastItem(bool first) const
+{
+    if (first) {
+        return itemAt(0);
+    } else {
+        return itemAt(count()-1);
+    }
+}
+
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {
