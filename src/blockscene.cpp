@@ -9,7 +9,7 @@
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {
-
+   //setSceneRect(0, 0, 800, 600);
     _form = new QGraphicsWidget;
     addItem(_form);
 
@@ -42,7 +42,8 @@ Item *BlockScene::addParserItem(Item *item)
     }
     addItem( item);
 
-    update();
+    QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+
     return item;
 }
 
@@ -51,6 +52,10 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
     if( layout->parentLayoutItem() == NULL){
         qDebug() << "also in scene";
         _form->setLayout(layout);
+        _root = layout;
+        _root->setParrentE(NULL);
+        setSceneRect(0, 0, 800, 600);
+
     } else {
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
@@ -60,8 +65,15 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
     return layout;
 }
 
+void BlockScene::updateTreeNeighbors()
+{
+    if (NULL == _root) {
+        qDebug() << "Warning: BlockScene::updateTreeNeighbors(): _root is null.";
+        return;
+    }
+    _root->updateChildNeighbors();
 
-
+}
 
 
 void BlockScene::test()

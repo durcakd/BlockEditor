@@ -1,8 +1,8 @@
 print "Initializing core"
 
 local parser = require 'parser'
-local compare = require 'compare'
-local utils = require 'utils'
+--local compare = require 'compare'
+--local utils = require 'utils'
 
 --- Load grammar and style
 -- Must be called to initialize lua state
@@ -28,16 +28,16 @@ end
 
 function parseTextNew(newText)
     print ("\nParsing text ===============================")
-    local newTree = compare.parseNew(currentActiveParser, newText,
+    local newTree = parseNew(currentActiveParser, newText,
         -- Add Item
         function(index, element, parent)
-            print('ADD ITEM: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            --print('ADD ITEM: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
             element.instance = addBasicItem( element.type, element.value, parent.instance, index)
         end,
 
         -- Add Grid
         function(index, element, parent)
-            print('ADD GRID: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            --print('ADD GRID: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
             element.instance = addBasicLayout( element.type, parent.instance, index)
         end
         )
@@ -56,63 +56,73 @@ function loadStyles()
     end
 end
 
-function parseText(newText)
+function parseNew(parser, text, addItemFnc, addGridFnc)
+    print("PARSE AST **************************************")
+    addItem = addItemFnc
+    addGrid = addGridFnc
+    local newTree = parser:match(text)
 
-    print ('\nParsing text...')
-    print "==============================================="
+    local parsedCharacters = 0
 
-print ('\nParsing vajce...')
-	local newTree = compare.parse(currentActiveParser, newText, currentActiveAST,
-		
-		-- Add element 
-		function(element, parent, index)
-		    print('ADD: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent.instance) .. '] ' .. tostring(parent.type) .. ' "' .. tostring(parent.value) .. '"')
+    if newTree ~= nil and #newTree > 0 then
+        parsedCharacters = newTree[#newTree].positionEnd
+    end
 
-			-- Pozor Lua indexuje od 1, C++ od 0
-			if type(element.value) == 'table' then
-		        element.instance = send_addGrid(element.type, parent.instance, element.index - 1)
-		    else
-		        element.instance = send_addItem(element.type, element.value, parent.instance, element.index - 1)
-		    end
-		end,
+    if #text + 1 ~= parsedCharacters then
+        -- if grammar failed to parse whole tree, return error
+        print ('Parsed ' .. tostring(parsedCharacters) .. ' characters, ')
+        print 'reparsing done with error!\n'
+        return nil, parsedCharacters
+    end
 
-		-- Update element
-		function(newElement, oldElement)
-			print('UPDATE: ' .. tostring(oldElement.type) .. ' "' .. tostring(oldElement.value) .. '" to[' .. tostring(newElement.instance) .. ', ' .. tostring(newElement.value) .. ']')
-			
-		    send_updateItem(newElement.instance, newElement.value)
-		end,
+    local root = { type = 'root' , value = newTree }
 
-		-- Remove element
-		function(element, parent, index)
-		    print('REMOVE: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' from parent ' .. tostring(parent and parent.type) .. ' "' .. tostring(parent and parent.value) .. '"')
+    --printTree(nil, root, " ")
 
-	        send_removeItem(element.instance)
-		end
-		)
+    print "ADDING ......."
+    sendNode(1, root, {});
 
-	-- pretty.dump(newTree)
-
-	-- If successfully parsed we will set new tree and commit updates
-	if newTree ~= nil then
-		currentActiveAST = newTree
-		send_commit()
-	end
 end
 
---- Get path to current selected grammar. Useful for loading images for display.
--- @returns string(required) Base path to current grammar
-function getCurrentGrammarPath()
-	assert(currentGramarBasePath)
-	return currentGramarBasePath
+function sendNode( index, node, parent)
+    print (">>> ".. index .."    "..tostring(node) .. "  " .. tostring(parent))
+    if node ~= nil and type(node) == "table" then
+        if node.value ~= nil and type(node.value) == "table" then
+            addGrid(index, node, parent)
+            -- children
+            for k,v in pairs(node.value) do
+                sendNode( k, v, node)
+            end
+        else
+            addItem(index, node, parent)
+        end
+    end
 end
 
---- Get element style
--- @param type Element type defined in style file
--- @returns string(required), object type to be created
--- @returns string(optional), element with style
-function getElementStyle(type)
-	local style = currentActiveStyle[type]
-	return style.object, style
+function printTree(key, value, u)
+    if value ~= nil then
+        if type(value) == "table" then
+
+            printTable( value, u)
+
+            for k,v in pairs(value) do
+                if type(v) == "table" then
+                    print (">-  "..u.."  "..k)
+                    printTree(k,v, u.."-")
+                end
+            end
+        else
+            --print ( ">   "..u, key , value)
+        end
+    end
 end
 
+function printTable(value, u)
+    if type(value) == "table" then
+            for k,v in pairs(value) do
+                if type(v) ~= "table" then
+                    print (">>  "..u.."  "..k, v )
+                end
+            end
+    end
+end
