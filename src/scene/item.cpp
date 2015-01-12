@@ -9,6 +9,7 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <scene/layout.h>
+#include "style/style.h"
 
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
     :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
@@ -77,21 +78,23 @@ void Item::keyPressEvent ( QKeyEvent * event )
     switch (event->key()){
 
     case Qt::Key_Left:
-        simpleCursorMovement(cursor, false);
+        horCursorMovement(cursor, false);
         break;
+
     case Qt::Key_Right:
-        simpleCursorMovement(cursor, true);
+        horCursorMovement(cursor, true);
         break;
+
     case Qt::Key_Up:
-        //qDebug() << "  UP cursor";
-        qDebug() << "me       " << this;
-        if (getPrevius() != NULL) {
-            qDebug() << "previous " << getPrevius() << "   " << getPrevius()->getType() << "  " << getPrevius()->isLayoutE();}
-        if (getNext() != NULL) {
-            qDebug() << "next     " << getNext() << "   " << getNext()->getType() << "  " << getNext()->isLayoutE();}
+        qDebug() << "  UP cursor";
+        verCursorMovement(cursor, false);
+        break;
+
     case Qt::Key_Down:
         qDebug() << "  DOWN cursor";
+        verCursorMovement(cursor, true);
         break;
+
     default:
         QGraphicsTextItem::keyPressEvent(event);
     }
@@ -102,7 +105,7 @@ bool Item::isLayoutE() const
     return false;
 }
 
-void Item::simpleCursorMovement(QTextCursor &cursor, bool toNext)
+void Item::horCursorMovement(QTextCursor &cursor, bool toNext)
 {
     AbstractElement *targed;
     if (textLength(toNext) == cursor.position()) {
@@ -139,6 +142,83 @@ void Item::simpleCursorMovement(QTextCursor &cursor, bool toNext)
     }
 }
 
+void Item::verCursorMovement(QTextCursor &cursor, bool down) {
+    AbstractElement *targed = this;
+    int linePos = cursor.position();
+    qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
+    // left
+    /*do {
+
+        while ( NULL != targed->nextPrevius(false)) {
+            targed = targed->nextPrevius(false);
+            linePos += targed->textLength();
+            qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
+        }
+        if(NULL == targed->getLayoutParrent()) { return; }
+        targed = targed->getLayoutParrent();
+        qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
+
+
+
+    } while (OrientationEnum::vertical != targed->styleE()->getOrientation());
+    */
+
+
+    while( NULL != targed) {
+        while ( NULL != targed->nextPrevius(false)) {
+            targed = targed->nextPrevius(false);
+            linePos += targed->textLength();
+            qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
+        }
+        AbstractElement *parrent = targed->getLayoutParrent();
+        if( NULL != parrent && OrientationEnum::vertical != parrent->styleE()->getOrientation()) {
+            break;
+        }
+        qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
+        targed = targed->getLayoutParrent();
+
+    }
+    // down/up
+
+
+    if (NULL!= targed) {qDebug() << "1. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
+    while (NULL != targed && NULL == targed->nextPrevius(down)) {  // there can be more vertical
+        targed = targed->getLayoutParrent();
+        if (NULL!= targed) {qDebug() << "2. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
+    }
+    if (NULL == targed) { return; }
+    targed = targed->nextPrevius(down);
+
+
+    qDebug() << "3. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();
+    // right
+    int tlen;
+    while (targed->isLayoutE()) {
+       qDebug() << "down child    " << targed->getType();
+       Layout *lay = dynamic_cast <Layout*>(targed);
+       targed = dynamic_cast<AbstractElement*>(lay->itemAt(0)); // TODO no children?
+
+       tlen = targed->textLength();
+       while (tlen < linePos
+              && NULL != targed->nextPrevius(true)) {
+           qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
+        targed = targed->nextPrevius(true);
+        linePos -= tlen;
+        tlen = targed->textLength();
+       }
+    }
+
+
+    Item *ite = dynamic_cast <Item*>(targed);
+    qDebug() << "final:" << targed->getType() << "  " << ite->toPlainText();
+    ite->setFocus();
+    cursor = ite->textCursor();
+    tlen = targed->textLength();
+    linePos = linePos < tlen ? linePos : tlen;
+    cursor.setPosition(linePos);
+    ite->setTextCursor(cursor);
+}
+
 int Item::textLength(bool length) const
 {
     if(length) {
@@ -147,6 +227,13 @@ int Item::textLength(bool length) const
         return 0;
     }
 }
+
+QString Item::textE() const
+{
+    return toPlainText();
+}
+
+
 
 /*
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)

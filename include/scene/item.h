@@ -31,8 +31,10 @@ public slots:
     void keyPressEvent ( QKeyEvent * event );
 
 protected:
-    void simpleCursorMovement(QTextCursor &cursor, bool toNext);
+    void horCursorMovement(QTextCursor &cursor, bool toNext);
+    void verCursorMovement(QTextCursor &cursor, bool down);
     int textLength(bool length = true) const;
+    QString textE() const;
 
 
     QString _text;

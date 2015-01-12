@@ -84,6 +84,32 @@ QGraphicsLayoutItem  *Layout::firstLastItem(bool first) const
     }
 }
 
+int Layout::textLength(bool length) const
+{
+    if(length) {
+        int sum = 0;
+        for ( int i=0; i < count(); i++) {
+            if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
+                   sum += element->textLength(length);
+            }
+        }
+        return sum;
+    } else {
+        return 0;
+    }
+}
+
+QString Layout::textE() const
+{
+    QString text;
+    for ( int i=0; i < count(); i++) {
+        if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
+            text += element->textE();
+        }
+    }
+    return text;
+}
+
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {

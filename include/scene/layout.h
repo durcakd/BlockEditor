@@ -24,6 +24,8 @@ public:
     //void addLayoutChild(AbstractElement *child);
     void updateChildNeighbors();
     bool isLayoutE() const;
+    int textLength(bool length) const;
+    QString textE() const;
 
     QGraphicsLayoutItem  *firstLastItem(bool first) const;
 

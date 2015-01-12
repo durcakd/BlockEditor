@@ -21,9 +21,12 @@ public:
     void setNext(AbstractElement *next) { _next = next; }
     void setPrevius(AbstractElement *previous) { _previous = previous; }
     void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
+    Style *styleE() const {return _style;}
 
     virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
     virtual bool isLayoutE() const = 0;
+    virtual int textLength(bool length = true) const = 0;
+    virtual QString textE() const = 0;
 
 
 protected:

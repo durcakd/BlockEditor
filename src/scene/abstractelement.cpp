@@ -27,10 +27,10 @@ Layout* AbstractElement::getLayoutParrent() const
 
 AbstractElement *AbstractElement::nextPrevius(bool next) const {
     if(next) {
-        qDebug() << "next";
+        //qDebug() << "next";
         return getNext();
     } else {
-        qDebug() << "previous";
+        //qDebug() << "previous";
         return getPrevius();
     }
 }
