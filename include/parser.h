@@ -24,6 +24,7 @@ signals:
     void addElementItem( Item* item);
     void addElementLayout( Layout* layout);
     void addElementStyle( Style* style);
+    void parsingFinished();
 
 private:
 

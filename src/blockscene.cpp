@@ -53,6 +53,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
+        _root->setParrentE(NULL);
         setSceneRect(0, 0, 800, 600);
 
     } else {
@@ -62,6 +63,16 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
     }
 
     return layout;
+}
+
+void BlockScene::updateTreeNeighbors()
+{
+    if (NULL == _root) {
+        qDebug() << "Warning: BlockScene::updateTreeNeighbors(): _root is null.";
+        return;
+    }
+    _root->updateChildNeighbors();
+
 }
 
 

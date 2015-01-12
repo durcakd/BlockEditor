@@ -11,6 +11,8 @@ AbstractElement::AbstractElement(QString type, Style *style, QGraphicsLinearLayo
     _type = type;
     _layoutParrentor = static_cast<Layout*>(layoutParrent);
     _style = style;
+    _next = NULL;
+    _previous = NULL;
 }
 
 QString AbstractElement::getType() const

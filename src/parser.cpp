@@ -69,7 +69,8 @@ void Parser::loadStyle()
     _state["loadStyles"]();
 }
 
-void Parser::loadGrammar() {
+void Parser::loadGrammar()
+{
     try {
         _state["loadGrammarAndStyle"].call( _textType.toStdString().c_str());
     }
@@ -88,4 +89,6 @@ void Parser::loadGrammar() {
 void Parser::parse(QString text) {
     qDebug() << "Request text reparse...";
     _state["parseTextNew"]( text.toStdString().c_str());
+    qDebug() << "... parsing DONE";
+    emit parsingFinished();
 }

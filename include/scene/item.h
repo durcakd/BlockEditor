@@ -19,6 +19,9 @@ public:
     QSizeF elementSizeHint(Qt::SizeHint which) const;
 
     QTextDocument *_document;
+    bool isLayoutE() const;
+
+    QString getText() const {return _text;}
 
 
 public slots:

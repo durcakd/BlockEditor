@@ -22,6 +22,60 @@ void Layout::childItemChanged() {
 
 
 
+
+
+
+QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
+{
+    return sizeHint(which);
+}
+
+void Layout::updateChildNeighbors()
+{
+    qDebug() << "  chids: " << count();
+    AbstractElement *previous = NULL;
+    for (int i=0; i < count(); i++) {
+        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
+            //if(NULL == previous) { qDebug() << "NULL           " << myItem;}
+            //else { qDebug() << previous << "    " << myItem;}
+
+            if( NULL != previous ) {
+                previous->setNext(myItem);
+            }
+            myItem->setPrevius(previous);
+            previous = myItem;
+
+            // recursively update children
+            if (Layout *layout = dynamic_cast <Layout*>(itemAt(i))) {
+                   layout->updateChildNeighbors();
+            }
+        }
+    }
+
+    qDebug() << " Neighbors controll:";
+
+    qDebug() << "  chids: " << count();
+    for (int i=0; i < count(); i++) {
+        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
+            if (myItem->getPrevius() != NULL) {
+                qDebug() << "previous " << myItem->getPrevius() << "   " << myItem->getPrevius()->getType() << "  " << myItem->getPrevius()->isLayoutE();}
+            if (myItem->getNext() != NULL) {
+                qDebug() << "next     " << myItem->getNext() << "   " << myItem->getNext()->getType() << "  " << myItem->getNext()->isLayoutE();}
+
+        }
+    }
+    qDebug() << "THIS  " << this << "   " << this->getType();
+    if( this->getLayoutParrent() != NULL){
+    qDebug() << "THIS  " << this->getLayoutParrent();}
+    qDebug() << "";
+}
+
+bool Layout::isLayoutE() const
+{
+    return true;
+}
+
+/*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {
     //qDebug() << "childrenSizeHint";
@@ -41,16 +95,13 @@ QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
     return QSizeF(w,h);
 }
 
-QList<AbstractElement *> Layout::getChildLayouts() const
-{
-    return _childLayouts;
-}
-
 void Layout::addLayoutChild(AbstractElement *child)
 {
     _childLayouts.append(child);
 }
-QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
+
+QList<AbstractElement *> Layout::getChildLayouts() const
 {
-    return sizeHint(which);
+    return _childLayouts;
 }
+*/

@@ -15,9 +15,14 @@ public:
 
     QString getType() const;
     Layout *getLayoutParrent() const;
+    AbstractElement *getNext() const { return _next; }
+    AbstractElement *getPrevius() const { return _previous; }
+    void setNext(AbstractElement *next) { _next = next; }
+    void setPrevius(AbstractElement *previous) { _previous = previous; }
+    void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
 
     virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
-
+    virtual bool isLayoutE() const = 0;
 
 
 protected:
@@ -25,6 +30,9 @@ protected:
     bool _elementType;
     Style *_style;
     Layout *_layoutParrentor;
+    AbstractElement *_next;
+    AbstractElement *_previous;
+
 };
 
 #endif

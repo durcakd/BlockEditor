@@ -54,7 +54,8 @@ MainWindow::MainWindow()
                      scene, &BlockScene::addParserItem );
     QObject::connect( parser, &Parser::addElementLayout,
                      scene, &BlockScene::addParserLayout );
-
+    QObject::connect( parser, &Parser::parsingFinished,
+                      scene, &BlockScene::updateTreeNeighbors);
 }
 
 void MainWindow::createMenus()
@@ -112,4 +113,3 @@ void MainWindow::openFile(const QString &path)
         }
     }
 }
-

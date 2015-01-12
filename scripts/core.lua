@@ -85,15 +85,13 @@ function parseNew(parser, text, addItemFnc, addGridFnc)
 end
 
 function sendNode( index, node, parent)
-    --print (">>> ".. index .."    "..tostring(node) .. "  " .. tostring(parent))
+    print (">>> ".. index .."    "..tostring(node) .. "  " .. tostring(parent))
     if node ~= nil and type(node) == "table" then
         if node.value ~= nil and type(node.value) == "table" then
             addGrid(index, node, parent)
-
             -- children
             for k,v in pairs(node.value) do
                 sendNode( k, v, node)
-
             end
         else
             addItem(index, node, parent)
