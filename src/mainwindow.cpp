@@ -28,17 +28,19 @@ MainWindow::MainWindow()
     createMenus();
     createToolbars();
 
-    lineEditor = new LineEditor(this);
+    lineEditor = new LineEditor(/*this*/);
     highlighter = new Highlighter(lineEditor->document());
 
 
     view = new QGraphicsView();
+    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     scene = new BlockScene(view);
     view->setScene(scene);
+    view->showMaximized();
 
     QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(lineEditor);
     layout->addWidget(view);
+    //layout->addWidget(lineEditor);
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
     setCentralWidget(widget);
@@ -52,7 +54,8 @@ MainWindow::MainWindow()
                      scene, &BlockScene::addParserItem );
     QObject::connect( parser, &Parser::addElementLayout,
                      scene, &BlockScene::addParserLayout );
-
+    QObject::connect( parser, &Parser::parsingFinished,
+                      scene, &BlockScene::updateTreeNeighbors);
 }
 
 void MainWindow::createMenus()
@@ -110,4 +113,3 @@ void MainWindow::openFile(const QString &path)
         }
     }
 }
-
