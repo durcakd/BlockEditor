@@ -86,12 +86,10 @@ void Item::keyPressEvent ( QKeyEvent * event )
         break;
 
     case Qt::Key_Up:
-        qDebug() << "  UP cursor";
         verCursorMovement(cursor, false);
         break;
 
     case Qt::Key_Down:
-        qDebug() << "  DOWN cursor";
         verCursorMovement(cursor, true);
         break;
 
@@ -145,6 +143,7 @@ void Item::horCursorMovement(QTextCursor &cursor, bool toNext)
 void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     AbstractElement *targed = this;
     int linePos = cursor.position();
+    qDebug() << "";
     qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
     // left
     /*do {
@@ -165,17 +164,18 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
 
 
     while( NULL != targed) {
+        AbstractElement *parrent = targed->getLayoutParrent();
+        if( NULL != parrent && OrientationEnum::vertical == parrent->styleE()->getOrientation()) {
+            break;
+        }
         while ( NULL != targed->nextPrevius(false)) {
             targed = targed->nextPrevius(false);
             linePos += targed->textLength();
             qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
         }
-        AbstractElement *parrent = targed->getLayoutParrent();
-        if( NULL != parrent && OrientationEnum::vertical != parrent->styleE()->getOrientation()) {
-            break;
-        }
+
         qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
-        targed = targed->getLayoutParrent();
+        targed = parrent;
 
     }
     // down/up
@@ -194,18 +194,21 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     // right
     int tlen;
     while (targed->isLayoutE()) {
-       qDebug() << "down child    " << targed->getType();
-       Layout *lay = dynamic_cast <Layout*>(targed);
-       targed = dynamic_cast<AbstractElement*>(lay->itemAt(0)); // TODO no children?
+        qDebug() << "down child    " << targed->getType();
+        bool isHorizontal = OrientationEnum::horizontal == targed->styleE()->getOrientation();
 
-       tlen = targed->textLength();
-       while (tlen < linePos
-              && NULL != targed->nextPrevius(true)) {
-           qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
-        targed = targed->nextPrevius(true);
-        linePos -= tlen;
+        Layout *lay = dynamic_cast <Layout*>(targed);
+        targed = dynamic_cast<AbstractElement*>(lay->itemAt(0)); // TODO no children?
+
         tlen = targed->textLength();
-       }
+        while (isHorizontal
+               && tlen < linePos
+               && NULL != targed->nextPrevius(true)) {
+            qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
+            targed = targed->nextPrevius(true);
+            linePos -= tlen;
+            tlen = targed->textLength();
+        }
     }
 
 
