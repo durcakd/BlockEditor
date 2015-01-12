@@ -127,8 +127,49 @@ void Item::keyPressEvent ( QKeyEvent * event )
 
         break;
     case Qt::Key_Right:
-        cursor.movePosition(QTextCursor::NextCharacter);
-        setTextCursor(cursor);
+        if (toPlainText().length() == cursor.position()) {
+
+            qDebug() << "max from right";
+            targed = getNext();
+            if (NULL == targed) {
+                targed = getLayoutParrent();
+                qDebug() << "1.p     " << targed;
+                while (NULL != targed && NULL == targed->getNext()) {
+                    targed = targed->getLayoutParrent();
+                    qDebug() << "n.p     " << targed;
+                    if (targed != NULL) {
+                        qDebug() << "targed U " << targed << "   " << targed->getType() << "  " << targed->isLayoutE();}
+                }
+                if (NULL == targed) {
+                    return;
+                }
+                targed = targed->getNext();
+            }
+            while (targed->isLayoutE()) {
+                if (targed != NULL) {
+                    qDebug() << "targed D " << targed << "   " << targed->getType() << "  " << targed->isLayoutE();}
+
+                Layout *lay = dynamic_cast <Layout*>(targed);
+                QGraphicsLayoutItem  *layout = lay->itemAt(0);
+                targed = dynamic_cast <AbstractElement*>(layout);
+
+            }
+            if (targed != NULL) {
+                qDebug() << "targed F " << targed << "   " << targed->getType() << "  " << targed->isLayoutE();}
+
+            Item *ite = dynamic_cast <Item*>(targed);
+            //ite->setActive(true);
+
+            ite->setFocus();
+            cursor = ite->textCursor();
+            cursor.setPosition(0);
+            ite->setTextCursor(cursor);
+
+        } else {
+            cursor.movePosition(QTextCursor::NextCharacter);
+            setTextCursor(cursor);
+        }
+
         break;
     case Qt::Key_Up:
         //qDebug() << "  UP cursor";
