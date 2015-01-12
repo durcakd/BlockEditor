@@ -5,6 +5,7 @@
 #include <QTextCursor>
 #include <QMimeData>
 #include <QDrag>
+#include <QFontDatabase>
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
@@ -24,6 +25,9 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
     setAcceptDrops(true);
+
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    setFont(fixedFont);
 
 QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
 
@@ -146,23 +150,6 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     qDebug() << "";
     qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
     // left
-    /*do {
-
-        while ( NULL != targed->nextPrevius(false)) {
-            targed = targed->nextPrevius(false);
-            linePos += targed->textLength();
-            qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
-        }
-        if(NULL == targed->getLayoutParrent()) { return; }
-        targed = targed->getLayoutParrent();
-        qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
-
-
-
-    } while (OrientationEnum::vertical != targed->styleE()->getOrientation());
-    */
-
-
     while( NULL != targed) {
         AbstractElement *parrent = targed->getLayoutParrent();
         if( NULL != parrent && OrientationEnum::vertical == parrent->styleE()->getOrientation()) {
@@ -170,7 +157,7 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
         }
         while ( NULL != targed->nextPrevius(false)) {
             targed = targed->nextPrevius(false);
-            linePos += targed->textLength();
+            linePos += targed->textLength() +1;
             qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
         }
 
@@ -202,11 +189,11 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
 
         tlen = targed->textLength();
         while (isHorizontal
-               && tlen < linePos
+               && tlen+1 < linePos
                && NULL != targed->nextPrevius(true)) {
             qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
             targed = targed->nextPrevius(true);
-            linePos -= tlen;
+            linePos -= (tlen +1);
             tlen = targed->textLength();
         }
     }
