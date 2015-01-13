@@ -8,6 +8,9 @@
 
 #include "scene/abstractelement.h"
 
+//class QGraphicsSceneDragDropEvent;
+//class QGraphicsSceneMouseEvent;
+
 class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public AbstractElement
 {
 
@@ -37,8 +40,19 @@ protected:
     QString textE() const;
 
 
-    QString _text;
+    // when draged on area
+    void dragEnterEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) ;//Q_DECL_OVERRIDE;
+    void dropEvent(QGraphicsSceneDragDropEvent *event) ;// Q_DECL_OVERRIDE;
 
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+
+
+    QString _text;
+    bool dragOver;
+    QColor color;
 
 private:
 

@@ -9,6 +9,13 @@
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneDragDropEvent>
+#include <QDrag>
+#include <QPixmap>
+#include <QBitmap>
+#include <QPainter>
+#include <QWidget>
+#include <QApplication>
 #include <scene/layout.h>
 #include "style/style.h"
 
@@ -24,7 +31,11 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
+
+    // draging
     setAcceptDrops(true);
+    //color = QColor(Qt::lightGray);
+
 
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(fixedFont);
@@ -222,6 +233,76 @@ QString Item::textE() const
 {
     return toPlainText();
 }
+
+
+
+void Item::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
+{
+    if (event->mimeData()->hasColor()) {
+        event->setAccepted(true);
+        dragOver = true;
+        update();
+    } else {
+        event->setAccepted(false);
+    }
+}
+
+void Item::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    Q_UNUSED(event);
+    dragOver = false;
+    update();
+}
+
+void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    dragOver = false;
+    if (event->mimeData()->hasColor()){
+        color = qvariant_cast<QColor>(event->mimeData()->colorData());
+    }
+    update();
+}
+
+
+// ---------------
+void Item::mousePressEvent(QGraphicsSceneMouseEvent *)
+{
+    setCursor(Qt::ClosedHandCursor);
+}
+
+void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+{
+    setCursor(Qt::ArrowCursor);
+}
+
+void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (QLineF(event->screenPos(), event->buttonDownScreenPos(Qt::LeftButton))
+            .length() < QApplication::startDragDistance()) {
+        return;
+    }
+
+    QDrag *drag = new QDrag(event->widget());
+
+    QMimeData *mime = new QMimeData;
+    drag->setMimeData(mime);
+
+
+    mime->setColorData(color);
+    mime->setText(QString("#%1%2%3")
+                  .arg(color.red(), 2, 16, QLatin1Char('0'))
+                  .arg(color.green(), 2, 16, QLatin1Char('0'))
+                  .arg(color.blue(), 2, 16, QLatin1Char('0')));
+
+    //drag->setHotSpot(QPoint(15, 20));
+
+    drag->exec();
+    setCursor(Qt::ArrowCursor);
+}
+
+
+
+
 
 
 
