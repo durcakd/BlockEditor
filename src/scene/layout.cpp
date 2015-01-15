@@ -110,6 +110,16 @@ QString Layout::textE() const
     return text;
 }
 
+int Layout::indexOf(AbstractElement *element)
+{
+    for ( int i=0; i < count(); i++) {
+        if (dynamic_cast <AbstractElement*>(itemAt(i)) == element) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {

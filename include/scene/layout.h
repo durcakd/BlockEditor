@@ -27,6 +27,8 @@ public:
     int textLength(bool length) const;
     QString textE() const;
 
+    int indexOf(AbstractElement *element);
+
     QGraphicsLayoutItem  *firstLastItem(bool first) const;
 
 public slots:
