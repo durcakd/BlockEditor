@@ -11,6 +11,8 @@
 //class QGraphicsSceneDragDropEvent;
 //class QGraphicsSceneMouseEvent;
 
+
+
 class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public AbstractElement
 {
 
@@ -57,5 +59,6 @@ protected:
 private:
 
 };
+
 
 #endif

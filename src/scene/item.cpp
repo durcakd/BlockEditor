@@ -19,6 +19,10 @@
 #include <scene/layout.h>
 #include "style/style.h"
 
+#include "mimedata.h"
+
+
+
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
     :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
 {
@@ -158,8 +162,8 @@ void Item::horCursorMovement(QTextCursor &cursor, bool toNext)
 void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     AbstractElement *targed = this;
     int linePos = cursor.position();
-    qDebug() << "";
-    qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
+   // qDebug() << "";
+    //qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
     // left
     while( NULL != targed) {
         AbstractElement *parrent = targed->getLayoutParrent();
@@ -169,10 +173,10 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
         while ( NULL != targed->nextPrevius(false)) {
             targed = targed->nextPrevius(false);
             linePos += targed->textLength() +1;
-            qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
+            //qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
         }
 
-        qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
+        //qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
         targed = parrent;
 
     }
@@ -182,17 +186,17 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     if (NULL!= targed) {qDebug() << "1. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
     while (NULL != targed && NULL == targed->nextPrevius(down)) {  // there can be more vertical
         targed = targed->getLayoutParrent();
-        if (NULL!= targed) {qDebug() << "2. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
+        //if (NULL!= targed) {qDebug() << "2. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
     }
     if (NULL == targed) { return; }
     targed = targed->nextPrevius(down);
 
 
-    qDebug() << "3. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();
+    //qDebug() << "3. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();
     // right
     int tlen;
     while (targed->isLayoutE()) {
-        qDebug() << "down child    " << targed->getType();
+        //qDebug() << "down child    " << targed->getType();
         bool isHorizontal = OrientationEnum::horizontal == targed->styleE()->getOrientation();
 
         Layout *lay = dynamic_cast <Layout*>(targed);
@@ -238,7 +242,14 @@ QString Item::textE() const
 
 void Item::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {
-    if (event->mimeData()->hasColor()) {
+
+    const MimeData *md = dynamic_cast<const MimeData*>(event->mimeData());
+    if ( md && md->hasElement()) {
+        //Item *item = dynamic_cast<Item *>(md->element());
+        //qDebug() << "drag " << item->toPlainText() << " "  << item;
+        qDebug() << "drag " << toPlainText();
+
+
         event->setAccepted(true);
         dragOver = true;
         update();
@@ -251,28 +262,63 @@ void Item::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
 {
     Q_UNUSED(event);
     dragOver = false;
+
     update();
+
 }
 
 void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     dragOver = false;
-    if (event->mimeData()->hasColor()){
-        color = qvariant_cast<QColor>(event->mimeData()->colorData());
+    const MimeData *md = dynamic_cast<const MimeData*>(event->mimeData());
+    if ( md && md->hasElement()) {
+        Item *item = dynamic_cast<Item *>(md->element());
+        qDebug() << "drop " << item->toPlainText() << " "  << item;
+
+
+        // remove from old position
+        item->getLayoutParrent()->removeItem(item);
+        if( item->getNext()) {
+            item->getNext()->setPrevius(item->getPrevius());
+        }
+        if( item->getPrevius()) {
+            item->getPrevius()->setNext(item->getNext());
+        }
+
+        // insert to new position
+        Layout *parrent = dynamic_cast <Layout*>( getLayoutParrent());
+        if(parrent) {
+            int index = parrent->indexOf(this);
+            parrent->insertItem(index+1,item);
+
+            if( item->getNext()) {
+                item->getNext()->setPrevius(item);
+            }
+
+            this->setNext(item);
+        }
+
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+        // event->acceptProposedAction();
+
     }
     update();
+
 }
 
 
 // ---------------
-void Item::mousePressEvent(QGraphicsSceneMouseEvent *)
+void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    setCursor(Qt::ClosedHandCursor);
+    //setCursor(Qt::ClosedHandCursor);
+    QGraphicsTextItem::mousePressEvent(event);
 }
 
-void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     setCursor(Qt::ArrowCursor);
+    QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
 void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -282,10 +328,14 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
-    QDrag *drag = new QDrag(event->widget());
+    //qDebug() << "et " << event->widget()->s;
+    qDebug() << "this " << toPlainText() << " "  << this;
 
-    QMimeData *mime = new QMimeData;
+
+    QDrag *drag = new QDrag(event->widget());
+    QMimeData *mime = new MimeData(this);
     drag->setMimeData(mime);
+
 
 
     mime->setColorData(color);
@@ -294,36 +344,29 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                   .arg(color.green(), 2, 16, QLatin1Char('0'))
                   .arg(color.blue(), 2, 16, QLatin1Char('0')));
 
-    //drag->setHotSpot(QPoint(15, 20));
 
-    drag->exec();
-    setCursor(Qt::ArrowCursor);
-}
+    QPixmap pixmap(5, 5);
+    pixmap.fill(Qt::green);
 
+    QPainter painter(&pixmap);
+    painter.translate(15, 15);
+    painter.end();
 
+    //    pixmap.setMask(pixmap.createHeuristicMask());
 
+    drag->setPixmap(pixmap);
 
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
 
-
-
-/*
-void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-
-        QDrag *drag = new QDrag(this);
-        QMimeData *mimeData = new QMimeData;
-
-        //mimeData->setText("commentEdit->toPlainText()");
-        //mimeData->setColorData(QColor(Qt::green));
-        drag->setMimeData(mimeData);
-        //drag->setPixmap(iconPixmap);
-
-        Qt::DropAction dropAction = drag->exec();
-
-    } else {
-        QGraphicsTextItem::mousePressEvent(event);
+    if (dropAction == Qt::MoveAction) {
+        qDebug() << "move exec done";
+        //this->setVisible(false);
     }
 
+
+    setCursor(Qt::ArrowCursor);
+    // QGraphicsTextItem::mouseMoveEvent(event);
 }
-*/
+
+
+
