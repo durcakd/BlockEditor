@@ -31,6 +31,12 @@ public:
 
     QGraphicsLayoutItem  *firstLastItem(bool first) const;
 
+
+    // TODO setContentsMargins();
+    // TODO getContentsMargins();
+    // TODO setItemSpacing()
+
+
 public slots:
 
     void childItemChanged();

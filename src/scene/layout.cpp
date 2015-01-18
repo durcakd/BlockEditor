@@ -13,6 +13,9 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
         this->setOrientation( Qt::Vertical);
     }
     //_childLayouts = new  QList<Layout*>();
+    setInstantInvalidatePropagation(true);
+    //setSpacing(5);
+
 }
 
 

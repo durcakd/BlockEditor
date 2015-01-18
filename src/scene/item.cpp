@@ -281,18 +281,23 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 
         // remove from old position
         item->getLayoutParrent()->removeItem(item);
+        //item->getLayoutParrent()->updateGeometry();
+        //item->getLayoutParrent()->getLayoutParrent()->invalidate();
+        //item->getLayoutParrent()->getLayoutParrent()->updateGeometry();
+
+
+        //item->getLayoutParrent()->setGeometry();
         if( item->getNext()) {
             item->getNext()->setPrevius(item->getPrevius());
         }
         if( item->getPrevius()) {
             item->getPrevius()->setNext(item->getNext());
         }
-        item->getLayoutParrent()->updateGeometry();
-
         // insert to new position
         Layout *parrent = dynamic_cast <Layout*>( getLayoutParrent());
         if(parrent) {
             item->setLayoutParrent(parrent);
+            item->setParentLayoutItem(parrent);
             int index = parrent->indexOf(this);
             parrent->insertItem(index+1,item);
 
