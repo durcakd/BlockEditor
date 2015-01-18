@@ -22,6 +22,11 @@ bool Style::getIsLayout() const {
     return _isLayout;
 }
 
+bool Style::getIsColor() const {
+    return _styleType.compare("Name") != 0;
+    return _isColor;
+}
+
 void Style::setOrientation(OrientationEnum orientation) {
     _orientation = orientation;
 }
@@ -40,4 +45,8 @@ bool Style::setIsItem(bool isItem) {
 
 bool Style::setIsLayout(bool isLayout) {
     _isLayout = isLayout;
+}
+
+bool Style::setIsColor(bool isColor) {
+    _isLayout = isColor;
 }

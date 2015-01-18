@@ -36,6 +36,9 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
 
+    if (style->getIsColor()){
+        setDefaultTextColor(Qt::blue);
+    }
     // draging
     setAcceptDrops(true);
     //color = QColor(Qt::lightGray);
@@ -162,7 +165,7 @@ void Item::horCursorMovement(QTextCursor &cursor, bool toNext)
 void Item::verCursorMovement(QTextCursor &cursor, bool down) {
     AbstractElement *targed = this;
     int linePos = cursor.position();
-   // qDebug() << "";
+    // qDebug() << "";
     //qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
     // left
     while( NULL != targed) {
@@ -284,24 +287,28 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
         if( item->getPrevius()) {
             item->getPrevius()->setNext(item->getNext());
         }
+        item->getLayoutParrent()->updateGeometry();
 
         // insert to new position
         Layout *parrent = dynamic_cast <Layout*>( getLayoutParrent());
         if(parrent) {
+            item->setLayoutParrent(parrent);
             int index = parrent->indexOf(this);
             parrent->insertItem(index+1,item);
 
-            if( item->getNext()) {
-                item->getNext()->setPrevius(item);
+            if( getNext()) {
+                getNext()->setPrevius(item);
+                item->setNext(getNext());
             }
 
-            this->setNext(item);
+            setNext(item);
+            item->setPrevius(this);
+            //parrent->updateGeometry();
         }
 
         event->setDropAction(Qt::MoveAction);
         event->accept();
         // event->acceptProposedAction();
-
     }
     update();
 
@@ -345,6 +352,7 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                   .arg(color.blue(), 2, 16, QLatin1Char('0')));
 
 
+
     QPixmap pixmap(5, 5);
     pixmap.fill(Qt::green);
 
@@ -355,12 +363,16 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     //    pixmap.setMask(pixmap.createHeuristicMask());
 
     drag->setPixmap(pixmap);
+    Layout *parrent = this->getLayoutParrent();
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
 
     if (dropAction == Qt::MoveAction) {
         qDebug() << "move exec done";
         //this->setVisible(false);
+        if(parrent) {
+            parrent->updateGeometry();
+        }
     }
 
 

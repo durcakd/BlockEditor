@@ -15,6 +15,8 @@ public:
 
     QString getType() const;
     Layout *getLayoutParrent() const;
+    void setLayoutParrent(Layout *parrent) {_layoutParrentor = parrent;}
+
     AbstractElement *getNext() const { return _next; }
     AbstractElement *getPrevius() const { return _previous; }
     AbstractElement *nextPrevius(bool next) const;
