@@ -7,10 +7,15 @@
 #include <QObject>
 
 #include "abstractelement.h"
+#include <QGraphicsItem>
 
 class Style;
 
-class Layout : public QObject, public QGraphicsLinearLayout, public AbstractElement
+class Layout :
+        public QObject,
+        public AbstractElement,
+        public QGraphicsRectItem,
+        public QGraphicsLinearLayout
 {
     Q_OBJECT
 
@@ -35,6 +40,13 @@ public:
     // TODO setContentsMargins();
     // TODO getContentsMargins();
     // TODO setItemSpacing()
+
+    // Inherited from QGraphicsItem
+    //QRectF boundingRect() const;
+
+    void setGeometry(const QRectF &geom);
+    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
+
 
 
 public slots:

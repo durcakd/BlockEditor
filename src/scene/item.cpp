@@ -10,6 +10,7 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
+#include <QStyleOptionGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
 #include <QBitmap>
@@ -24,7 +25,7 @@
 
 
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
+    :  QGraphicsTextItem(), AbstractElement(type, style, parent), QGraphicsLayoutItem(parent)
 {
     _text = text.trimmed();
 
@@ -324,6 +325,7 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     //setCursor(Qt::ClosedHandCursor);
+    getLayoutParrent()->paint(new QPainter(), new QStyleOptionGraphicsItem());
     QGraphicsTextItem::mousePressEvent(event);
 }
 

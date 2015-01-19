@@ -5,7 +5,6 @@
 
 #include "scene/item.h"
 #include "scene/layout.h"
-
 class QGraphicsLinearLayout;
 class QGraphicsWidget;
 

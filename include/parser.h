@@ -19,6 +19,8 @@ class Parser : public QObject {
 public:
     Parser(QString type);
     void parse(QString text);
+    StyleUtil _styleUtil;
+
 
 signals:
     void addElementItem( Item* item);
@@ -35,7 +37,6 @@ private:
     lua::State _state;
     QString _textType;
     QString _text;
-    StyleUtil _styleUtil;
 
 };
 

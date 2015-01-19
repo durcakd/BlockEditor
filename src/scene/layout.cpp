@@ -1,10 +1,19 @@
 #include "scene/layout.h"
 #include "style/style.h"
 #include <QDebug>
+#include <QBrush>
+#include <QLinearGradient>
+#include <QPainter>
+#include <QBrush>
 
 
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
-    : QObject(), QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
+    : QObject(),
+      AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
+      QGraphicsLinearLayout( parent),
+      QGraphicsRectItem(50,50,50,50,  dynamic_cast<QGraphicsItem*>(parent))
+
+
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {
@@ -15,6 +24,9 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
     //setSpacing(5);
+    //setBrush(QBrush(Qt::red));
+    //setGraphicsItem(this);
+    //paint(new QPainter);
 
 }
 
@@ -31,6 +43,19 @@ void Layout::childItemChanged() {
 QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
 {
     return sizeHint(which);
+}
+
+void Layout::setGeometry(const QRectF &geom)
+{
+    //prepareGeometryChange();
+    //QGraphicsLayoutItem::setGeometry(geom);
+    //setPos(geom.topLeft());
+    QGraphicsLinearLayout:setGeometry(geom);
+}
+
+QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
+{
+    QGraphicsLinearLayout:sizeHint(which, constraint);
 }
 
 void Layout::updateChildNeighbors()
@@ -67,9 +92,10 @@ void Layout::updateChildNeighbors()
 
         }
     }
-    qDebug() << "THIS  " << this << "   " << this->getType();
+    //qDebug() << "THIS  " << this << "   " << this->getType();
     if( this->getLayoutParrent() != NULL){
-    qDebug() << "THIS  " << this->getLayoutParrent();}
+    //qDebug() << "THIS  " << this->getLayoutParrent();
+    }
     qDebug() << "";
 }
 

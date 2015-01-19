@@ -3,6 +3,7 @@
 
 #include <QGraphicsTextItem>
 #include <QGraphicsLayoutItem>
+
 #include <QSizeF>
 #include <QObject>
 
@@ -13,7 +14,7 @@
 
 
 
-class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public AbstractElement
+class Item :  public AbstractElement, public QGraphicsLayoutItem, public QGraphicsTextItem
 {
 
 public:
