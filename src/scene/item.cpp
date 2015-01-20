@@ -279,12 +279,15 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
     dragOver = false;
     const MimeData *md = dynamic_cast<const MimeData*>(event->mimeData());
     if ( md && md->hasElement()) {
-        Item *item = dynamic_cast<Item *>(md->element());
-        qDebug() << "drop " << item->toPlainText() << " "  << item;
+        qDebug() << "drop 1 ";
+        AbstractElement *item = dynamic_cast<AbstractElement *>(md->element());
+        qDebug() << "drop 2" << item->textE() << " "  << item;
 
 
         // remove from old position
-        item->getLayoutParrent()->removeItem(item);
+
+        // TODO item parrent can be null -> null pointer exception
+        item->getLayoutParrent()->removeItem(dynamic_cast<QGraphicsLayoutItem*>(item));
         //item->getLayoutParrent()->updateGeometry();
         //item->getLayoutParrent()->getLayoutParrent()->invalidate();
         //item->getLayoutParrent()->getLayoutParrent()->updateGeometry();
@@ -301,9 +304,9 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
         Layout *parrent = dynamic_cast <Layout*>( getLayoutParrent());
         if(parrent) {
             item->setLayoutParrent(parrent);
-            item->setParentLayoutItem(parrent);
+            //item->setParentLayoutItem(parrent);
             int index = parrent->indexOf(this);
-            parrent->insertItem(index+1,item);
+            parrent->insertItem(index+1,dynamic_cast<QGraphicsLayoutItem*>(item));
 
             if( getNext()) {
                 getNext()->setPrevius(item);
@@ -414,7 +417,7 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 
     QDrag *drag = new QDrag(event->widget());
-    QMimeData *mime = new MimeData(this);
+    QMimeData *mime = new MimeData(_selectedE);
     drag->setMimeData(mime);
 
 
@@ -445,7 +448,7 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         qDebug() << "move exec done";
         //this->setVisible(false);
         if(parrent) {
-            parrent->updateGeometry();
+            //parrent->updateGeometry();
         }
     }
 
