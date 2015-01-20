@@ -8,7 +8,7 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     : QObject(),
       QGraphicsLinearLayout( parent),
       AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
-      QGraphicsRectItem(0,15,100,10, dynamic_cast<QGraphicsItem*>(parent))
+      QGraphicsItem(dynamic_cast<QGraphicsItem*>(parent))
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {

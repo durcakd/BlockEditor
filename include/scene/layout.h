@@ -2,7 +2,7 @@
 #define LAYOUT_H
 
 #include <QGraphicsLinearLayout>
-#include <QGraphicsRectItem>
+#include <QGraphicsItem>
 #include <QSizeF>
 #include <QList>
 #include <QObject>
@@ -16,7 +16,7 @@ class Layout :
         public QObject,
         public QGraphicsLinearLayout,
         public AbstractElement,
-        public QGraphicsRectItem
+        public QGraphicsItem
 {
     Q_OBJECT
 
@@ -41,8 +41,10 @@ public:
     void setGeometry(const QRectF &geom);
 
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
-    QRectF boundingRect() const;
-    void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/);
+
+    // Inherited from QGraphicsItem
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) Q_DECL_OVERRIDE;
 
 public slots:
 
