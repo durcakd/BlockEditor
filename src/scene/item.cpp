@@ -326,8 +326,11 @@ void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
      QGraphicsItem *parent = dynamic_cast<QGraphicsItem*>(getLayoutParrent());
     qDebug() << "--------------------------------------";
-   while(parent) {
-       parent->setVisible(true);
+   if(parent) {
+       AbstractElement *parentE = dynamic_cast<AbstractElement*>( parent);
+       parentE->setPaintEnable(true);
+       //parent->setVisible(true);
+       //parent->setOpacity(0.8);
        parent->update();
        qDebug() << "click on parent " << getLayoutParrent()->toString();
        qDebug() << parent;
@@ -336,7 +339,6 @@ void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
        qDebug() << "isActive " << parent->isActive();
        qDebug() << "isEnabled" << parent->isEnabled();
        qDebug() << "isUnderMo" << parent->isUnderMouse();
-       AbstractElement *parentE = dynamic_cast<AbstractElement*>( parent);
        parent = dynamic_cast<QGraphicsItem*>( parentE->getLayoutParrent());
    }
     //setCursor(Qt::ClosedHandCursor);

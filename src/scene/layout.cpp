@@ -18,7 +18,9 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     }
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
-    setVisible(false);
+    setVisible(true);
+    //setOpacity(0.5);
+
 
 }
 
@@ -43,9 +45,9 @@ QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 
 void Layout::setGeometry(const QRectF &geom)
 {    
-   prepareGeometryChange();
-   QGraphicsLinearLayout::setGeometry( geom);
-   setPos(0,0);
+    prepareGeometryChange();
+    QGraphicsLinearLayout::setGeometry( geom);
+    setPos(0,0);
 }
 
 QRectF Layout::boundingRect() const
@@ -54,16 +56,21 @@ QRectF Layout::boundingRect() const
 }
 
 void Layout::paint(QPainter *painter,
-    const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
+                   const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
 {
     Q_UNUSED(widget);
     Q_UNUSED(option);
 
-    QRectF frame(geometry());
-    frame.translate(3,20);
-    frame.adjust(-5,-5,3,3);
+    if (isPaintEnabled()) {
+        qDebug() << "paint " << toString();
 
-    painter->drawRoundedRect(frame, 3.0, 3.0);
+
+        QRectF frame(geometry());
+        frame.translate(3,20);
+        frame.adjust(-5,-5,3,3);
+
+        painter->drawRoundedRect(frame, 3.0, 3.0);
+    }
 }
 
 void Layout::updateChildNeighbors()
