@@ -3,8 +3,12 @@
 #include <QDebug>
 
 
+
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
-    : QObject(), QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
+    : QObject(),
+      QGraphicsLinearLayout( parent),
+      AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
+      QGraphicsRectItem(0,0,100,10, dynamic_cast<QGraphicsItem*>(parent))
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {
@@ -14,7 +18,12 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     }
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
-    //setSpacing(5);
+    setSpacing(0);
+
+//    QSizePolicy sp = sizePolicy();
+//        sp.setHeightForWidth(true);
+//        setSizePolicy(sp);
+    //QGraphicsRectItem::
 
 }
 
@@ -31,6 +40,78 @@ void Layout::childItemChanged() {
 QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
 {
     return sizeHint(which);
+}
+
+void printG(const QRectF &geom) {
+    qDebug() << "  g: " << geom;
+    qDebug() << "     " << geom.center();
+}
+
+void Layout::setGeometry(const QRectF &geom)
+{
+    //prepareGeometryChange();
+    qreal left, top, right, bottom;
+
+    if(getLayoutParrent()){
+        getLayoutParrent()->getContentsMargins(&left, &top, &right, &bottom);
+        QRectF geom2 = geom;
+        //geom2.moveTopLeft(QPointF(left, top));
+
+        setPos(geom2.topLeft() - getLayoutParrent()->pos());
+        //setPos(geom2.topLeft());
+    }else{
+        setPos(geom.topLeft());
+    }
+
+
+    qDebug() << "-------" << getType() << "  " << textE();
+    qDebug() << "  g : " << boundingRect();
+    qDebug() << "  g : " << geom;
+    qDebug() << "  g : " << pos();
+    qDebug() << "  c : " << left << " " << top << " " << right << " " << bottom;
+    //qDebug() << "  g: " << pos();
+    //qDebug() << "  g: " << scenePos();
+
+
+    QRectF geom2 = geom;
+    geom2.moveTopLeft(QPointF(left, top));
+
+
+    QGraphicsLinearLayout::setGeometry( geom);
+    qDebug() << "  b : " << boundingRect();
+
+//    qDebug() << ">-----" << getType() << "  " << textE();
+//    qDebug() << "  l  " << QGraphicsLinearLayout::geometry();
+    //qDebug() << "  g: " << pos();
+    //qDebug() << "  g: " << scenePos();
+
+
+}
+
+QRectF Layout::boundingRect() const
+{
+    //return   QGraphicsRectItem::boundingRect();
+    //return   QGraphicsLinearLayout::boundingRect();
+    return QRectF(QPointF(0,0), geometry().size());
+}
+
+void Layout::paint(QPainter *painter,
+    const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
+{
+    Q_UNUSED(widget);
+    Q_UNUSED(option);
+
+    QRectF frame(QPointF(0,0), geometry().size());
+     painter->drawRoundedRect(frame, 10.0, 10.0);
+}
+
+QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
+{
+    //return  QGraphicsLinearLayout::sizeHint(which);
+    return  QGraphicsLinearLayout::sizeHint(which);
+    //return  QGraphicsRectItem::sizeHint(which);
+
+    //return
 }
 
 void Layout::updateChildNeighbors()
@@ -50,7 +131,7 @@ void Layout::updateChildNeighbors()
 
             // recursively update children
             if (Layout *layout = dynamic_cast <Layout*>(itemAt(i))) {
-                   layout->updateChildNeighbors();
+                layout->updateChildNeighbors();
             }
         }
     }
@@ -67,9 +148,10 @@ void Layout::updateChildNeighbors()
 
         }
     }
-    qDebug() << "THIS  " << this << "   " << this->getType();
+    //qDebug() << "THIS  " << this << "   " << this->getType();
     if( this->getLayoutParrent() != NULL){
-    qDebug() << "THIS  " << this->getLayoutParrent();}
+        //qDebug() << "THIS  " << this->getLayoutParrent();
+    }
     qDebug() << "";
 }
 
@@ -93,7 +175,7 @@ int Layout::textLength(bool length) const
         int sum = 0;
         for ( int i=0; i < count(); i++) {
             if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
-                   sum += element->textLength(length);
+                sum += element->textLength(length);
             }
         }
         return sum;

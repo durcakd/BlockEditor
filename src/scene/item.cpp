@@ -56,8 +56,8 @@ void Item::setGeometry(const QRectF &geom) {
     //qDebug() << "GG" << geom.size().width() <<"  "<< geom.size().height() << _type ;
     //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y();
     //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y()+boundingRect().size().width();
-    prepareGeometryChange();
-    QGraphicsLayoutItem::setGeometry(geom);
+    //prepareGeometryChange();
+    //QGraphicsLayoutItem::setGeometry(geom);
     setPos(geom.bottomLeft());
 
 }

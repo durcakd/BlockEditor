@@ -63,8 +63,9 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
         layout->getLayoutParrent()->addItem(layout);
-    }
 
+    }
+    addItem( layout);
     return layout;
 }
 
