@@ -10,6 +10,7 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
 #include <QBitmap>
@@ -323,8 +324,26 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 // ---------------
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+     QGraphicsItem *parent = dynamic_cast<QGraphicsItem*>(getLayoutParrent());
+    qDebug() << "--------------------------------------";
+   while(parent) {
+       parent->setVisible(true);
+       parent->update();
+       qDebug() << "click on parent " << getLayoutParrent()->toString();
+       qDebug() << parent;
+       qDebug() << "isVisibleTo " << parent->isVisibleTo(getLayoutParrent());
+       qDebug() << "isVisible" << parent->isVisible();
+       qDebug() << "isActive " << parent->isActive();
+       qDebug() << "isEnabled" << parent->isEnabled();
+       qDebug() << "isUnderMo" << parent->isUnderMouse();
+       AbstractElement *parentE = dynamic_cast<AbstractElement*>( parent);
+       parent = dynamic_cast<QGraphicsItem*>( parentE->getLayoutParrent());
+   }
     //setCursor(Qt::ClosedHandCursor);
     QGraphicsTextItem::mousePressEvent(event);
+
+
+
 }
 
 void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

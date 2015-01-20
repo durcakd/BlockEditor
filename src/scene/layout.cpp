@@ -18,6 +18,7 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     }
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
+    setVisible(false);
 
 }
 
