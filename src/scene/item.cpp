@@ -55,6 +55,7 @@ QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::text
 
     // setGeometry();
 }
+
 void Item::setGeometry(const QRectF &geom) {
 
     //qDebug() << "GG" << geom.size().width() <<"  "<< geom.size().height() << _type ;
@@ -68,7 +69,7 @@ void Item::setGeometry(const QRectF &geom) {
 
 void Item::textUpdatedSlot() {
     updateGeometry();
-
+    getLayoutParrent()->invalidate();
 }
 
 QSizeF Item::elementSizeHint(Qt::SizeHint which) const
@@ -288,10 +289,10 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 
         // TODO item parrent can be null -> null pointer exception
         item->getLayoutParrent()->removeItem(dynamic_cast<QGraphicsLayoutItem*>(item));
+        item->getLayoutParrent()->invalidate();  // TODO remove maybe
         //item->getLayoutParrent()->updateGeometry();
         //item->getLayoutParrent()->getLayoutParrent()->invalidate();
         //item->getLayoutParrent()->getLayoutParrent()->updateGeometry();
-
 
         //item->getLayoutParrent()->setGeometry();
         if( item->getNext()) {
