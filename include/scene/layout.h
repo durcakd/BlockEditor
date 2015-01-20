@@ -39,6 +39,8 @@ public:
 
 
     void setGeometry(const QRectF &geom);
+    //QRectF geometry() const;
+
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
     QRectF boundingRect() const;
     void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/);

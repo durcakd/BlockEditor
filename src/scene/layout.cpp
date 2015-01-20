@@ -8,7 +8,7 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     : QObject(),
       QGraphicsLinearLayout( parent),
       AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
-      QGraphicsRectItem(0,0,100,10, dynamic_cast<QGraphicsItem*>(parent))
+      QGraphicsRectItem(0,15,100,10, dynamic_cast<QGraphicsItem*>(parent))
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {
@@ -18,7 +18,8 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     }
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
-    setSpacing(0);
+    //setSpacing(0);
+    //setContentsMargins(0, 0, 0, 0);
 
 //    QSizePolicy sp = sizePolicy();
 //        sp.setHeightForWidth(true);
@@ -49,9 +50,28 @@ void printG(const QRectF &geom) {
 
 void Layout::setGeometry(const QRectF &geom)
 {
-    //prepareGeometryChange();
     qreal left, top, right, bottom;
+    QRectF zgeom = geom;
+    QRectF zbound = boundingRect();
+    QRectF zgeometry = geometry();
 
+    prepareGeometryChange();
+    QGraphicsLinearLayout::setGeometry( geom);
+
+   /*taking the geometry*/
+   //QRectF effectiveRect = geometry();
+   getContentsMargins(&left, &top, &right, &bottom);
+
+   /*adjust margins*/
+   //effectiveRect.adjust(+left, +top, -right, -bottom);
+
+
+  // qDebug()<<"   "<<left<<","<<top<<","<<right<<","<<bottom;
+   //setPos(geom.topLeft());
+   setPos(geom.topLeft());
+   setPos(0,0);
+
+   /*
     if(getLayoutParrent()){
         getLayoutParrent()->getContentsMargins(&left, &top, &right, &bottom);
         QRectF geom2 = geom;
@@ -85,6 +105,20 @@ void Layout::setGeometry(const QRectF &geom)
     //qDebug() << "  g: " << pos();
     //qDebug() << "  g: " << scenePos();
 
+*/
+   QString parentType= "";
+   if(getLayoutParrent()) {
+      parentType = getLayoutParrent()->getType();
+   }
+   qDebug() << ">>>>>> " << getType() << "   " << parentType << "  " << textE();
+   //qDebug() << "  marg  "<<left<<","<<top<<","<<right<<","<<bottom;
+   //qDebug() << "  geom  " << zgeom;
+   qDebug() << "< geom  " << geom;
+   //qDebug() << "  boud  " << boundingRect();
+   //qDebug() << "< boud  " << zbound;
+   //qDebug() << "  gmet  " << zgeometry;
+   //qDebug() << "< gmet  " << geometry();
+   qDebug() << "<<<<<" << getType() << "  " << textE();
 
 }
 
@@ -92,8 +126,14 @@ QRectF Layout::boundingRect() const
 {
     //return   QGraphicsRectItem::boundingRect();
     //return   QGraphicsLinearLayout::boundingRect();
-    return QRectF(QPointF(0,0), geometry().size());
+    return QRectF(QPointF(0,0), QGraphicsLinearLayout::geometry().size());
 }
+/*
+QRectF Layout::geometry() const {
+    //return QRectF(0,0,0,0);
+    return boundingRect();
+}
+*/
 
 void Layout::paint(QPainter *painter,
     const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
@@ -101,8 +141,20 @@ void Layout::paint(QPainter *painter,
     Q_UNUSED(widget);
     Q_UNUSED(option);
 
-    QRectF frame(QPointF(0,0), geometry().size());
-     painter->drawRoundedRect(frame, 10.0, 10.0);
+    //QString parentType= "";
+    //if(getLayoutParrent()) {
+    //   parentType = getLayoutParrent()->getType();
+    //}
+    //qDebug() << "PAINT  " << getType() << "   " << parentType << "  " << textE();
+    //qDebug() << "     g  " << geometry();
+    //qDebug() << "     p  " << pos();
+    //qDebug() << "     sp " << scenePos();
+
+    //QRectF frame(QPointF(0,0), geometry().size());
+    QRectF frame(geometry());
+    frame.translate(4,20);
+     painter->drawRoundedRect(frame, 3.0, 3.0);
+     //QGraphicsRectItem::paint(painter, option, widget);
 }
 
 QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
