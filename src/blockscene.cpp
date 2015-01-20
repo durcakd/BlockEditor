@@ -6,6 +6,17 @@
 #include <QGraphicsWidget>
 #include <QLabel>
 
+BlockScene *BlockScene::inst = 0;
+
+BlockScene *BlockScene::instance( QObject *parent)
+{
+  if (!inst) {
+      inst = new BlockScene(parent);
+    }
+  return inst;
+}
+
+
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {

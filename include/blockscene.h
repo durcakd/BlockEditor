@@ -14,7 +14,7 @@ class BlockScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    explicit BlockScene( QObject *parent = 0);
+    static BlockScene *instance( QObject *parent = 0);
     void addItem(QGraphicsItem *item);
     void test();
 
@@ -26,6 +26,9 @@ public slots:
     void updateTreeNeighbors();
 
 private:
+    static BlockScene *inst;
+
+    BlockScene( QObject *parent = 0);
 
     QGraphicsLinearLayout *_vLayout;
     QGraphicsWidget *_form;
