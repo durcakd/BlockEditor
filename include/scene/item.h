@@ -28,9 +28,6 @@ public:
 
     QString getText() const {return _text;}
 
-    void paint(QPainter *painter,
-        const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/);
-
 public slots:
     void textUpdatedSlot();
 

@@ -385,21 +385,3 @@ void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     // QGraphicsTextItem::mouseMoveEvent(event);
 }
 
-
-void Item::paint(QPainter *painter,
-    const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
-{
-//    QString parentType = "";
-//    if(getLayoutParrent()) {
-//        parentType = getLayoutParrent()->getType();
-//    }
-//    qDebug() << "paint  " << getType() << "   " << parentType << "  " << textE();
-//    qDebug() << "     g  " << geometry();
-//    qDebug() << "     p  " << pos();
-    //qDebug() << "     sp " << scenePos();
-
-    //QRectF frame(QPointF(0,0), geometry().size());
-     //painter->drawRoundedRect(frame, 10.0, 10.0);
-     QGraphicsTextItem::paint(painter, option, widget);
-}
-
