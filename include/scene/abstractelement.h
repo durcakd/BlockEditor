@@ -30,6 +30,7 @@ public:
     virtual int textLength(bool length = true) const = 0;
     virtual QString textE() const = 0;
 
+    QString toString() const;
 
 protected:
     QString _type;
