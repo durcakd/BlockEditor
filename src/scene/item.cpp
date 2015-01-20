@@ -309,13 +309,14 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
             int index = parrent->indexOf(this);
             parrent->insertItem(index+1,dynamic_cast<QGraphicsLayoutItem*>(item));
 
+
+            item->setNext(getNext());
+            item->setPrevius(this);
             if( getNext()) {
                 getNext()->setPrevius(item);
-                item->setNext(getNext());
             }
-
             setNext(item);
-            item->setPrevius(this);
+
             //parrent->updateGeometry();
         }
 
