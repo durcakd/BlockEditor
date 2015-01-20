@@ -51,13 +51,15 @@ void Parser::loadStyle()
                [this] (lua::String elementType,
                        lua::String orientation,
                        lua::Boolean isItem,
-                       lua::Boolean isLayout)
+                       lua::Boolean isLayout,
+                       lua::Boolean isColor)
                -> lua::Pointer
     {
         Style *newStyle = new Style(elementType);
         newStyle->setIsItem(isItem);
         newStyle->setIsLayout(isLayout);
         newStyle->setOrientation( orientation);
+        newStyle->setIsColor(isColor);
 
         _styleUtil.addStyle(newStyle);
         //emit addElementStyle( newStyle);

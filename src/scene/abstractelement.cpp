@@ -13,6 +13,7 @@ AbstractElement::AbstractElement(QString type, Style *style, QGraphicsLinearLayo
     _style = style;
     _next = NULL;
     _previous = NULL;
+    _enablePaint = false;
 }
 
 QString AbstractElement::getType() const
@@ -33,4 +34,13 @@ AbstractElement *AbstractElement::nextPrevius(bool next) const {
         //qDebug() << "previous";
         return getPrevius();
     }
+}
+
+QString AbstractElement::toString() const
+{
+    QString parentType= "";
+    if(getLayoutParrent()) {
+       parentType = getLayoutParrent()->getType();
+    }
+    return getType() + "   " + parentType + "  " + textE();
 }

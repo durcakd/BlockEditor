@@ -50,8 +50,9 @@ function loadStyles()
             print ( k.." >>  "..v.object)
             local isItem = v.item or false;
             local isLayout = v.grid or false;
+            local isColor = (type(v.text) == "table" and type(v.text.color) )  or false;
 
-            addStyle( k, v.object, isItem, isLayout)
+            addStyle( k, v.object, isItem, isLayout, isColor)
         end
     end
 end

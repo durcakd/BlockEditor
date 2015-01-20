@@ -6,13 +6,25 @@
 #include <QGraphicsWidget>
 #include <QLabel>
 
+BlockScene *BlockScene::inst = 0;
+
+BlockScene *BlockScene::instance( QObject *parent)
+{
+    if (!inst) {
+        inst = new BlockScene(parent);
+    }
+    return inst;
+}
+
+
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {
-   //setSceneRect(0, 0, 800, 600);
+    //setSceneRect(0, 0, 800, 600);
     _form = new QGraphicsWidget;
     addItem(_form);
-
+    _selectedLeaf = NULL;
+    _paintedElemement = NULL;
     //test();
 
 }
@@ -24,13 +36,15 @@ void BlockScene::addItem(QGraphicsItem *item) {
 
 Item *BlockScene::addParserItem(Item *item)
 {
-    qDebug() << "-- added item " << item->toPlainText();
+    qDebug() << "-- added item " << item->toPlainText() << "   " << item->getType();
 
     if( item->getLayoutParrent() == NULL){
         //addItem(item);
         qDebug() << "also in scene";
 
     } else {
+        qDebug() << "      with parrent: " << item->getLayoutParrent()->getType();
+
         item->getLayoutParrent()->addItem(item);
         //item->getLayoutParrent()->activate();
         //item->getLayoutParrent()->updateGeometry();
@@ -42,7 +56,7 @@ Item *BlockScene::addParserItem(Item *item)
     }
     addItem( item);
 
-    QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
 
     return item;
 }
@@ -57,11 +71,13 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         setSceneRect(0, 0, 800, 600);
 
     } else {
+        qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
         layout->getLayoutParrent()->addItem(layout);
-    }
 
+    }
+    addItem( layout);
     return layout;
 }
 

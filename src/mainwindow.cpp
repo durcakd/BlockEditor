@@ -34,7 +34,7 @@ MainWindow::MainWindow()
 
     view = new QGraphicsView();
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    scene = new BlockScene(view);
+    scene = BlockScene::instance(view);
     view->setScene(scene);
     view->showMaximized();
 
