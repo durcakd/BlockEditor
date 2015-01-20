@@ -10,6 +10,7 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsSceneWheelEvent>
 #include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
@@ -43,6 +44,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     // draging
     setAcceptDrops(true);
     //color = QColor(Qt::lightGray);
+    _selectedE = NULL;
 
 
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -324,28 +326,73 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 // ---------------
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-     QGraphicsItem *parent = dynamic_cast<QGraphicsItem*>(getLayoutParrent());
-    qDebug() << "--------------------------------------";
-   if(parent) {
-       AbstractElement *parentE = dynamic_cast<AbstractElement*>( parent);
-       parentE->setPaintEnable(true);
-       //parent->setVisible(true);
-       //parent->setOpacity(0.8);
-       parent->update();
-       qDebug() << "click on parent " << getLayoutParrent()->toString();
-       qDebug() << parent;
-       qDebug() << "isVisibleTo " << parent->isVisibleTo(getLayoutParrent());
-       qDebug() << "isVisible" << parent->isVisible();
-       qDebug() << "isActive " << parent->isActive();
-       qDebug() << "isEnabled" << parent->isEnabled();
-       qDebug() << "isUnderMo" << parent->isUnderMouse();
-       parent = dynamic_cast<QGraphicsItem*>( parentE->getLayoutParrent());
-   }
+    //     QGraphicsItem *parent = dynamic_cast<QGraphicsItem*>(getLayoutParrent());
+    //    qDebug() << "--------------------------------------";
+    //   if(parent) {
+    //       AbstractElement *parentE = dynamic_cast<AbstractElement*>( parent);
+    //       parentE->setPaintEnable(true);
+    //       //parent->setVisible(true);
+    //       //parent->setOpacity(0.8);
+    //       parent->update();
+    //       qDebug() << "click on parent " << getLayoutParrent()->toString();
+    //       qDebug() << parent;
+    //       qDebug() << "isVisibleTo " << parent->isVisibleTo(getLayoutParrent());
+    //       qDebug() << "isVisible" << parent->isVisible();
+    //       qDebug() << "isActive " << parent->isActive();
+    //       qDebug() << "isEnabled" << parent->isEnabled();
+    //       qDebug() << "isUnderMo" << parent->isUnderMouse();
+    //       parent = dynamic_cast<QGraphicsItem*>( parentE->getLayoutParrent());
+    //   }
     //setCursor(Qt::ClosedHandCursor);
+    //QGraphicsTextItem::mousePressEvent(event);
+
+
+    if(!_selectedE) {
+        _selectedE = this;
+    }
     QGraphicsTextItem::mousePressEvent(event);
 
+}
 
 
+void Item::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    if (Qt::ControlModifier & event->modifiers()) {
+        qDebug() << "ctrl wheel ";
+
+        if(!_selectedE) {
+            _selectedE = this;
+        }
+
+        if( event->delta() > 0) {  // UP
+            AbstractElement *parentE = dynamic_cast<AbstractElement*>(_selectedE->getLayoutParrent());
+            if(parentE) {
+                parentE->setPaintEnable(true);
+                _selectedE->setPaintEnable(false);
+                dynamic_cast<QGraphicsItem*>(parentE)->update();
+                dynamic_cast<QGraphicsItem*>(_selectedE)->update();
+                _selectedE = parentE;
+            }
+
+        } else {  // DOWN
+            AbstractElement *child = this;
+            AbstractElement *parentE = dynamic_cast<AbstractElement*>(getLayoutParrent());
+            while(parentE) {
+                if (parentE == _selectedE) {
+                    _selectedE->setPaintEnable(false);
+                    child->setPaintEnable(true);
+                    dynamic_cast<QGraphicsItem*>(child)->update();
+                    dynamic_cast<QGraphicsItem*>(_selectedE)->update();
+                    _selectedE = child;
+                    break;
+                }
+                child = parentE;
+               parentE = dynamic_cast<AbstractElement*>( parentE->getLayoutParrent());
+            }
+        }
+    }
+
+    event->accept();
 }
 
 void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
