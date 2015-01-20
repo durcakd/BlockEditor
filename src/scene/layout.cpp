@@ -3,8 +3,12 @@
 #include <QDebug>
 
 
+
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
-    : QObject(), QGraphicsLinearLayout( parent), AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent))
+    : QObject(),
+      QGraphicsLinearLayout( parent),
+      AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
+      QGraphicsItem(dynamic_cast<QGraphicsItem*>(parent))
 {
     //qDebug() << "---------   "<< type << " " << style;
     if (OrientationEnum::horizontal == _style->getOrientation()) {
@@ -14,7 +18,6 @@ Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     }
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
-    //setSpacing(5);
 
 }
 
@@ -23,14 +26,43 @@ void Layout::childItemChanged() {
     this->updateGeometry();
 }
 
-
-
-
-
-
 QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
 {
     return sizeHint(which);
+}
+
+
+// **************************************************
+// redefine QGRaphics rectangular method
+
+QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
+{
+    return  QGraphicsLinearLayout::sizeHint(which);
+}
+
+void Layout::setGeometry(const QRectF &geom)
+{    
+   prepareGeometryChange();
+   QGraphicsLinearLayout::setGeometry( geom);
+   setPos(0,0);
+}
+
+QRectF Layout::boundingRect() const
+{
+    return QRectF(QPointF(0,0), QGraphicsLinearLayout::geometry().size());
+}
+
+void Layout::paint(QPainter *painter,
+    const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
+{
+    Q_UNUSED(widget);
+    Q_UNUSED(option);
+
+    QRectF frame(geometry());
+    frame.translate(3,20);
+    frame.adjust(-5,-5,3,3);
+
+    painter->drawRoundedRect(frame, 3.0, 3.0);
 }
 
 void Layout::updateChildNeighbors()
@@ -50,7 +82,7 @@ void Layout::updateChildNeighbors()
 
             // recursively update children
             if (Layout *layout = dynamic_cast <Layout*>(itemAt(i))) {
-                   layout->updateChildNeighbors();
+                layout->updateChildNeighbors();
             }
         }
     }
@@ -67,9 +99,10 @@ void Layout::updateChildNeighbors()
 
         }
     }
-    qDebug() << "THIS  " << this << "   " << this->getType();
+    //qDebug() << "THIS  " << this << "   " << this->getType();
     if( this->getLayoutParrent() != NULL){
-    qDebug() << "THIS  " << this->getLayoutParrent();}
+        //qDebug() << "THIS  " << this->getLayoutParrent();
+    }
     qDebug() << "";
 }
 
@@ -93,7 +126,7 @@ int Layout::textLength(bool length) const
         int sum = 0;
         for ( int i=0; i < count(); i++) {
             if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
-                   sum += element->textLength(length);
+                sum += element->textLength(length);
             }
         }
         return sum;

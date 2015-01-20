@@ -28,7 +28,6 @@ public:
 
     QString getText() const {return _text;}
 
-
 public slots:
     void textUpdatedSlot();
 

@@ -2,15 +2,21 @@
 #define LAYOUT_H
 
 #include <QGraphicsLinearLayout>
+#include <QGraphicsItem>
 #include <QSizeF>
 #include <QList>
 #include <QObject>
+#include <QPainter>
 
 #include "abstractelement.h"
 
 class Style;
 
-class Layout : public QObject, public QGraphicsLinearLayout, public AbstractElement
+class Layout :
+        public QObject,
+        public QGraphicsLinearLayout,
+        public AbstractElement,
+        public QGraphicsItem
 {
     Q_OBJECT
 
@@ -32,10 +38,13 @@ public:
     QGraphicsLayoutItem  *firstLastItem(bool first) const;
 
 
-    // TODO setContentsMargins();
-    // TODO getContentsMargins();
-    // TODO setItemSpacing()
+    void setGeometry(const QRectF &geom);
 
+    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
+
+    // Inherited from QGraphicsItem
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) Q_DECL_OVERRIDE;
 
 public slots:
 
@@ -43,12 +52,8 @@ public slots:
 
 protected:
 
-
-
-
     QString _layoutType;
     //QList<AbstractElement*> _childLayouts;
-
 
 };
 

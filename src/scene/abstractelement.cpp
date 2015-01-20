@@ -34,3 +34,12 @@ AbstractElement *AbstractElement::nextPrevius(bool next) const {
         return getPrevius();
     }
 }
+
+QString AbstractElement::toString() const
+{
+    QString parentType= "";
+    if(getLayoutParrent()) {
+       parentType = getLayoutParrent()->getType();
+    }
+    return getType() + "   " + parentType + "  " + textE();
+}
