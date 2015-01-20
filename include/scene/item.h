@@ -28,6 +28,8 @@ public:
 
     QString getText() const {return _text;}
 
+    AbstractElement *_selectedE;
+
 public slots:
     void textUpdatedSlot();
 
@@ -43,12 +45,13 @@ protected:
 
     // when draged on area
     void dragEnterEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
-    void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) ;//Q_DECL_OVERRIDE;
-    void dropEvent(QGraphicsSceneDragDropEvent *event) ;// Q_DECL_OVERRIDE;
+    void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
+    void dropEvent(QGraphicsSceneDragDropEvent *event)  Q_DECL_OVERRIDE;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QGraphicsSceneWheelEvent *event) Q_DECL_OVERRIDE;
 
 
     QString _text;

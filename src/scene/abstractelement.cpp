@@ -13,6 +13,7 @@ AbstractElement::AbstractElement(QString type, Style *style, QGraphicsLinearLayo
     _style = style;
     _next = NULL;
     _previous = NULL;
+    _enablePaint = false;
 }
 
 QString AbstractElement::getType() const

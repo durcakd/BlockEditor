@@ -10,6 +10,8 @@
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsSceneWheelEvent>
+#include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
 #include <QBitmap>
@@ -18,6 +20,7 @@
 #include <QApplication>
 #include <scene/layout.h>
 #include "style/style.h"
+#include "blockscene.h"
 
 #include "mimedata.h"
 
@@ -42,6 +45,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     // draging
     setAcceptDrops(true);
     //color = QColor(Qt::lightGray);
+    _selectedE = NULL;
 
 
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -323,8 +327,73 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 // ---------------
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //setCursor(Qt::ClosedHandCursor);
+    qDebug() << "MOUSE PRESS EVENT";
+    BlockScene *scene = BlockScene::instance();
+    if(!_selectedE) {
+        _selectedE = this;
+
+    }
+    if(scene->selectedLeaf() != this) {
+        qDebug() << "new selected";
+        if(scene->selectedLeaf()) {
+            scene->paintedElemement()->setPaintEnable(false);
+            dynamic_cast<QGraphicsItem*>(scene->paintedElemement())->update();
+        }
+        scene->setSelectedE(this, _selectedE);
+    }
     QGraphicsTextItem::mousePressEvent(event);
+
+}
+
+
+void Item::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    if (Qt::ControlModifier & event->modifiers()) {
+        qDebug() << "ctrl wheel ";
+
+        if(!_selectedE) {
+            _selectedE = this;
+        }
+        BlockScene *scene = BlockScene::instance();
+        if(scene->selectedLeaf() != this) {
+            qDebug() << "new selected";
+            if(scene->selectedLeaf()) {
+                scene->paintedElemement()->setPaintEnable(false);
+                dynamic_cast<QGraphicsItem*>(scene->paintedElemement())->update();
+            }
+        }
+
+        if( event->delta() > 0) {  // UP
+            AbstractElement *parentE = dynamic_cast<AbstractElement*>(_selectedE->getLayoutParrent());
+            if(parentE) {
+                parentE->setPaintEnable(true);
+                _selectedE->setPaintEnable(false);
+                dynamic_cast<QGraphicsItem*>(parentE)->update();
+                dynamic_cast<QGraphicsItem*>(_selectedE)->update();
+                _selectedE = parentE;
+                scene->setSelectedE(this, _selectedE);
+            }
+
+        } else {  // DOWN
+            AbstractElement *child = this;
+            AbstractElement *parentE = dynamic_cast<AbstractElement*>(getLayoutParrent());
+            while(parentE) {
+                if (parentE == _selectedE) {
+                    _selectedE->setPaintEnable(false);
+                    child->setPaintEnable(true);
+                    dynamic_cast<QGraphicsItem*>(child)->update();
+                    dynamic_cast<QGraphicsItem*>(_selectedE)->update();
+                    _selectedE = child;
+                    scene->setSelectedE(this, _selectedE);
+                    break;
+                }
+                child = parentE;
+                parentE = dynamic_cast<AbstractElement*>( parentE->getLayoutParrent());
+            }
+        }
+    }
+
+    event->accept();
 }
 
 void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

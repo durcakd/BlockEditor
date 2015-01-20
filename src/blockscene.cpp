@@ -6,13 +6,25 @@
 #include <QGraphicsWidget>
 #include <QLabel>
 
+BlockScene *BlockScene::inst = 0;
+
+BlockScene *BlockScene::instance( QObject *parent)
+{
+    if (!inst) {
+        inst = new BlockScene(parent);
+    }
+    return inst;
+}
+
+
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {
-   //setSceneRect(0, 0, 800, 600);
+    //setSceneRect(0, 0, 800, 600);
     _form = new QGraphicsWidget;
     addItem(_form);
-
+    _selectedLeaf = NULL;
+    _paintedElemement = NULL;
     //test();
 
 }
@@ -44,7 +56,7 @@ Item *BlockScene::addParserItem(Item *item)
     }
     addItem( item);
 
-    QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
 
     return item;
 }
