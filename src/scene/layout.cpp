@@ -52,7 +52,7 @@ void Layout::setGeometry(const QRectF &geom)
 
 QRectF Layout::boundingRect() const
 {
-    return QRectF(QPointF(0,0), QGraphicsLinearLayout::geometry().size());
+    return QRectF(geometry().adjusted(0,0,5,22));
 }
 
 void Layout::paint(QPainter *painter,
