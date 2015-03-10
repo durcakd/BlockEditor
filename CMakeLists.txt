@@ -146,6 +146,8 @@ endif()
 # Install
 # -------
 install(DIRECTORY scripts/ DESTINATION ${INSTALL_DES}/scripts COMPONENT Data)
+install(DIRECTORY examples_scripts/ DESTINATION ${INSTALL_DES}/examples_scripts COMPONENT Data)
+
 
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION ${INSTALL_DES}
