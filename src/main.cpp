@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     MainWindow window;
     window.setGeometry(100, 100, 800, 500);
     window.show();
-    window.openFile("echo.lua");
+     window.openFile("examples_scripts/echo.lua");
 
     return app.exec();
 }
