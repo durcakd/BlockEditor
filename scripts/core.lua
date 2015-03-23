@@ -11,7 +11,7 @@ function loadGrammarAndStyle(name)
 	print("Loading grammar and style: " .. name)
 
 	local grammar = require(string.format("grammars.%s.grammar", name))
-	currentActiveStyle = require(string.format("grammars.%s.style", name))
+        currentActiveStyle = require(string.format("grammars.%s.style_new", name))
         currentActiveParser = parser.create(grammar, currentActiveStyle)
 
 	local sep = "/"
@@ -52,7 +52,7 @@ function loadStyles()
             local isLayout = v.grid or false;
             local isColor = (type(v.text) == "table" and type(v.text.color) )  or false;
 
-            addStyle( k, v.object, isItem, isLayout, isColor)
+            addStyle(v, k)
         end
     end
 end

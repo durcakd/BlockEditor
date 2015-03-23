@@ -72,27 +72,28 @@ void Parser::init() {
 void Parser::loadStyle()
 {
     _state.set("addStyle",
-               [this] (lua::String elementType,
-                       lua::String orientation,
-                       lua::Boolean isItem,
-                       lua::Boolean isLayout,
-                       lua::Boolean isColor)
-               -> lua::Pointer
+               [this] ( lua::Value style,
+                        lua::String elementType)
     {
         Style *newStyle = new Style(elementType);
-        newStyle->setIsItem(isItem);
-        newStyle->setIsLayout(isLayout);
-        newStyle->setOrientation( orientation);
-        newStyle->setIsColor(isColor);
+
+        newStyle->setIsItem( style["item"]);
+        newStyle->setIsLayout( style["grid"]);
+        lua::String object = style["object"];
+
+        if (strcmp(object, "text") == 0){
+            lua::Value text = style["text"];
+            newStyle->setIsColor( text["isColor"]);
+        } else {
+            newStyle->setOrientation( object);
+        }
 
         _styleUtil.addStyle(newStyle);
-        //emit addElementStyle( newStyle);
-
-        return newStyle;
     });
 
     qDebug() << "Load styles...";
     _state["loadStyles"]();
+
 }
 
 void Parser::loadGrammar()
@@ -102,7 +103,8 @@ void Parser::loadGrammar()
     }
     catch (lua::RuntimeError ex) {
         //QMessageBox msgBox;
-        //msgBox.setText(QString("Error while loading grammar style: ").append(_textType));
+        //msgBox.setText(QString("Error while loading grammar style: ")
+        //.append(_textType));
        // msgBox.setInformativeText(ex.what());
         //msgBox.setStandardButtons(QMessageBox::Ok);
         //msgBox.exec();
