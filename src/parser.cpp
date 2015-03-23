@@ -3,6 +3,7 @@
 #include "scene/layout.h"
 #include "style/style.h"
 #include <QDebug>
+#include <QStringBuilder>
 
 Parser::Parser(QString type) :
     QObject()
@@ -24,8 +25,31 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-        Item *newItem= new Item( elementType, elementText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
+        //elementText.
+        QString text = elementText;
+        QString onlyText;
+        QString afterText;
+
+        QString::ConstIterator it;
+        for (it = text.constBegin(); it != text.constEnd(); it++) {
+            //qDebug() << "--------- " << *it << "  space:"<<it->isSpace() <<"  isLN:"<<it->isLetterOrNumber() <<"  isPrint:"<<it->isPrint() <<"  isSymbol:"<<it->isSymbol();
+            if (it->isSpace()) {
+                afterText += *it;
+            } else {
+                onlyText += *it;
+            }
+        }
+        qDebug()<<" >"<< onlyText <<"<>"<<afterText;
+
+
+        Item *newItem= new Item( elementType, onlyText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementItem(newItem);
+
+        if (!afterText.isEmpty()){
+            Item *newItem= new Item( elementType, afterText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
+            emit addElementItem(newItem);
+        }
+
         return newItem;
     });
     _state.set("addBasicLayout",

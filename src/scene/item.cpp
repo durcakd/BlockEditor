@@ -29,7 +29,8 @@
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
     :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
 {
-    _text = text.trimmed();
+    //_text = text.trimmed();
+    _text = text;
 
     _document = new QTextDocument(_text);
     setDocument(_document);

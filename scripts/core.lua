@@ -122,7 +122,7 @@ function printTable(value, u)
     if type(value) == "table" then
             for k,v in pairs(value) do
                 if type(v) ~= "table" then
-                    print (">>  "..u.."  "..k, v )
+                    print (">>  "..u.."  "..k.." >".. v.."<" )
                 end
             end
     end
