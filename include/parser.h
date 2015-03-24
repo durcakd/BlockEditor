@@ -35,7 +35,6 @@ private:
     lua::State _state;
     QString _textType;
     QString _text;
-    StyleUtil _styleUtil;
 
 };
 

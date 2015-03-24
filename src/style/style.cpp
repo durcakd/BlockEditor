@@ -1,9 +1,26 @@
 #include "style/style.h"
+
 #include <QDebug>
+#include <QStringBuilder>
 
 Style::Style( const QString styleType)
 {
     _styleType = styleType;
+    _orientation = OrientationEnum::any;
+    _isItem = false;
+    _isLayout = false;
+    _isColor = false;
+}
+
+
+QString Style::toString() const
+{
+    return "Style: " + getStyleType() \
+            + (getIsItem() ? "\t\tisItem":"\t") \
+            + (getIsLayout() ? "\tisLayout":"\t") \
+            + (getIsLayout() ?(getOrientation()==OrientationEnum::vertical \
+                           ?"\tvertical":"\thorizontal"):"\t") \
+            + (getIsColor() ? "\tisColor":"\t");
 }
 
 QString Style::getStyleType() const {
@@ -23,7 +40,6 @@ bool Style::getIsLayout() const {
 }
 
 bool Style::getIsColor() const {
-    return _styleType.compare("Name") != 0;
     return _isColor;
 }
 
@@ -39,14 +55,14 @@ void Style::setOrientation(QString orientation) {
     }
 }
 
-bool Style::setIsItem(bool isItem) {
+void Style::setIsItem(bool isItem) {
     _isItem = isItem;
 }
 
-bool Style::setIsLayout(bool isLayout) {
+void Style::setIsLayout(bool isLayout) {
     _isLayout = isLayout;
 }
 
-bool Style::setIsColor(bool isColor) {
-    _isLayout = isColor;
+void Style::setIsColor(bool isColor) {
+    _isColor = isColor;
 }

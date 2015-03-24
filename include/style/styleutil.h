@@ -9,13 +9,15 @@ class Style;
 class StyleUtil
 {
 public:
-    StyleUtil();
+    static StyleUtil* instance( );
 
     Style* getStyle(QString type) const;
     void addStyle(Style *style);
 
-protected:
+private:
+    StyleUtil();
 
+    static StyleUtil* _instance;
     QMap<QString, Style*> _styleMap;
 };
 

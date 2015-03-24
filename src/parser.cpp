@@ -42,11 +42,11 @@ void Parser::init() {
         qDebug()<<" >"<< onlyText <<"<>"<<afterText;
 
 
-        Item *newItem= new Item( elementType, onlyText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
+        Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem= new Item( elementType, afterText, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
+            Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
             emit addElementItem(newItem);
         }
 
@@ -58,7 +58,7 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-        Layout *newLayout= new Layout( elementType, _styleUtil.getStyle(elementType), static_cast<Layout*>(parentPointer));
+        Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementLayout(newLayout);
 
         return newLayout;
@@ -74,6 +74,7 @@ void Parser::loadStyle()
     _state.set("addStyle",
                [this] ( lua::Value style,
                         lua::String elementType)
+            -> lua::Pointer
     {
         Style *newStyle = new Style(elementType);
 
@@ -88,7 +89,9 @@ void Parser::loadStyle()
             newStyle->setOrientation( object);
         }
 
-        _styleUtil.addStyle(newStyle);
+        StyleUtil::instance()->addStyle(newStyle);
+
+        return newStyle;
     });
 
     qDebug() << "Load styles...";

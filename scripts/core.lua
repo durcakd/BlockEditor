@@ -1,8 +1,6 @@
 print "Initializing core"
 
 local parser = require 'parser'
---local compare = require 'compare'
---local utils = require 'utils'
 
 --- Load grammar and style
 -- Must be called to initialize lua state
@@ -18,6 +16,15 @@ function loadGrammarAndStyle(name)
 	currentGramarBasePath = "scripts"..sep.."grammars"..sep..name..sep
 
 	print("Grammar and style '" .. currentGramarBasePath .. "' successfully loaded.")
+end
+
+function loadStyles()
+    print ("\nLoad styles ===============================")
+    for k,v in pairs(currentActiveStyle) do
+        if type(v) == "table" then
+            addStyle(v, k)
+        end
+    end
 end
 
 --- Parse new text
@@ -43,19 +50,6 @@ function parseTextNew(newText)
         )
 end
 
-function loadStyles()
-    print ("\nLoad styles ===============================")
-    for k,v in pairs(currentActiveStyle) do
-        if type(v) == "table" then
-            print ( k.." >>  "..v.object)
-            local isItem = v.item or false;
-            local isLayout = v.grid or false;
-            local isColor = (type(v.text) == "table" and type(v.text.color) )  or false;
-
-            addStyle(v, k)
-        end
-    end
-end
 
 function parseNew(parser, text, addItemFnc, addGridFnc)
     print("PARSE AST **************************************")
