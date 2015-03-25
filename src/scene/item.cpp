@@ -11,16 +11,19 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsSceneWheelEvent>
+#include <QStyleOptionGraphicsItem>
 #include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
 #include <QBitmap>
 #include <QPainter>
 #include <QWidget>
+#include <QStyle>
 #include <QApplication>
 #include <scene/layout.h>
 #include "style/style.h"
 #include "blockscene.h"
+
 
 #include "mimedata.h"
 
@@ -32,9 +35,10 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     //_text = text.trimmed();
     _text = text;
 
-    _document = new QTextDocument(_text);
-    setDocument(_document);
-    setTextInteractionFlags( Qt::TextEditable);
+
+    _document = this->document();
+    _document->setPlainText(_text);
+    setTextInteractionFlags( Qt::TextEditorInteraction);
 
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -55,6 +59,13 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
 QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
 
     // setGeometry();
+}
+
+void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
+o->state &= ~QStyle::State_HasFocus;
+QGraphicsTextItem::paint(painter, o, widget);
 }
 
 void Item::setGeometry(const QRectF &geom) {

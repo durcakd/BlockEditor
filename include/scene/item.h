@@ -53,6 +53,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void wheelEvent(QGraphicsSceneWheelEvent *event) Q_DECL_OVERRIDE;
 
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
     QString _text;
     bool dragOver;
