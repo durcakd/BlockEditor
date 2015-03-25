@@ -63,9 +63,10 @@ QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::text
 
 void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
-o->state &= ~QStyle::State_HasFocus;
-QGraphicsTextItem::paint(painter, o, widget);
+    QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
+    o->state &= ~QStyle::State_HasFocus;
+    o->state &= ~QStyle::State_Selected;
+    QGraphicsTextItem::paint(painter, o, widget);
 }
 
 void Item::setGeometry(const QRectF &geom) {
@@ -111,9 +112,9 @@ QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 
 void Item::keyPressEvent ( QKeyEvent * event )
 {
+    //if (!+Qt::ControlModifier & event->modifiers()) {
     AbstractElement *targed;
     QTextCursor cursor = textCursor();
-
     switch (event->key()){
 
     case Qt::Key_Left:
@@ -131,7 +132,6 @@ void Item::keyPressEvent ( QKeyEvent * event )
     case Qt::Key_Down:
         verCursorMovement(cursor, true);
         break;
-
     default:
         QGraphicsTextItem::keyPressEvent(event);
     }
@@ -192,7 +192,7 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
         }
         while ( NULL != targed->nextPrevius(false)) {
             targed = targed->nextPrevius(false);
-            linePos += targed->textLength() +1;
+            linePos += targed->textLength();
             //qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
         }
 
@@ -224,11 +224,11 @@ void Item::verCursorMovement(QTextCursor &cursor, bool down) {
 
         tlen = targed->textLength();
         while (isHorizontal
-               && tlen+1 < linePos
+               && tlen < linePos
                && NULL != targed->nextPrevius(true)) {
             qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
             targed = targed->nextPrevius(true);
-            linePos -= (tlen +1);
+            linePos -= (tlen);
             tlen = targed->textLength();
         }
     }
