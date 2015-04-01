@@ -1,5 +1,7 @@
 #include "parser.h"
 #include "scene/item.h"
+#include "scene/textitem.h"
+#include "scene/blankitem.h"
 #include "scene/layout.h"
 #include "style/style.h"
 #include <QDebug>
@@ -42,11 +44,11 @@ void Parser::init() {
         qDebug()<<" >"<< onlyText <<"<>"<<afterText;
 
 
-        Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        Item *newItem= new TextItem( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+            Item *newItem= new BlankItem( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
             emit addElementItem(newItem);
         }
 
