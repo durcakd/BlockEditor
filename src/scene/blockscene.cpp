@@ -26,6 +26,8 @@ BlockScene::BlockScene( QObject *parent)
     _selectedLeaf = NULL;
     _paintedElemement = NULL;
     //test();
+    _eventFilter = new SceneEventObserver;
+    addItem(_eventFilter);
 
 }
 
@@ -55,6 +57,7 @@ Item *BlockScene::addParserItem(Item *item)
 
     }
     addItem( item);
+    item->installSceneEventFilter( _eventFilter);
 
 QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
 

@@ -5,6 +5,7 @@
 
 #include "item/item.h"
 #include "item/layout.h"
+#include "sceneeventobserver.h"
 
 class QGraphicsLinearLayout;
 class QGraphicsWidget;
@@ -44,6 +45,7 @@ private:
     Layout *_root;
     AbstractElement *_selectedLeaf;
     AbstractElement *_paintedElemement;
+    SceneEventObserver *_eventFilter;
 
 };
 
