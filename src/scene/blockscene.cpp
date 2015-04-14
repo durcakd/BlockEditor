@@ -1,4 +1,4 @@
-#include "blockscene.h"
+#include "scene/blockscene.h"
 #include "QDebug"
 
 #include <QGraphicsLinearLayout>

@@ -3,8 +3,8 @@
 
 #include <QGraphicsScene>
 
-#include "scene/item.h"
-#include "scene/layout.h"
+#include "item/item.h"
+#include "item/layout.h"
 
 class QGraphicsLinearLayout;
 class QGraphicsWidget;

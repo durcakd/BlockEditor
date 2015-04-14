@@ -1,7 +1,7 @@
 #ifndef BLANKITEM_H
 #define BLANKITEM_H
 
-#include <scene/item.h>
+#include <item/item.h>
 
 class BlankItem :   public Item
 {

@@ -17,9 +17,9 @@
 #include <QDebug>
 
 #include "lineeditor.h"
-#include "blockscene.h"
+#include "scene/blockscene.h"
 #include "highlighter.h"
-#include "parser.h"
+#include "scene/parser.h"
 
 
 MainWindow::MainWindow()

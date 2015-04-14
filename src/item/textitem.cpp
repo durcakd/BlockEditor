@@ -1,4 +1,4 @@
-#include "scene/textitem.h"
+#include "item/textitem.h"
 
 
 TextItem::TextItem(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)

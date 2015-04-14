@@ -1,8 +1,8 @@
-#include "parser.h"
-#include "scene/item.h"
-#include "scene/textitem.h"
-#include "scene/blankitem.h"
-#include "scene/layout.h"
+#include "scene/parser.h"
+#include "item/item.h"
+#include "item/textitem.h"
+#include "item/blankitem.h"
+#include "item/layout.h"
 #include "style/style.h"
 #include <QDebug>
 #include <QStringBuilder>

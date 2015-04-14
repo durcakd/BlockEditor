@@ -1,5 +1,5 @@
-#include "scene/abstractelement.h"
-#include "scene/layout.h"
+#include "item/abstractelement.h"
+#include "item/layout.h"
 #include <QDebug>
 
 #include <QGraphicsLinearLayout>

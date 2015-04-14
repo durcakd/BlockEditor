@@ -6,7 +6,7 @@
 #include <QSizeF>
 #include <QObject>
 
-#include "scene/abstractelement.h"
+#include "item/abstractelement.h"
 
 //class QGraphicsSceneDragDropEvent;
 //class QGraphicsSceneMouseEvent;

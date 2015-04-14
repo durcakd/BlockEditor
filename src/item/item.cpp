@@ -1,4 +1,4 @@
-#include "scene/item.h"
+#include "item/item.h"
 #include <QDebug>
 #include <QFontMetrics>
 #include <QTextDocument>
@@ -20,12 +20,12 @@
 #include <QWidget>
 #include <QStyle>
 #include <QApplication>
-#include <scene/layout.h>
+#include <item/layout.h>
 #include "style/style.h"
-#include "blockscene.h"
+#include "scene/blockscene.h"
 
 
-#include "mimedata.h"
+#include "scene/mimedata.h"
 
 
 
