@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 
+class QKeyEvent;
+class Command;
 
 class SceneEventObserver : public QGraphicsItem{
 public:
@@ -15,6 +17,10 @@ protected:
     bool sceneEventFilter ( QGraphicsItem * watched, QEvent * event );
     //bool eventFilter(QObject *object, QEvent *event);
 
+    bool addCommand(Command *command);
+
+private:
+    bool keyCommand(QGraphicsItem *watched, QKeyEvent *event);
 
 };
 
