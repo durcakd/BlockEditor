@@ -8,7 +8,7 @@ class Command {
 public:
     explicit Command();
 
-    virtual void execute() const = 0;
+    virtual void execute() = 0;
 
 protected:
 
