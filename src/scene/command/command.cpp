@@ -1,4 +1,4 @@
-#include "scene/command.h"
+#include "scene/command/command.h"
 
 
 #include <QDebug>
