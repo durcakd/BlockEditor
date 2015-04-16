@@ -16,6 +16,7 @@ public:
 
 protected:
     void horCursorMovement(QTextCursor &cursor, bool toNext);
+    void verCursorMovement(QTextCursor &cursor, bool down);
 
     Item *_item;
     QKeyEvent *_event;
