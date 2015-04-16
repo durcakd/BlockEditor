@@ -22,6 +22,8 @@ public:
     void setGeometry(const QRectF &geom);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
     QSizeF elementSizeHint(Qt::SizeHint which) const;
+    int textLength(bool length = true) const;
+
 
     QTextDocument *_document;
     bool isLayoutE() const;
@@ -39,7 +41,6 @@ public slots:
 protected:
     void horCursorMovement(QTextCursor &cursor, bool toNext);
     void verCursorMovement(QTextCursor &cursor, bool down);
-    int textLength(bool length = true) const;
     QString textE() const;
 
 

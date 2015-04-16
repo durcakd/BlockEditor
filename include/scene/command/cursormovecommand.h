@@ -4,14 +4,23 @@
 
 #include "scene/command/command.h"
 
+class QGraphicsItem;
+class QKeyEvent;
+class Item;
 
 class CursorMoveCommand : public Command {
 public:
-    explicit CursorMoveCommand();
+    explicit CursorMoveCommand(QGraphicsItem *watched, QKeyEvent *event);
 
     void execute();
 
 protected:
+    void horCursorMovement(QTextCursor &cursor, bool toNext);
+
+    Item *_item;
+    QKeyEvent *_event;
+
+
 
 };
 

@@ -57,7 +57,7 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
 
     else if (event->type() == QEvent::KeyPress) {
         qDebug() << "SEFO KEY press EVENT";
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event) ;
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         return keyCommand( watched, keyEvent);
     }
     return false;
@@ -84,7 +84,7 @@ bool SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
          event->key() == Qt::Key_Right ||
          event->key() == Qt::Key_Up    ||
          event->key() == Qt::Key_Down ) {
-        command = new CursorMoveCommand();
+        command = new CursorMoveCommand(watched, event);
     }
 
     return addCommand( command);
