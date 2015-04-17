@@ -165,6 +165,12 @@ int Layout::indexOf(AbstractElement *element)
     return -1;
 }
 
+void Layout::setPaintEnable( bool enablePaint ) {
+    qDebug() << "Layout setPaint enabled";
+    _enablePaint = enablePaint;
+    update();
+}
+
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {
