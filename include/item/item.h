@@ -36,11 +36,10 @@ public slots:
     void textUpdatedSlot();
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void keyPressEvent ( QKeyEvent * event );
+
 
 protected:
-    void horCursorMovement(QTextCursor &cursor, bool toNext);
-    void verCursorMovement(QTextCursor &cursor, bool down);
+
     QString textE() const;
 
 
