@@ -216,20 +216,20 @@ void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
 // ---------------
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "MOUSE PRESS EVENT";
-    BlockScene *scene = BlockScene::instance();
-    if(!_selectedE) {
-        _selectedE = this;
+//    qDebug() << "item MOUSE PRESS EVENT";
+//    BlockScene *scene = BlockScene::instance();
+//    if(!_selectedE) {
+//        _selectedE = this;
 
-    }
-    if(scene->selectedLeaf() != this) {
-        qDebug() << "new selected";
-        if(scene->selectedLeaf()) {
-            scene->paintedElemement()->setPaintEnable(false);
-            dynamic_cast<QGraphicsItem*>(scene->paintedElemement())->update();
-        }
-        scene->setSelectedE(this, _selectedE);
-    }
+//    }
+//    if(scene->selectedLeaf() != this) {
+//        qDebug() << "new selected";
+//        if(scene->selectedLeaf()) {
+//            scene->paintedElemement()->setPaintEnable(false);
+//            dynamic_cast<QGraphicsItem*>(scene->paintedElemement())->update();
+//        }
+//        scene->setSelectedE(this, _selectedE);
+//    }
     QGraphicsTextItem::mousePressEvent(event);
 
 }
