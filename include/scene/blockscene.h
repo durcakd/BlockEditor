@@ -5,10 +5,13 @@
 
 #include "item/item.h"
 #include "item/layout.h"
-#include "sceneeventobserver.h"
+
+
 
 class QGraphicsLinearLayout;
 class QGraphicsWidget;
+class SceneEventObserver;
+class SceneState;
 
 class BlockScene : public QGraphicsScene
 {
@@ -46,6 +49,7 @@ private:
     AbstractElement *_selectedLeaf;
     AbstractElement *_paintedElemement;
     SceneEventObserver *_eventFilter;
+    SceneState *_sceneState;
 
 };
 

@@ -6,6 +6,9 @@
 #include <QGraphicsWidget>
 #include <QLabel>
 
+#include "scene/sceneeventobserver.h"
+#include "scene/scenestate.h"
+
 BlockScene *BlockScene::inst = 0;
 
 BlockScene *BlockScene::instance( QObject *parent)
@@ -26,6 +29,7 @@ BlockScene::BlockScene( QObject *parent)
     _selectedLeaf = NULL;
     _paintedElemement = NULL;
     //test();
+    _sceneState = new SceneState;
     _eventFilter = new SceneEventObserver;
     addItem(_eventFilter);
 
