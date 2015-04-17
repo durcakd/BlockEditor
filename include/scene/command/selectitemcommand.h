@@ -1,0 +1,28 @@
+#ifndef SELECTITEMCOMMAND_H
+#define SELECTITEMCOMMAND_H
+
+
+#include "scene/command/command.h"
+
+
+class QGraphicsSceneMouseEvent;
+class QGraphicsItem;
+
+
+class SelectItemCommand : public Command {
+public:
+    explicit SelectItemCommand(QGraphicsItem *watched, QGraphicsSceneMouseEvent *event);
+
+    void execute();
+
+protected:
+
+
+   QGraphicsSceneMouseEvent *_event;
+   //Item *_item;
+
+
+
+};
+
+#endif
