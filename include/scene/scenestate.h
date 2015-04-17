@@ -9,22 +9,14 @@ class SceneState
 public:
     SceneState();
 
-
-
-    //    AbstractElement *selectedLeaf() const {return _selectedLeaf;}
-    //    AbstractElement *paintedElemement() const {return _paintedElemement;}
-
-    //    void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
-    //    {
-    //        _selectedLeaf = selectedLeaf;
-    //        _paintedElemement = paintedElemement;
-    //    }
-
+    AbstractElement *getSelectedItem() const;
+    AbstractElement *getPaintedElement() const;
+    void setSelectedItem(AbstractElement *selectedItem);
+    void setPaintedElement(AbstractElement *paintedElement);
 
 private:
-    //AbstractElement *_selectedLeaf;
-    //AbstractElement *_paintedElemement;
-
+    AbstractElement *_selectedItem;
+    AbstractElement *_paintedElement;
 
 };
 

@@ -24,6 +24,7 @@ public:
 
     AbstractElement *selectedLeaf() const {return _selectedLeaf;}
     AbstractElement *paintedElemement() const {return _paintedElemement;}
+    SceneState *getSceneState() const { return _sceneState;}
 
     void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
     {
