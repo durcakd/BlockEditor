@@ -7,6 +7,7 @@
 
 class QGraphicsSceneWheelEvent;
 class QGraphicsItem;
+class Item;
 
 
 class ChangeMarkedCommand : public Command {
@@ -19,7 +20,7 @@ protected:
 
 
    QGraphicsSceneWheelEvent *_event;
-   //Item *_item;
+   Item *_item;
 
 
 
