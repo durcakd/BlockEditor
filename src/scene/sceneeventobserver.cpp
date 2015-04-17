@@ -4,9 +4,12 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 
 #include "scene/command/command.h"
 #include "scene/command/cursormovecommand.h"
+#include "scene/command/selectitemcommand.h"
+#include "scene/command/changemarkedcommand.h"
 
 SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
     : QGraphicsItem(parent) {
@@ -17,15 +20,15 @@ SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
 bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *event ) {
 
     if (event->type() == QEvent::GraphicsSceneWheel) {
-        //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE wheel EVENT";
-        return true;
+        QGraphicsSceneWheelEvent * wheelEvent = static_cast<QGraphicsSceneWheelEvent *>(event);
+        return addCommand( new ChangeMarkedCommand(watched, wheelEvent));
     }
 
     else if (event->type() == QEvent::GraphicsSceneMousePress) {
-        //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE press EVENT";
-        return true;
+        QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+        return addCommand( new SelectItemCommand(watched, mouseEvent));
     }
 
     else if (event->type() == QEvent::GraphicsSceneMouseRelease) {
