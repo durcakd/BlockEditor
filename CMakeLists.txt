@@ -81,14 +81,18 @@ include_directories(${LUA_INCLUDE_DIR})
 # ------------
 
 file(GLOB SRC_DET "src/*.cpp")
+file(GLOB SRC_ITEM "src/item/*.cpp")
 file(GLOB SRC_SCENE "src/scene/*.cpp")
+file(GLOB SRC_COMMAND "src/scene/command/*.cpp")
 file(GLOB SRC_STYLE "src/style/*.cpp")
-set(SRC ${SRC_DET} ${SRC_SCENE} ${SRC_STYLE})
+set(SRC ${SRC_DET} ${SRC_ITEM} ${SRC_SCENE} ${SRC_COMMAND} ${SRC_STYLE})
 
 file(GLOB INCL_DET "include/*.h")
+file(GLOB INCL_ITEM "include/item/*.h")
 file(GLOB INCL_SCENE "include/scene/*.h")
+file(GLOB INCL_COMMAND "include/scene/command/*.h")
 file(GLOB INCL_STYLE "include/style/*.h")
-set(INCL ${INCL_DET} ${INCL_SCENE}  ${INCL_STYLE})
+set(INCL ${INCL_DET} ${INCL_ITEM} ${INCL_SCENE} ${INCL_COMMAND} ${INCL_STYLE})
 
 file(GLOB_RECURSE SCRIPT "scripts/*")
 set_source_files_properties(${SCRIPT} PROPERTIES HEADER_FILE_ONLY TRUE)

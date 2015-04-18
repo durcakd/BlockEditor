@@ -17,9 +17,9 @@
 #include <QDebug>
 
 #include "lineeditor.h"
-#include "blockscene.h"
+#include "scene/blockscene.h"
 #include "highlighter.h"
-#include "parser.h"
+#include "scene/parser.h"
 
 
 MainWindow::MainWindow()
@@ -56,6 +56,9 @@ MainWindow::MainWindow()
                      scene, &BlockScene::addParserLayout );
     QObject::connect( parser, &Parser::parsingFinished,
                       scene, &BlockScene::updateTreeNeighbors);
+
+    setGeometry(100, 100, 500, 400);
+    scene->setSceneRect(0, 0, 470, 380);
 }
 
 void MainWindow::createMenus()

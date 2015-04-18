@@ -1,10 +1,13 @@
-#include "blockscene.h"
+#include "scene/blockscene.h"
 #include "QDebug"
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsLayoutItem>
 #include <QGraphicsWidget>
 #include <QLabel>
+
+#include "scene/sceneeventobserver.h"
+#include "scene/scenestate.h"
 
 BlockScene *BlockScene::inst = 0;
 
@@ -20,12 +23,15 @@ BlockScene *BlockScene::instance( QObject *parent)
 BlockScene::BlockScene( QObject *parent)
     : QGraphicsScene(parent)
 {
-    //setSceneRect(0, 0, 800, 600);
+    //setSceneRect(0, 0, 300, 300);
     _form = new QGraphicsWidget;
     addItem(_form);
     _selectedLeaf = NULL;
     _paintedElemement = NULL;
     //test();
+    _sceneState = new SceneState;
+    _eventFilter = new SceneEventObserver;
+    addItem(_eventFilter);
 
 }
 
@@ -55,6 +61,7 @@ Item *BlockScene::addParserItem(Item *item)
 
     }
     addItem( item);
+    item->installSceneEventFilter( _eventFilter);
 
 QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
 
@@ -68,7 +75,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         _form->setLayout(layout);
         _root = layout;
         _root->setParrentE(NULL);
-        setSceneRect(0, 0, 800, 600);
+        //setSceneRect(0, 0, 800, 600);
 
     } else {
         qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();

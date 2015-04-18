@@ -1,6 +1,6 @@
-#include "mimedata.h"
+#include "scene/mimedata.h"
 #include "QDebug"
-#include "scene/abstractelement.h"
+#include "item/abstractelement.h"
 
 MimeData::MimeData( AbstractElement *el)
     : QMimeData()

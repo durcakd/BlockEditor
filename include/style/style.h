@@ -3,7 +3,7 @@
 
 #include <QString>
 
-enum OrientationEnum {vertical, horizontal} ;
+enum OrientationEnum {vertical, horizontal, any} ;
 
 class Style
 {
@@ -19,11 +19,13 @@ public:
 
     void setOrientation(OrientationEnum orientation);
     void setOrientation(QString orientation);
-    bool setIsItem(bool isItem);
-    bool setIsLayout(bool isLayout);
-    bool setIsColor(bool isColor);
+    void setIsItem(bool isItem);
+    void setIsLayout(bool isLayout);
+    void setIsColor(bool isColor);
 
-protected:
+    QString toString() const;
+
+private:
     QString _styleType;
     OrientationEnum _orientation;
     bool _isItem;
