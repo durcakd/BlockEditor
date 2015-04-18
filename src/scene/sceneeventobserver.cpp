@@ -18,17 +18,19 @@ SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
 
 
 bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *event ) {
-
+    Command *command = NULL;
     if (event->type() == QEvent::GraphicsSceneWheel) {
         qDebug() << "SEFO  MOUSE wheel EVENT";
         QGraphicsSceneWheelEvent * wheelEvent = static_cast<QGraphicsSceneWheelEvent *>(event);
-        return addCommand( new ChangeMarkedCommand(watched, wheelEvent));
+        if (Qt::ControlModifier & wheelEvent->modifiers()) {
+            command = new ChangeMarkedCommand(watched, wheelEvent);
+        }
     }
 
     else if (event->type() == QEvent::GraphicsSceneMousePress) {
         qDebug() << "SEFO  MOUSE press EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        return addCommand( new SelectItemCommand(watched, mouseEvent));
+        command = new SelectItemCommand(watched, mouseEvent);
     }
 
     else if (event->type() == QEvent::GraphicsSceneMouseRelease) {
@@ -61,9 +63,10 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
     else if (event->type() == QEvent::KeyPress) {
         qDebug() << "SEFO KEY press EVENT";
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        return keyCommand( watched, keyEvent);
+        command = keyCommand( watched, keyEvent);
     }
-    return false;
+
+    return addCommand( command);
 }
 
 bool SceneEventObserver::addCommand(Command *command) {
@@ -76,7 +79,7 @@ bool SceneEventObserver::addCommand(Command *command) {
 
 
 // Key Command
-bool SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
+Command *SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
     Command *command = NULL;
 
     //    //if (!+Qt::ControlModifier & event->modifiers()) {
@@ -90,5 +93,5 @@ bool SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
         command = new CursorMoveCommand(watched, event);
     }
 
-    return addCommand( command);
+   return command;
 }

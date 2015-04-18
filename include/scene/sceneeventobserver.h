@@ -20,7 +20,7 @@ protected:
     bool addCommand(Command *command);
 
 private:
-    bool keyCommand(QGraphicsItem *watched, QKeyEvent *event);
+    Command *keyCommand(QGraphicsItem *watched, QKeyEvent *event);
 
 };
 
