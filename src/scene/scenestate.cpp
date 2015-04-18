@@ -2,6 +2,7 @@
 #include "QDebug"
 
 #include "item/abstractelement.h"
+#include "item/item.h"
 
 SceneState::SceneState()
 {
@@ -11,7 +12,7 @@ SceneState::SceneState()
 
 
 
-AbstractElement *SceneState::getSelectedItem() const {
+Item *SceneState::getSelectedItem() const {
     return _selectedItem;
 }
 
@@ -19,7 +20,7 @@ AbstractElement *SceneState::getPaintedElement() const {
     return _paintedElement;
 }
 
-void SceneState::setSelectedItem(AbstractElement *selectedItem) {
+void SceneState::setSelectedItem(Item *selectedItem) {
     _selectedItem = selectedItem;
 }
 

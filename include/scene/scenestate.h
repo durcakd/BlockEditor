@@ -3,19 +3,20 @@
 
 
 class AbstractElement;
+class Item;
 
 class SceneState
 {
 public:
     SceneState();
 
-    AbstractElement *getSelectedItem() const;
+    Item *getSelectedItem() const;
     AbstractElement *getPaintedElement() const;
-    void setSelectedItem(AbstractElement *selectedItem);
+    void setSelectedItem(Item *selectedItem);
     void setPaintedElement(AbstractElement *paintedElement);
 
 private:
-    AbstractElement *_selectedItem;
+    Item *_selectedItem;
     AbstractElement *_paintedElement;
 
 };
