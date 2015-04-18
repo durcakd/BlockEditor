@@ -23,7 +23,7 @@ public:
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
     QSizeF elementSizeHint(Qt::SizeHint which) const;
     int textLength(bool length = true) const;
-
+    QString textE() const;
 
     QTextDocument *_document;
     bool isLayoutE() const;
@@ -42,7 +42,7 @@ public slots:
 
 protected:
 
-    QString textE() const;
+
 
 
     // when draged on area

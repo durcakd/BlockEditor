@@ -63,7 +63,7 @@ void Layout::paint(QPainter *painter,
     Q_UNUSED(option);
 
     if (isPaintEnabled()) {
-        qDebug() << "paint " << toString();
+        //qDebug() << "paint " << toString();
 
 
         QRectF frame(geometry());
@@ -166,7 +166,6 @@ int Layout::indexOf(AbstractElement *element)
 }
 
 void Layout::setPaintEnable( bool enablePaint ) {
-    qDebug() << "Layout setPaint enabled";
     _enablePaint = enablePaint;
     update();
 }
