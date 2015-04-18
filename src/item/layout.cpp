@@ -2,6 +2,8 @@
 #include "style/style.h"
 #include <QDebug>
 
+#include "scene/blockscene.h"
+
 
 
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
@@ -45,7 +47,7 @@ QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 }
 
 void Layout::setGeometry(const QRectF &geom)
-{    
+{
     prepareGeometryChange();
     QGraphicsLinearLayout::setGeometry( geom);
     setPos(0,0);
@@ -168,6 +170,21 @@ int Layout::indexOf(AbstractElement *element)
 void Layout::setPaintEnable( bool enablePaint ) {
     _enablePaint = enablePaint;
     update();
+}
+
+QPixmap Layout::toPixmap() {
+    BlockScene *scene = BlockScene::instance();
+    QRectF r = boundingRect();
+    r.adjust(0,0,5,0);
+
+    QPixmap pixmap(r.width(), r.height());
+    pixmap.fill(QColor(0, 0, 0, 10));
+    QPainter painter(&pixmap);
+
+    scene->render(&painter, QRectF(), sceneBoundingRect().translated(-3,5));
+    painter.end();
+
+    return pixmap.copy(0,10,r.width(),r.height()-13);
 }
 
 /*

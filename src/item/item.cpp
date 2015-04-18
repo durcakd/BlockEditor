@@ -12,6 +12,7 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QStyleOptionGraphicsItem>
+#include <QWidget>
 #include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
@@ -63,9 +64,11 @@ QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::text
 
 void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+
     QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
     o->state &= ~QStyle::State_HasFocus;
     o->state &= ~QStyle::State_Selected;
+
     QGraphicsTextItem::paint(painter, o, widget);
 }
 
@@ -142,4 +145,24 @@ void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     setCursor(Qt::ArrowCursor);
     QGraphicsTextItem::mouseReleaseEvent(event);
+}
+
+QPixmap Item::toPixmap() {
+    QSizeF elementSize = elementSizeHint(Qt::MinimumSize);
+    QPixmap pixmap(elementSize.width()+3, elementSize.height()+3);
+    pixmap.fill(QColor(0,0,0,10));
+
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.translate(-2, -3);
+
+    QStyleOptionGraphicsItem opt;
+    QWidget wid;
+    paint(&painter, &opt, &wid);
+
+    QRectF rect(3,3,elementSize.width(),elementSize.height());
+    painter.drawRoundedRect(rect, 3.0, 3.0);
+
+    painter.end();
+    return pixmap;
 }

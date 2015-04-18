@@ -38,6 +38,9 @@ public:
     virtual QString textE() const = 0;
 
 
+    virtual QPixmap toPixmap() = 0;
+
+
     QString toString() const;
 
 protected:

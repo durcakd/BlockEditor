@@ -29,6 +29,7 @@ public:
     bool isLayoutE() const;
 
     QString getText() const {return _text;}
+    QPixmap toPixmap();
 
 public slots:
     void textUpdatedSlot();
@@ -46,6 +47,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
+
 
     QString _text;
     QColor color;
