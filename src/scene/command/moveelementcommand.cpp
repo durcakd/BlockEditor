@@ -6,14 +6,13 @@
 #include <QGraphicsItem>
 
 
-//#include "item/layout.h"
+
 //#include "item/abstractelement.h"
-//#include "style/style.h"
 #include "scene/blockscene.h"
 #include "scene/scenestate.h"
 #include "item/item.h"
 #include "scene/mimedata.h"
-//#include <QLine>
+
 
 
 MoveElementCommand::MoveElementCommand(QGraphicsItem *watched, QGraphicsSceneMouseEvent *event)
@@ -35,47 +34,24 @@ void MoveElementCommand::execute() {
         return;
     }
 
-    //qDebug() << "et " << event->widget()->s;
-    qDebug() << "this " << _item->toPlainText();
-
-
+    AbstractElement *movedElement = state->getPaintedElement();
     QDrag *drag = new QDrag(_event->widget());
-    QMimeData *mime = new MimeData( state->getPaintedElement());
+    QMimeData *mime = new MimeData(movedElement);
     drag->setMimeData(mime);
-
-
-
-    //mime->setColorData(color);
     mime->setText("textdata");
 
-
-
-    QPixmap pixmap(5, 5);
-    pixmap.fill(Qt::green);
-
-    QPainter painter(&pixmap);
-    painter.translate(15, 15);
-    painter.end();
-
-    //    pixmap.setMask(pixmap.createHeuristicMask());
-
-    drag->setPixmap(pixmap);
-    Layout *parrent = _item->getLayoutParrent();
+    drag->setPixmap( movedElement->toPixmap());
+    drag->setHotSpot(QPoint(0, 0));
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
 
     if (dropAction == Qt::MoveAction) {
         qDebug() << "move exec done";
-        //this->setVisible(false);
-        if(parrent) {
-            //parrent->updateGeometry();
-        }
+        Layout *parrent = _item->getLayoutParrent();
+        //        if(parrent) {
+        //            parrent->updateGeometry();
+        //        }
     }
-
-
-    //setCursor(Qt::ArrowCursor);
-
-
 }
 
 
