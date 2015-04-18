@@ -1,10 +1,13 @@
-#include "blockscene.h"
+#include "scene/blockscene.h"
 #include "QDebug"
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsLayoutItem>
 #include <QGraphicsWidget>
 #include <QLabel>
+
+#include "scene/sceneeventobserver.h"
+#include "scene/scenestate.h"
 
 BlockScene *BlockScene::inst = 0;
 
@@ -26,6 +29,9 @@ BlockScene::BlockScene( QObject *parent)
     _selectedLeaf = NULL;
     _paintedElemement = NULL;
     //test();
+    _sceneState = new SceneState;
+    _eventFilter = new SceneEventObserver;
+    addItem(_eventFilter);
 
 }
 
@@ -55,6 +61,7 @@ Item *BlockScene::addParserItem(Item *item)
 
     }
     addItem( item);
+    item->installSceneEventFilter( _eventFilter);
 
 QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
 

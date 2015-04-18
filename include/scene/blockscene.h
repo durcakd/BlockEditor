@@ -3,11 +3,15 @@
 
 #include <QGraphicsScene>
 
-#include "scene/item.h"
-#include "scene/layout.h"
+#include "item/item.h"
+#include "item/layout.h"
+
+
 
 class QGraphicsLinearLayout;
 class QGraphicsWidget;
+class SceneEventObserver;
+class SceneState;
 
 class BlockScene : public QGraphicsScene
 {
@@ -20,6 +24,7 @@ public:
 
     AbstractElement *selectedLeaf() const {return _selectedLeaf;}
     AbstractElement *paintedElemement() const {return _paintedElemement;}
+    SceneState *getSceneState() const { return _sceneState;}
 
     void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
     {
@@ -44,6 +49,8 @@ private:
     Layout *_root;
     AbstractElement *_selectedLeaf;
     AbstractElement *_paintedElemement;
+    SceneEventObserver *_eventFilter;
+    SceneState *_sceneState;
 
 };
 

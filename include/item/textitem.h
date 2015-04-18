@@ -1,7 +1,7 @@
 #ifndef TEXTITEM_H
 #define TEXTITEM_H
 
-#include "scene/item.h"
+#include "item/item.h"
 
 class TextItem :   public Item
 {

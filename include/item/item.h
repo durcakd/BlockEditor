@@ -6,7 +6,7 @@
 #include <QSizeF>
 #include <QObject>
 
-#include "scene/abstractelement.h"
+#include "item/abstractelement.h"
 
 //class QGraphicsSceneDragDropEvent;
 //class QGraphicsSceneMouseEvent;
@@ -22,6 +22,8 @@ public:
     void setGeometry(const QRectF &geom);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
     QSizeF elementSizeHint(Qt::SizeHint which) const;
+    int textLength(bool length = true) const;
+    QString textE() const;
 
     QTextDocument *_document;
     bool isLayoutE() const;
@@ -34,13 +36,13 @@ public slots:
     void textUpdatedSlot();
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void keyPressEvent ( QKeyEvent * event );
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+
 
 protected:
-    void horCursorMovement(QTextCursor &cursor, bool toNext);
-    void verCursorMovement(QTextCursor &cursor, bool down);
-    int textLength(bool length = true) const;
-    QString textE() const;
+
+
 
 
     // when draged on area
@@ -48,10 +50,8 @@ protected:
     void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
     void dropEvent(QGraphicsSceneDragDropEvent *event)  Q_DECL_OVERRIDE;
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-    void wheelEvent(QGraphicsSceneWheelEvent *event) Q_DECL_OVERRIDE;
 
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 

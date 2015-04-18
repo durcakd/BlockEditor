@@ -42,9 +42,13 @@ public:
 
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
 
+    // Inherited from AbstractElement
+    void setPaintEnable( bool enablePaint );
+
     // Inherited from QGraphicsItem
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) Q_DECL_OVERRIDE;
+
 
 public slots:
 

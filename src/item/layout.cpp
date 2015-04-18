@@ -1,4 +1,4 @@
-#include "scene/layout.h"
+#include "item/layout.h"
 #include "style/style.h"
 #include <QDebug>
 
@@ -63,7 +63,7 @@ void Layout::paint(QPainter *painter,
     Q_UNUSED(option);
 
     if (isPaintEnabled()) {
-        qDebug() << "paint " << toString();
+        //qDebug() << "paint " << toString();
 
 
         QRectF frame(geometry());
@@ -163,6 +163,11 @@ int Layout::indexOf(AbstractElement *element)
         }
     }
     return -1;
+}
+
+void Layout::setPaintEnable( bool enablePaint ) {
+    _enablePaint = enablePaint;
+    update();
 }
 
 /*

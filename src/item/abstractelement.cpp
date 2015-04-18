@@ -1,5 +1,5 @@
-#include "scene/abstractelement.h"
-#include "scene/layout.h"
+#include "item/abstractelement.h"
+#include "item/layout.h"
 #include <QDebug>
 
 #include <QGraphicsLinearLayout>
@@ -34,6 +34,17 @@ AbstractElement *AbstractElement::nextPrevius(bool next) const {
         //qDebug() << "previous";
         return getPrevius();
     }
+}
+
+bool AbstractElement::isParent(AbstractElement *checkedParent) {
+    AbstractElement *parent = dynamic_cast<AbstractElement*>(this->getLayoutParrent());
+    while (parent) {
+        if (parent == checkedParent) {
+            return true;
+        }
+        parent = dynamic_cast<AbstractElement*>( parent->getLayoutParrent());
+    }
+    return false;
 }
 
 QString AbstractElement::toString() const

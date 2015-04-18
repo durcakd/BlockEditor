@@ -25,7 +25,11 @@ public:
     void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
     Style *styleE() const {return _style;}
     bool isPaintEnabled() const {return _enablePaint;}
-    void setPaintEnable( bool enablePaint ) { _enablePaint = enablePaint;}
+    bool isParent(AbstractElement *checkedParent);
+
+
+
+    virtual void setPaintEnable( bool enablePaint ) { _enablePaint = enablePaint;}
 
 
     virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
