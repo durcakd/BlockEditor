@@ -36,6 +36,17 @@ AbstractElement *AbstractElement::nextPrevius(bool next) const {
     }
 }
 
+bool AbstractElement::isParent(AbstractElement *checkedParent) {
+    AbstractElement *parent = dynamic_cast<AbstractElement*>(this->getLayoutParrent());
+    while (parent) {
+        if (parent == checkedParent) {
+            return true;
+        }
+        parent = dynamic_cast<AbstractElement*>( parent->getLayoutParrent());
+    }
+    return false;
+}
+
 QString AbstractElement::toString() const
 {
     QString parentType= "";
