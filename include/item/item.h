@@ -29,8 +29,7 @@ public:
     bool isLayoutE() const;
 
     QString getText() const {return _text;}
-
-    AbstractElement *_selectedE;
+    QPixmap toPixmap();
 
 public slots:
     void textUpdatedSlot();
@@ -45,18 +44,12 @@ protected:
 
 
 
-    // when draged on area
-    void dragEnterEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
-    void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
-    void dropEvent(QGraphicsSceneDragDropEvent *event)  Q_DECL_OVERRIDE;
-
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
+
     QString _text;
-    bool dragOver;
     QColor color;
 
 private:

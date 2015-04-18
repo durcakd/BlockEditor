@@ -12,6 +12,7 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QStyleOptionGraphicsItem>
+#include <QWidget>
 #include <QGraphicsItem>
 #include <QDrag>
 #include <QPixmap>
@@ -50,7 +51,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     // draging
     setAcceptDrops(true);
     //color = QColor(Qt::lightGray);
-    _selectedE = NULL;
+
 
 
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -63,9 +64,11 @@ QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::text
 
 void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+
     QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
     o->state &= ~QStyle::State_HasFocus;
     o->state &= ~QStyle::State_Selected;
+
     QGraphicsTextItem::paint(painter, o, widget);
 }
 
@@ -132,86 +135,6 @@ QString Item::textE() const
 
 
 
-void Item::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
-{
-
-    const MimeData *md = dynamic_cast<const MimeData*>(event->mimeData());
-    if ( md && md->hasElement()) {
-        //Item *item = dynamic_cast<Item *>(md->element());
-        //qDebug() << "drag " << item->toPlainText() << " "  << item;
-        qDebug() << "drag " << toPlainText();
-
-
-        event->setAccepted(true);
-        dragOver = true;
-        update();
-    } else {
-        event->setAccepted(false);
-    }
-}
-
-void Item::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
-{
-    Q_UNUSED(event);
-    dragOver = false;
-
-    update();
-
-}
-
-void Item::dropEvent(QGraphicsSceneDragDropEvent *event)
-{
-    dragOver = false;
-    const MimeData *md = dynamic_cast<const MimeData*>(event->mimeData());
-    if ( md && md->hasElement()) {
-        qDebug() << "drop 1 ";
-        AbstractElement *item = dynamic_cast<AbstractElement *>(md->element());
-        qDebug() << "drop 2" << item->textE() << " "  << item;
-
-
-        // remove from old position
-
-        // TODO item parrent can be null -> null pointer exception
-        item->getLayoutParrent()->removeItem(dynamic_cast<QGraphicsLayoutItem*>(item));
-        item->getLayoutParrent()->invalidate();  // TODO remove maybe
-        //item->getLayoutParrent()->updateGeometry();
-        //item->getLayoutParrent()->getLayoutParrent()->invalidate();
-        //item->getLayoutParrent()->getLayoutParrent()->updateGeometry();
-
-        //item->getLayoutParrent()->setGeometry();
-        if( item->getNext()) {
-            item->getNext()->setPrevius(item->getPrevius());
-        }
-        if( item->getPrevius()) {
-            item->getPrevius()->setNext(item->getNext());
-        }
-        // insert to new position
-        Layout *parrent = dynamic_cast <Layout*>( getLayoutParrent());
-        if(parrent) {
-            item->setLayoutParrent(parrent);
-            //item->setParentLayoutItem(parrent);
-            int index = parrent->indexOf(this);
-            parrent->insertItem(index+1,dynamic_cast<QGraphicsLayoutItem*>(item));
-
-
-            item->setNext(getNext());
-            item->setPrevius(this);
-            if( getNext()) {
-                getNext()->setPrevius(item);
-            }
-            setNext(item);
-
-            //parrent->updateGeometry();
-        }
-
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-        // event->acceptProposedAction();
-    }
-    update();
-
-}
-
 
 // ---------------
 void Item::mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -224,55 +147,22 @@ void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
-void Item::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (QLineF(event->screenPos(), event->buttonDownScreenPos(Qt::LeftButton))
-            .length() < QApplication::startDragDistance()) {
-        return;
-    }
-
-    //qDebug() << "et " << event->widget()->s;
-    qDebug() << "this " << toPlainText() << " "  << this;
-
-
-    QDrag *drag = new QDrag(event->widget());
-    QMimeData *mime = new MimeData(_selectedE);
-    drag->setMimeData(mime);
-
-
-
-    mime->setColorData(color);
-    mime->setText(QString("#%1%2%3")
-                  .arg(color.red(), 2, 16, QLatin1Char('0'))
-                  .arg(color.green(), 2, 16, QLatin1Char('0'))
-                  .arg(color.blue(), 2, 16, QLatin1Char('0')));
-
-
-
-    QPixmap pixmap(5, 5);
-    pixmap.fill(Qt::green);
+QPixmap Item::toPixmap() {
+    QSizeF elementSize = elementSizeHint(Qt::MinimumSize);
+    QPixmap pixmap(elementSize.width()+3, elementSize.height()+3);
+    pixmap.fill(QColor(0,0,0,10));
 
     QPainter painter(&pixmap);
-    painter.translate(15, 15);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.translate(-2, -3);
+
+    QStyleOptionGraphicsItem opt;
+    QWidget wid;
+    paint(&painter, &opt, &wid);
+
+    QRectF rect(3,3,elementSize.width(),elementSize.height());
+    painter.drawRoundedRect(rect, 3.0, 3.0);
+
     painter.end();
-
-    //    pixmap.setMask(pixmap.createHeuristicMask());
-
-    drag->setPixmap(pixmap);
-    Layout *parrent = this->getLayoutParrent();
-
-    Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
-
-    if (dropAction == Qt::MoveAction) {
-        qDebug() << "move exec done";
-        //this->setVisible(false);
-        if(parrent) {
-            //parrent->updateGeometry();
-        }
-    }
-
-
-    setCursor(Qt::ArrowCursor);
-    // QGraphicsTextItem::mouseMoveEvent(event);
+    return pixmap;
 }
-
