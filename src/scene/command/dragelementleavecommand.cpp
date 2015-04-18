@@ -11,14 +11,14 @@
 //#include "style/style.h"
 //#include "scene/blockscene.h"
 //#include "scene/scenestate.h"
-//#include "item/item.h"
+#include "item/item.h"
 
 
 DragElementLeaveCommand::DragElementLeaveCommand(QGraphicsItem *watched, QGraphicsSceneDragDropEvent *event)
     : Command()
 {
     _event = event;
-    //_item = dynamic_cast<Item *>(watched) ;
+    _item = dynamic_cast<Item *>(watched) ;
 
 
 }
@@ -29,6 +29,9 @@ void DragElementLeaveCommand::execute() {
 
     //SceneState *state = BlockScene::instance()->getSceneState();
 
+    //dragOver = false;
+
+    _item->update();
 }
 
 

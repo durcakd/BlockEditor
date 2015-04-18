@@ -7,7 +7,7 @@
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsItem;
-//class Item;
+class Item;
 
 
 class MoveElementCommand : public Command {
@@ -20,7 +20,7 @@ protected:
 
 
    QGraphicsSceneMouseEvent *_event;
-   //Item *_item;
+   Item *_item;
 
 
 

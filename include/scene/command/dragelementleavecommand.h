@@ -7,7 +7,7 @@
 
 class QGraphicsSceneDragDropEvent;
 class QGraphicsItem;
-//class Item;
+class Item;
 
 
 class DragElementLeaveCommand : public Command {
@@ -20,7 +20,7 @@ protected:
 
 
    QGraphicsSceneDragDropEvent *_event;
-   //Item *_item;
+   Item *_item;
 
 
 
