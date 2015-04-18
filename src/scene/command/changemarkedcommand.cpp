@@ -8,6 +8,7 @@
 #include "item/item.h"
 #include "scene/scenestate.h"
 #include "scene/blockscene.h"
+
 //#include "item/layout.h"
 //#include "item/abstractelement.h"
 //#include "style/style.h"
@@ -17,57 +18,68 @@ ChangeMarkedCommand::ChangeMarkedCommand(QGraphicsItem *watched, QGraphicsSceneW
     : Command()
 {
     _event = event;
-    _item = static_cast<Item *>(watched) ;
+    _item = dynamic_cast<Item *>(watched) ;
 
 
 }
 
 
 void ChangeMarkedCommand::execute() {
-    qDebug() << "EXE changeMarkedCommand";
+    qDebug() << "EXE changeMarkedCommand ";
 
+    SceneState *state = BlockScene::instance()->getSceneState();
+    AbstractElement *painted = state->getPaintedElement();
 
-    if (Qt::ControlModifier & _event->modifiers()) {
-        qDebug() << "ctrl wheel ";
+//    qDebug() << "  ACT : "<< _item->toString();
+//    if (state->getSelectedItem()) {
+//        qDebug() << "    OLD SELECTED: "<< state->getSelectedItem()->toString();
+//        qDebug() << "    OLD PAINTED:  "<< state->getPaintedElement()->toString();
+//    }
+    if (_item != state->getSelectedItem()) {
+        // qDebug() << "new selected";
+        state->setSelectedItem(_item);
 
-        SceneState *state = BlockScene::instance()->getSceneState();
-
-
-        if (_item != state->getSelectedItem()) {
-            qDebug() << "new selected";
-            if(state->getPaintedElement()) {
+        if (!painted || !_item->isParent(painted)) {
+            if(painted) {
                 state->getPaintedElement()->setPaintEnable(false);
             }
-            state->setSelectedItem(_item);  //
-            state->setPaintedElement(_item);  //
+            state->setPaintedElement(dynamic_cast<AbstractElement*>(_item));
+        }
+    }
+
+
+    painted = state->getPaintedElement();
+
+    if( _event->delta() > 0) {  // UP
+        //qDebug() << "UP";
+        AbstractElement *parentE = dynamic_cast<AbstractElement*>(painted->getLayoutParrent());
+
+        if(parentE) {
+            parentE->setPaintEnable(true);
+            painted->setPaintEnable(false);
+            state->setPaintedElement( parentE);
         }
 
-        AbstractElement *oldPainted = state->getPaintedElement();
+    } else {  // DOWN
+        AbstractElement *child = dynamic_cast<AbstractElement*>(_item);
 
-        if( _event->delta() > 0) {  // UP
-            AbstractElement *parentE = dynamic_cast<AbstractElement*>(oldPainted->getLayoutParrent());
-            if(parentE) {
-                parentE->setPaintEnable(true);
-                oldPainted->setPaintEnable(false);
-                state->setPaintedElement( parentE);
-            }
-
-        } else {  // DOWN
-            AbstractElement *child = _item;
+        if( painted != child ) {
+            //qDebug() << "DOWN";
             AbstractElement *parentE = dynamic_cast<AbstractElement*>(_item->getLayoutParrent());
+
             while(parentE) {
-                if (parentE == oldPainted) {
-                    oldPainted->setPaintEnable(false);
+                if (parentE == painted) {
+                    painted->setPaintEnable(false);
                     child->setPaintEnable(true);
                     state->setPaintedElement(child);
-                    break;
+                    return;
                 }
                 child = parentE;
                 parentE = dynamic_cast<AbstractElement*>( parentE->getLayoutParrent());
             }
         }
     }
-
+    //qDebug() << "    NEW PAINTED:  "<< state->getPaintedElement()->toString();
 }
 
 

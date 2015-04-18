@@ -18,7 +18,7 @@ SelectItemCommand::SelectItemCommand(QGraphicsItem *watched, QGraphicsSceneMouse
     : Command()
 {
     _event = event;
-    _item = static_cast<Item *>(watched) ;
+    _item = dynamic_cast<Item *>(watched) ;
 
 
 }
@@ -30,13 +30,18 @@ void SelectItemCommand::execute() {
     SceneState *state = BlockScene::instance()->getSceneState();
 
     if (_item != state->getSelectedItem()) {
-        qDebug() << "new selected";
-        if(state->getPaintedElement()) {
-            state->getPaintedElement()->setPaintEnable(false);
-        }
+        //qDebug() << "new selected";
         state->setSelectedItem(_item);
-        state->setPaintedElement(_item);   // TODO selected
+
+        AbstractElement *painted = state->getPaintedElement();
+        if (!painted || !_item->isParent(painted)) {
+            if(painted) {
+                state->getPaintedElement()->setPaintEnable(false);
+            }
+            state->setPaintedElement(dynamic_cast<AbstractElement*>(_item));
+        }
     }
+
     _item->mousePressEvent(_event);
 
 }
