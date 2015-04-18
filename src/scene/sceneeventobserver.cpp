@@ -10,6 +10,10 @@
 #include "scene/command/cursormovecommand.h"
 #include "scene/command/selectitemcommand.h"
 #include "scene/command/changemarkedcommand.h"
+#include "scene/command/moveelementcommand.h"
+#include "scene/command/dragelemententercommand.h"
+#include "scene/command/dragelementleavecommand.h"
+#include "scene/command/dropelementcommand.h"
 
 SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
     : QGraphicsItem(parent) {
@@ -19,6 +23,7 @@ SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
 
 bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *event ) {
     Command *command = NULL;
+
     if (event->type() == QEvent::GraphicsSceneWheel) {
         qDebug() << "SEFO  MOUSE wheel EVENT";
         QGraphicsSceneWheelEvent * wheelEvent = static_cast<QGraphicsSceneWheelEvent *>(event);
@@ -26,38 +31,35 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
             command = new ChangeMarkedCommand(watched, wheelEvent);
         }
     }
-
     else if (event->type() == QEvent::GraphicsSceneMousePress) {
         qDebug() << "SEFO  MOUSE press EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
         command = new SelectItemCommand(watched, mouseEvent);
     }
-
     else if (event->type() == QEvent::GraphicsSceneMouseRelease) {
         //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE release EVENT";
-        return true;
     }
-
     else if (event->type() == QEvent::GraphicsSceneMouseMove) {
-        //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE move EVENT";
-        return true;
+        QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+        command = new MoveElementCommand(watched, mouseEvent);
     }
 
     else if (event->type() == QEvent::GraphicsSceneDragEnter) {
-        //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE drag enter EVENT";
-        return true;
+        QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
+        command = new DragElementEnterCommand(watched, dragDropEvent);
     }
     else if (event->type() == QEvent::GraphicsSceneDragLeave) {
-        //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
         qDebug() << "SEFO  MOUSE drag leave EVENT";
-        return true;
+        QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
+        command = new DragElementLeaveCommand(watched, dragDropEvent);
     }
     else if (event->type() == QEvent::GraphicsSceneDrop) {
         qDebug() << "SEFO  MOUSE drop EVENT";
-        return true;
+        QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
+        command = new DropElementCommand(watched, dragDropEvent);
     }
 
     else if (event->type() == QEvent::KeyPress) {
