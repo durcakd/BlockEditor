@@ -36,9 +36,10 @@ void DragElementEnterCommand::execute() {
        qDebug() << "drag " << _item->toPlainText();
 
 
+       //_item->dragEnterEvent(_event);
         _event->setAccepted(true);
         //dragOver = true;
-        _item->update();
+        //_item->update();
     } else {
         _event->setAccepted(false);
     }

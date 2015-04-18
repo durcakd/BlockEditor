@@ -51,11 +51,11 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
         QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
         command = new DragElementEnterCommand(watched, dragDropEvent);
     }
-    else if (event->type() == QEvent::GraphicsSceneDragLeave) {
-        qDebug() << "SEFO  MOUSE drag leave EVENT";
-        QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
-        command = new DragElementLeaveCommand(watched, dragDropEvent);
-    }
+//    else if (event->type() == QEvent::GraphicsSceneDragLeave) {
+//        qDebug() << "SEFO  MOUSE drag leave EVENT";
+//        QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);
+//        command = new DragElementLeaveCommand(watched, dragDropEvent);
+//    }
     else if (event->type() == QEvent::GraphicsSceneDrop) {
         qDebug() << "SEFO  MOUSE drop EVENT";
         QGraphicsSceneDragDropEvent * dragDropEvent = static_cast<QGraphicsSceneDragDropEvent *>(event);

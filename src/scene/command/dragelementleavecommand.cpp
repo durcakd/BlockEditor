@@ -27,11 +27,13 @@ DragElementLeaveCommand::DragElementLeaveCommand(QGraphicsItem *watched, QGraphi
 void DragElementLeaveCommand::execute() {
     qDebug() << "EXE dragElementLeaveCommand";
 
+    qDebug() << "drag-leave " << _item->toPlainText();
+
     //SceneState *state = BlockScene::instance()->getSceneState();
 
     //dragOver = false;
 
-    _item->update();
+    //_item->update();
 }
 
 
