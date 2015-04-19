@@ -32,7 +32,8 @@ public:
     QPixmap toPixmap();
 
 public slots:
-    void textUpdatedSlot();
+
+    void textChanged( int pos, int charsRemoved, int charsAdded);
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
 

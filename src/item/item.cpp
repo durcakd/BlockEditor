@@ -24,6 +24,7 @@
 #include <item/layout.h>
 #include "style/style.h"
 #include "scene/blockscene.h"
+#include "scene/command/writeitemcommand.h"
 
 
 #include "scene/mimedata.h"
@@ -57,7 +58,8 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(fixedFont);
 
-QConnect:connect( _document, &QTextDocument::contentsChanged, this , &Item::textUpdatedSlot );
+connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
+
 
     // setGeometry();
 }
@@ -83,7 +85,11 @@ void Item::setGeometry(const QRectF &geom) {
 
 }
 
-void Item::textUpdatedSlot() {
+
+void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
+
+    BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
+
     updateGeometry();
     getLayoutParrent()->invalidate();
 }
