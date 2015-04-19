@@ -22,18 +22,11 @@ class BlockScene : public QGraphicsScene
 public:
     static BlockScene *instance( QObject *parent = 0);
     void addItem(QGraphicsItem *item);
-    void test();
 
-    AbstractElement *selectedLeaf() const {return _selectedLeaf;}
-    AbstractElement *paintedElemement() const {return _paintedElemement;}
+
     SceneState *getSceneState() const { return _sceneState;}
     void addCommand(Command *command);
 
-    void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
-    {
-        _selectedLeaf = selectedLeaf;
-        _paintedElemement = paintedElemement;
-    }
 
 public slots:
 
@@ -50,8 +43,6 @@ private:
     QGraphicsLinearLayout *_vLayout;
     QGraphicsWidget *_form;
     Layout *_root;
-    AbstractElement *_selectedLeaf;
-    AbstractElement *_paintedElemement;
     SceneEventObserver *_eventFilter;
     SceneState *_sceneState;
 
