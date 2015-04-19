@@ -84,5 +84,8 @@ void DropElementCommand::execute() {
 
 }
 
+void DropElementCommand::undo() {
+    qDebug() << "UNDO dropElementCommand ";
+}
 
 

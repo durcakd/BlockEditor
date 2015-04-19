@@ -54,5 +54,8 @@ void MoveElementCommand::execute() {
     }
 }
 
+void MoveElementCommand::undo() {
+    qDebug() << "UNDO moveElementCommand ";
+}
 
 

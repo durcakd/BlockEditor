@@ -82,5 +82,7 @@ void ChangeMarkedCommand::execute() {
     //qDebug() << "    NEW PAINTED:  "<< state->getPaintedElement()->toString();
 }
 
-
+void ChangeMarkedCommand::undo() {
+    qDebug() << "UNDO changeMarkedCommand ";
+}
 

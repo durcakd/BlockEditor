@@ -1,4 +1,4 @@
-#include "scene/command/cursormovecommand.h"
+#include "scene/command/writeitemcommand.h"
 
 
 #include <QDebug>
@@ -9,40 +9,44 @@
 #include "item/item.h"
 #include "item/layout.h"
 #include "item/abstractelement.h"
-#include "style/style.h"
+//#include "style/style.h"
 
 
-CursorMoveCommand::CursorMoveCommand(QGraphicsItem *watched, QKeyEvent *event)
+WriteItemCommand::WriteItemCommand(QGraphicsItem *watched, int pos, int charsRemoved, int charsAdded)
     : Command()
 {
     _item = static_cast<Item *>(watched) ;
-    _event = event;
+    this->pos = pos;
+    this->charsAdded = charsAdded;
+    this->charsRemoved = charsRemoved;
 
 }
 
 
-void CursorMoveCommand::execute() {
-    qDebug() << "EXE cursorMoveCommand";
+void WriteItemCommand::execute() {
+    qDebug() << "EXE writeItemCommand";
+    qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
 
     QTextCursor cursor = _item->textCursor();
-
-    switch (_event->key()){
-    case Qt::Key_Left:
-        horCursorMovement(cursor, false);
-        break;
-    case Qt::Key_Right:
-        horCursorMovement(cursor, true);
-        break;
-    case Qt::Key_Up:
-        verCursorMovement(cursor, false);
-        break;
-    case Qt::Key_Down:
-        verCursorMovement(cursor, true);
-        break;
+    if (_item->document()->isUndoAvailable()) {
+        qDebug() << " orig       "<< _item->toPlainText();
+        qDebug() << " orig-pos   "<<  cursor.position();
+        _item->document()->undo( &cursor);
+        qDebug() << " undo       "<< _item->toPlainText();
+        qDebug() << " undo-pos   "<<  cursor.position();
     }
+
+
 }
 
 
+void WriteItemCommand::undo() {
+    qDebug() << "UNDO writeItemCommand ";
+}
+
+
+
+/*
 void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
 {
     AbstractElement *targed;
@@ -72,13 +76,14 @@ void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
 
     } else {
         if(toNext){
-            cursor.movePosition(QTextCursor::NextCharacter);//, QTextCursor::KeepAnchor);
+            cursor.movePosition(QTextCursor::NextCharacter);
         } else {
-            cursor.movePosition(QTextCursor::PreviousCharacter);//, QTextCursor::KeepAnchor);
+            cursor.movePosition(QTextCursor::PreviousCharacter);
         }
         _item->setTextCursor(cursor);
     }
 }
+
 
 void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
     AbstractElement *targed = static_cast<AbstractElement *>(_item) ;;
@@ -144,7 +149,4 @@ void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
     cursor.setPosition(linePos);
     ite->setTextCursor(cursor);
 }
-
-void CursorMoveCommand::undo() {
-    qDebug() << "UNDO cursorMoveCommand ";
-}
+*/

@@ -46,5 +46,7 @@ void DragElementEnterCommand::execute() {
 
 }
 
-
+void DragElementEnterCommand::undo() {
+    qDebug() << "UNDO dragElementEnterCommand ";
+}
 

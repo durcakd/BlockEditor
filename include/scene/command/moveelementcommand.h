@@ -15,6 +15,7 @@ public:
     explicit MoveElementCommand(QGraphicsItem *watched, QGraphicsSceneMouseEvent *event);
 
     void execute();
+    void undo();
 
 protected:
 

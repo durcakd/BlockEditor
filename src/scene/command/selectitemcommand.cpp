@@ -48,3 +48,7 @@ void SelectItemCommand::execute() {
 
 
 
+void SelectItemCommand::undo() {
+    qDebug() << "UNDO selectItemCommand ";
+}
+

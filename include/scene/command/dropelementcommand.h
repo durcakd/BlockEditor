@@ -15,6 +15,7 @@ public:
     explicit DropElementCommand(QGraphicsItem *watched, QGraphicsSceneDragDropEvent *event);
 
     void execute();
+    void undo();
 
 protected:
 

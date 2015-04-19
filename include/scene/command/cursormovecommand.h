@@ -13,6 +13,7 @@ public:
     explicit CursorMoveCommand(QGraphicsItem *watched, QKeyEvent *event);
 
     void execute();
+    void undo();
 
 protected:
     void horCursorMovement(QTextCursor &cursor, bool toNext);
