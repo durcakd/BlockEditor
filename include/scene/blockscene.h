@@ -5,6 +5,7 @@
 
 #include "item/item.h"
 #include "item/layout.h"
+#include "QStack"
 
 
 
@@ -12,6 +13,7 @@ class QGraphicsLinearLayout;
 class QGraphicsWidget;
 class SceneEventObserver;
 class SceneState;
+class Command;
 
 class BlockScene : public QGraphicsScene
 {
@@ -25,6 +27,7 @@ public:
     AbstractElement *selectedLeaf() const {return _selectedLeaf;}
     AbstractElement *paintedElemement() const {return _paintedElemement;}
     SceneState *getSceneState() const { return _sceneState;}
+    void addCommand(Command *command);
 
     void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
     {
@@ -51,6 +54,8 @@ private:
     AbstractElement *_paintedElemement;
     SceneEventObserver *_eventFilter;
     SceneState *_sceneState;
+
+    QStack<Command *> _commandStack;
 
 };
 

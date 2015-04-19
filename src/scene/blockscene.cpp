@@ -8,6 +8,7 @@
 
 #include "scene/sceneeventobserver.h"
 #include "scene/scenestate.h"
+#include "scene/command/command.h"
 
 BlockScene *BlockScene::inst = 0;
 
@@ -98,6 +99,11 @@ void BlockScene::updateTreeNeighbors()
 
 }
 
+void BlockScene::addCommand(Command *command)
+{
+    command->execute();
+    _commandStack.push( command);
+}
 
 void BlockScene::test()
 {

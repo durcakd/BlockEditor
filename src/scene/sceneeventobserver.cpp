@@ -14,6 +14,7 @@
 #include "scene/command/dragelemententercommand.h"
 #include "scene/command/dragelementleavecommand.h"
 #include "scene/command/dropelementcommand.h"
+#include "scene/blockscene.h"
 
 SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
     : QGraphicsItem(parent) {
@@ -68,32 +69,23 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
         command = keyCommand( watched, keyEvent);
     }
 
-    return addCommand( command);
-}
-
-bool SceneEventObserver::addCommand(Command *command) {
     if (NULL == command) {
         return false;
     }
-    command->execute();
+    BlockScene::instance()->addCommand(command);
     return true;
 }
 
 
+
 // Key Command
 Command *SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
-    Command *command = NULL;
-
-    //    //if (!+Qt::ControlModifier & event->modifiers()) {
-    //    AbstractElement *targed;
-    //    QTextCursor cursor = textCursor();
 
     if ( event->key() == Qt::Key_Left  ||
          event->key() == Qt::Key_Right ||
          event->key() == Qt::Key_Up    ||
          event->key() == Qt::Key_Down ) {
-        command = new CursorMoveCommand(watched, event);
+        return new CursorMoveCommand(watched, event);
     }
-
-   return command;
+   return NULL;
 }
