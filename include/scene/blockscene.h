@@ -30,7 +30,6 @@ public:
 
 public slots:
 
-
     Item* addParserItem( Item *item);
     Layout* addParserLayout( Layout *layout);
     void updateTreeNeighbors();

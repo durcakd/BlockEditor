@@ -35,7 +35,9 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
     else if (event->type() == QEvent::GraphicsSceneMousePress) {
         qDebug() << "SEFO  MOUSE press EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        command = new SelectItemCommand(watched, mouseEvent);
+        if (mouseEvent->buttons() & Qt::LeftButton) {
+            command = new SelectItemCommand(watched, mouseEvent);
+        }
     }
     else if (event->type() == QEvent::GraphicsSceneMouseRelease) {
         //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
@@ -44,7 +46,9 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
     else if (event->type() == QEvent::GraphicsSceneMouseMove) {
         qDebug() << "SEFO  MOUSE move EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        command = new MoveElementCommand(watched, mouseEvent);
+        if (Qt::ControlModifier & mouseEvent->modifiers()) {
+            command = new MoveElementCommand(watched, mouseEvent);
+        }
     }
 
     else if (event->type() == QEvent::GraphicsSceneDragEnter) {

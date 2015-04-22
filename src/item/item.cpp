@@ -42,7 +42,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     _document->setPlainText(_text);
     setTextInteractionFlags( Qt::TextEditorInteraction);
 
-    setFlag(ItemIsMovable);
+    //setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
 
