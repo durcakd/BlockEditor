@@ -6,3 +6,7 @@ TextItem::TextItem(QString type, QString text, Style *style, QGraphicsLinearLayo
 {
 
 }
+
+bool TextItem::isSpaceItem() const {
+    return false;
+}

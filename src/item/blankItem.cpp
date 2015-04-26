@@ -5,3 +5,8 @@ BlankItem::BlankItem(QString type, QString text, Style *style, QGraphicsLinearLa
 {
 
 }
+
+
+bool BlankItem::isSpaceItem() const {
+    return true;
+}

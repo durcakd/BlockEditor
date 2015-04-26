@@ -31,6 +31,8 @@ public:
     QString getText() const {return _text;}
     QPixmap toPixmap();
 
+    virtual bool isSpaceItem() const = 0;
+
 public slots:
 
     void textChanged( int pos, int charsRemoved, int charsAdded);

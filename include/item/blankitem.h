@@ -9,6 +9,8 @@ class BlankItem :   public Item
 public:
     explicit BlankItem(QString type, QString text, Style *style, QGraphicsLinearLayout *parent = 0);
 
+    bool isSpaceItem() const;
+
 public slots:
 
 protected:
