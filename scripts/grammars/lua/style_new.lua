@@ -7,6 +7,16 @@ local NORMAL_TEXT = {
     }
 }
 
+local SPACE_TEXT = {
+    item = true,
+    object = "text",
+    grid = false,
+    text = {
+        isColor = false
+    }
+}
+
+
 local function COLOR_TEXT(color)
     return {
         item = true,
@@ -86,6 +96,7 @@ return {
 	Name = NORMAL_TEXT,
         Number = COLOR_BOLD_TEXT({ 0, 0.8, 0 }),
         String = COLOR_TEXT({ 1, 0, 0 }),
+        spaced_text = SPACE_TEXT,
 
         function_stat = FUNCTION_STAT,
         functiondef = FUNCTIONDEF,

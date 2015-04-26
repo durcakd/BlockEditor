@@ -1,7 +1,8 @@
 #include "item/blankitem.h"
+#include "style/styleutil.h"
 
-BlankItem::BlankItem(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    :  Item(type, text, style, parent)
+BlankItem::BlankItem(QString type, QString text, Style *, QGraphicsLinearLayout *parent)
+    :  Item(type, text, StyleUtil::instance()->getStyle("spaced_text"), parent)
 {
 
 }

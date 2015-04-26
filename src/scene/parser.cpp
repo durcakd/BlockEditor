@@ -48,7 +48,7 @@ void Parser::init() {
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem= new BlankItem( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+            Item *newItem= new BlankItem( elementType, afterText, 0, static_cast<Layout*>(parentPointer));
             emit addElementItem(newItem);
         }
 
