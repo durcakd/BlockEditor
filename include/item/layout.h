@@ -39,7 +39,7 @@ public:
     void insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
 
 
-    QGraphicsLayoutItem  *firstLastItem(bool first) const;
+    QGraphicsLayoutItem  *firstLastChildrenElement(bool first) const;
 
 
     void setGeometry(const QRectF &geom);

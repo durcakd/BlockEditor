@@ -122,7 +122,7 @@ bool Layout::isLayoutE() const
     return true;
 }
 
-QGraphicsLayoutItem  *Layout::firstLastItem(bool first) const
+QGraphicsLayoutItem  *Layout::firstLastChildrenElement(bool first) const
 {
     if (first) {
         return itemAt(0);
@@ -217,7 +217,6 @@ void Layout::insertBefore( AbstractElement *oldElement, AbstractElement *newElem
     }
     oldElement->setPrevius(newElement);
 }
-
 
 
 /*
