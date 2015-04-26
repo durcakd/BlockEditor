@@ -35,6 +35,10 @@ public:
 
     int indexOf(AbstractElement *element);
 
+    void insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
+    void insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
+
+
     QGraphicsLayoutItem  *firstLastItem(bool first) const;
 
 

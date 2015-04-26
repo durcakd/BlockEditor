@@ -187,6 +187,39 @@ QPixmap Layout::toPixmap() {
     return pixmap.copy(0,10,r.width(),r.height()-13);
 }
 
+void Layout::insertBehind( AbstractElement *oldElement, AbstractElement *newElement) {
+    int index = indexOf(oldElement);
+    insertItem( index+1, dynamic_cast<QGraphicsLayoutItem*>(newElement));
+
+    newElement->setLayoutParrent(this);
+    newElement->setNext(oldElement->getNext());
+    newElement->setPrevius(oldElement);
+
+    if( oldElement->getNext()) {
+        oldElement->getNext()->setPrevius(newElement);
+    }
+    oldElement->setNext(newElement);
+}
+
+void Layout::insertBefore( AbstractElement *oldElement, AbstractElement *newElement) {
+    int index = indexOf(oldElement);
+    insertItem( index, dynamic_cast<QGraphicsLayoutItem*>(newElement));
+
+    newElement->setLayoutParrent(this);
+
+
+
+    newElement->setPrevius(oldElement->getPrevius());
+    newElement->setNext(oldElement);
+
+    if( oldElement->getPrevius()) {
+        oldElement->getPrevius()->setNext(newElement);
+    }
+    oldElement->setPrevius(newElement);
+}
+
+
+
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
 {
