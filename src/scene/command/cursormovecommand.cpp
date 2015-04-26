@@ -47,23 +47,11 @@ void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
 {
     AbstractElement *targed;
     if (_item->textLength(toNext) == cursor.position()) {
-        targed = _item->nextPrevius(toNext);
+        targed = _item->nextPreviousAlsoVert(toNext);
         if (NULL == targed) {
-            targed = _item->getLayoutParrent();
-            while (NULL != targed && NULL == targed->nextPrevius(toNext)) {
-                targed = targed->getLayoutParrent();
-            }
-            if (NULL == targed) {
-                return;
-            }
-            targed = targed->nextPrevius(toNext);
+            return;
         }
-        while (targed->isLayoutE()) {
-            Layout *lay = dynamic_cast <Layout*>(targed);
-            QGraphicsLayoutItem  *layout = lay->firstLastItem(toNext);
-            targed = dynamic_cast <AbstractElement*>(layout);
 
-        }
         Item *ite = dynamic_cast <Item*>(targed);
         ite->setFocus();
         cursor = ite->textCursor();
