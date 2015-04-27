@@ -15,8 +15,11 @@ public:
     void undo();
 
 protected:
-    //void horCursorMovement(QTextCursor &cursor, bool toNext);
-    //void verCursorMovement(QTextCursor &cursor, bool down);
+
+    bool hasSpace(const QString str) const;
+
+    void simpleAddition();
+    void complexAddition();
 
     Item *_item;
     int pos;

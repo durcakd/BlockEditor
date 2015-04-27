@@ -4,12 +4,21 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QTextCursor>
-#include "QGraphicsLayoutItem"
+#include <QGraphicsLayoutItem>
+#include <QTextDocument>
+#include <QGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
 
 #include "item/item.h"
 #include "item/layout.h"
 #include "item/abstractelement.h"
-//#include "style/style.h"
+#include "style/styleutil.h"
+#include "scene/blockscene.h"
+#include "item/state/elementstate.h"
+#include "item/state/elementstable.h"
+#include "item/state/elementchanged.h"
+
+
 
 
 WriteItemCommand::WriteItemCommand(QGraphicsItem *watched, int pos, int charsRemoved, int charsAdded)
@@ -24,19 +33,144 @@ WriteItemCommand::WriteItemCommand(QGraphicsItem *watched, int pos, int charsRem
 
 
 void WriteItemCommand::execute() {
+
     qDebug() << "EXE writeItemCommand";
     qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
 
-    QTextCursor cursor = _item->textCursor();
-    if (_item->document()->isUndoAvailable()) {
-        qDebug() << " orig       "<< _item->toPlainText();
-        qDebug() << " orig-pos   "<<  cursor.position();
-        _item->document()->undo( &cursor);
-        qDebug() << " undo       "<< _item->toPlainText();
-        qDebug() << " undo-pos   "<<  cursor.position();
+    //    QTextCursor cursor = _item->textCursor();
+    //    if (_item->document()->isUndoAvailable()) {
+    //        qDebug() << " orig       "<< _item->toPlainText();
+    //        qDebug() << " orig-pos   "<<  cursor.position();
+    //        _item->document()->undo( &cursor);
+    //        qDebug() << " undo       "<< _item->toPlainText();
+    //        qDebug() << " undo-pos   "<<  cursor.position();
+    //    }
+
+    // ADD
+    if ( 0 == charsRemoved || charsAdded > charsRemoved) {
+        charsAdded -= charsRemoved;
+        charsRemoved = 0;
+        qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
+
+        if (1 == charsAdded ){
+            simpleAddition();
+        }
+
     }
 
 
+
+}
+
+void WriteItemCommand::simpleAddition() {
+    qDebug() << "  simple addition";
+    QTextCursor cursor(_item->textCursor());
+    QChar newChar = _item->document()->characterAt(pos);
+    Item *newItem = NULL;
+
+    if ( _item->state()->isSpaced() == newChar.isSpace()) {
+        qDebug() << "  spacedItem="<<_item->state()->isSpaced()<< "   simple soltion";
+        _item->document()->clearUndoRedoStacks();
+
+
+    } else {
+        qDebug() << "  different item types, added:" << newChar;
+        _item->document()->undo();
+        Layout *parent = _item->getLayoutParrent();
+
+        if (newChar.isSpace()) {
+            // blank
+            newItem = new Item( "changed_text", QString(newChar), StyleUtil::instance()->getStyle("changed_text"), _item->getLayoutParrent());
+            newItem->setState(new ElementStable);
+        } else {
+            newItem = new Item( "changed_text", QString(newChar), StyleUtil::instance()->getStyle("changed_text"), _item->getLayoutParrent());
+            newItem->setState(new ElementChanged);
+        }
+
+        if (0 == pos) {
+            qDebug() << "add at start  new Item";
+            Item *previous = dynamic_cast<Item*>(_item->nextPreviousAlsoHor(false));
+            if (NULL != previous && previous->state()->isSpaced() == newChar.isSpace()) {
+                qDebug() << "posible merge with previous";
+
+
+//                QTextCursor cursor(previous->textCursor());
+//                cursor.beginEditBlock();
+//                cursor.movePosition(QTextCursor::StartOfWord);
+//                cursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
+//                cursor.endEditBlock();
+
+
+//                cursor.setPosition(previous->textLength(true));
+//                cursor.insertText(QString(newChar));
+                //previous->setTextCursor(cursor);
+                //previous->setFocus();
+
+            } else {
+
+
+                parent->insertBefore(_item, newItem);
+                BlockScene::instance()->addItem( newItem);
+            }
+
+        } else if (cursor.atEnd()) {
+            qDebug() << "add at end  new item";
+            Item *next = dynamic_cast<Item*>(_item->nextPreviousAlsoHor(true));
+            if (NULL != next && next->state()->isSpaced() == newChar.isSpace()) {
+                qDebug() << "posible merge with next";
+
+
+                next->setFocus();
+                next->blockSignals(true);
+                QTextCursor c(next->textCursor());
+                c.beginEditBlock();
+                c.movePosition(QTextCursor::Start);
+                c.insertText(QString(newChar));
+                c.endEditBlock();
+                next->setTextCursor(c);
+                next->blockSignals(false);
+
+            } else {
+                parent->insertBehind(_item, newItem);
+                BlockScene::instance()->addItem( newItem);
+            }
+        } else {
+            qDebug() << "add in the middle";
+        }
+
+        //newItem->updateGeometry();
+//        parent->invalidate();
+//        parent->update();
+//        parent->updateGeometry();
+//        newItem->update();
+//        newItem->updateGeometry();
+//        _item->update();
+//        _item->updateGeometry();
+
+
+
+    }
+
+    qDebug();
+
+
+
+}
+
+
+void WriteItemCommand::complexAddition() {
+
+}
+
+
+bool WriteItemCommand::hasSpace(const QString str) const {
+    QString::ConstIterator it;
+    for (it = str.constBegin(); it != str.constEnd(); it++) {
+        if (it->isSpace()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -44,109 +178,3 @@ void WriteItemCommand::undo() {
     qDebug() << "UNDO writeItemCommand ";
 }
 
-
-
-/*
-void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
-{
-    AbstractElement *targed;
-    if (_item->textLength(toNext) == cursor.position()) {
-        targed = _item->nextPrevius(toNext);
-        if (NULL == targed) {
-            targed = _item->getLayoutParrent();
-            while (NULL != targed && NULL == targed->nextPrevius(toNext)) {
-                targed = targed->getLayoutParrent();
-            }
-            if (NULL == targed) {
-                return;
-            }
-            targed = targed->nextPrevius(toNext);
-        }
-        while (targed->isLayoutE()) {
-            Layout *lay = dynamic_cast <Layout*>(targed);
-            QGraphicsLayoutItem  *layout = lay->firstLastItem(toNext);
-            targed = dynamic_cast <AbstractElement*>(layout);
-
-        }
-        Item *ite = dynamic_cast <Item*>(targed);
-        ite->setFocus();
-        cursor = ite->textCursor();
-        cursor.setPosition(ite->textLength(!toNext));
-        ite->setTextCursor(cursor);
-
-    } else {
-        if(toNext){
-            cursor.movePosition(QTextCursor::NextCharacter);
-        } else {
-            cursor.movePosition(QTextCursor::PreviousCharacter);
-        }
-        _item->setTextCursor(cursor);
-    }
-}
-
-
-void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
-    AbstractElement *targed = static_cast<AbstractElement *>(_item) ;;
-    int linePos = cursor.position();
-    // qDebug() << "";
-    //qDebug() << "start " << linePos << "  " << getType() << "  " << toPlainText();
-    // left
-    while( NULL != targed) {
-        AbstractElement *parrent = targed->getLayoutParrent();
-        if( NULL != parrent && OrientationEnum::vertical == parrent->styleE()->getOrientation()) {
-            break;
-        }
-        while ( NULL != targed->nextPrevius(false)) {
-            targed = targed->nextPrevius(false);
-            linePos += targed->textLength();
-            //qDebug() << " + "<< targed->textLength() << " = " << linePos << "    " << targed->getType();
-        }
-
-        //qDebug() << "up parrent "<< targed->getType() << "  " << targed->textE();
-        targed = parrent;
-
-    }
-    // down/up
-
-
-    if (NULL!= targed) {qDebug() << "1. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
-    while (NULL != targed && NULL == targed->nextPrevius(down)) {  // there can be more vertical
-        targed = targed->getLayoutParrent();
-        //if (NULL!= targed) {qDebug() << "2. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();}
-    }
-    if (NULL == targed) { return; }
-    targed = targed->nextPrevius(down);
-
-
-    //qDebug() << "3. up/down"   << linePos << "    " << targed << "  " << targed->getType() << "  " << targed->textE();
-    // right
-    int tlen;
-    while (targed->isLayoutE()) {
-        //qDebug() << "down child    " << targed->getType();
-        bool isHorizontal = OrientationEnum::horizontal == targed->styleE()->getOrientation();
-
-        Layout *lay = dynamic_cast <Layout*>(targed);
-        targed = dynamic_cast<AbstractElement*>(lay->itemAt(0)); // TODO no children?
-
-        tlen = targed->textLength();
-        while (isHorizontal
-               && tlen < linePos
-               && NULL != targed->nextPrevius(true)) {
-            qDebug() << " - "<< tlen << " = " << linePos << "    " << targed->getType();
-            targed = targed->nextPrevius(true);
-            linePos -= (tlen);
-            tlen = targed->textLength();
-        }
-    }
-
-
-    Item *ite = dynamic_cast <Item*>(targed);
-    qDebug() << "final:" << targed->getType() << "  " << ite->toPlainText();
-    ite->setFocus();
-    cursor = ite->textCursor();
-    tlen = targed->textLength();
-    linePos = linePos < tlen ? linePos : tlen;
-    cursor.setPosition(linePos);
-    ite->setTextCursor(cursor);
-}
-*/
