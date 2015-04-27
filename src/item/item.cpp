@@ -32,7 +32,7 @@
 
 
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
+    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)), AbstractElement(type, style, parent)
 {
     //_text = text.trimmed();
     _text = text;
@@ -45,6 +45,7 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     //setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
+    setFlag(ItemIsFocusable);
 
     if (style->getIsColor()){
         setDefaultTextColor(Qt::blue);
@@ -87,7 +88,6 @@ void Item::setGeometry(const QRectF &geom) {
 
 
 void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
-
     if (charsRemoved!=charsAdded){
         BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
     }

@@ -31,8 +31,6 @@ public:
     QString getText() const {return _text;}
     QPixmap toPixmap();
 
-    virtual bool isSpaceItem() const = 0;
-
 public slots:
 
     void textChanged( int pos, int charsRemoved, int charsAdded);
@@ -50,7 +48,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
-
 
     QString _text;
     QColor color;

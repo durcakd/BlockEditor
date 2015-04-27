@@ -1,11 +1,11 @@
 #include "scene/parser.h"
 #include "item/item.h"
-#include "item/textitem.h"
-#include "item/blankitem.h"
 #include "item/layout.h"
 #include "style/style.h"
 #include <QDebug>
 #include <QStringBuilder>
+#include <item/state/elementvalid.h>
+#include <item/state/elementstable.h>
 
 Parser::Parser(QString type) :
     QObject()
@@ -44,11 +44,17 @@ void Parser::init() {
         qDebug()<<" >"<< onlyText <<"<>"<<afterText;
 
 
-        Item *newItem= new TextItem( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        // text
+        Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        newItem->setState(new ElementValid);
+
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem= new BlankItem( elementType, afterText, 0, static_cast<Layout*>(parentPointer));
+            // blank
+            Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+            newItem->setState(new ElementStable);
+
             emit addElementItem(newItem);
         }
 

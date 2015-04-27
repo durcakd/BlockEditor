@@ -8,6 +8,7 @@
 class QGraphicsLinearLayout;
 class Style;
 class Layout;
+class ElementState;
 
 class AbstractElement {
 public:
@@ -30,6 +31,9 @@ public:
     void setPrevius(AbstractElement *previous) { _previous = previous; }
     void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
     Style *styleE() const {return _style;}
+    ElementState *state() const {return _state;}
+    void setState(ElementState *state) { _state = state;}
+
     bool isPaintEnabled() const {return _enablePaint;}
     bool isParent(AbstractElement *checkedParent);
 
@@ -53,6 +57,8 @@ protected:
     QString _type;
     bool _elementType;
     Style *_style;
+    ElementState *_state;
+
     Layout *_layoutParrentor;
     AbstractElement *_next;
     AbstractElement *_previous;
