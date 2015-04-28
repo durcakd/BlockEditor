@@ -21,6 +21,9 @@ class Layout :
     Q_OBJECT
 
 public:
+
+    explicit Layout(QGraphicsLayoutItem *parent = 0);
+
     explicit Layout(QString type, Style *style, QGraphicsLayoutItem *parent = 0);
 
     QSizeF elementSizeHint(Qt::SizeHint which) const;
@@ -32,6 +35,7 @@ public:
     bool isLayoutE() const;
     int textLength(bool length) const;
     QString textE() const;
+    void setStyleE(Style *style);
 
     int indexOf(AbstractElement *element);
 

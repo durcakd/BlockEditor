@@ -14,7 +14,10 @@ class AbstractElement {
 public:
     explicit AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent = 0);
 
+    explicit AbstractElement(QGraphicsLinearLayout *layoutParrent);
+
     QString getType() const;
+    void setType(QString type) {_type = type;}
     Layout *getLayoutParrent() const;
     void setLayoutParrent(Layout *parrent) {_layoutParrentor = parrent;}
 
@@ -31,6 +34,8 @@ public:
     void setPrevius(AbstractElement *previous) { _previous = previous; }
     void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
     Style *styleE() const {return _style;}
+    virtual void setStyleE(Style *style) { _style = style;}
+
     ElementState *state() const {return _state;}
     void setState(ElementState *state) { _state = state;}
 

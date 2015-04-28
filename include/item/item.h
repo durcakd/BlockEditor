@@ -18,12 +18,15 @@ class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public Abst
 
 public:
     explicit Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent = 0);
+    explicit Item(Layout *parent = 0, QString text = "");
 
     void setGeometry(const QRectF &geom);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
     QSizeF elementSizeHint(Qt::SizeHint which) const;
     int textLength(bool length = true) const;
     QString textE() const;
+
+    void setStyleE(Style *style);
 
     QTextDocument *_document;
     bool isLayoutE() const;

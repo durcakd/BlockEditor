@@ -30,6 +30,43 @@
 #include "scene/mimedata.h"
 
 
+Item::Item(Layout *parent, QString text)
+    : QGraphicsLayoutItem(parent),
+      QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)),
+      AbstractElement(parent)
+{
+    _text = text;
+
+
+    _document = this->document();
+    _document->setPlainText(_text);
+    setTextInteractionFlags( Qt::TextEditorInteraction);
+
+    //setFlag(ItemIsMovable);
+    setFlag(ItemSendsGeometryChanges);
+    setFlag(ItemIsSelectable);
+    setFlag(ItemIsFocusable);
+
+
+    // draging
+    setAcceptDrops(true);
+
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    setFont(fixedFont);
+
+connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
+
+    // setGeometry();
+}
+
+void Item::setStyleE(Style *style) {
+    AbstractElement::setStyleE(style);
+
+    if (style->getIsColor()){
+        setDefaultTextColor(Qt::blue);
+    }
+}
+
 
 Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
     :  QGraphicsLayoutItem(parent), QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)), AbstractElement(type, style, parent)

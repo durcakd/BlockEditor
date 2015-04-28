@@ -5,6 +5,34 @@
 #include "scene/blockscene.h"
 
 
+Layout::Layout(QGraphicsLayoutItem *parent)
+    : QObject(),
+      QGraphicsLinearLayout( parent),
+      QGraphicsItem(dynamic_cast<QGraphicsItem*>(parent)),
+      AbstractElement(dynamic_cast<QGraphicsLinearLayout*>(parent))
+{
+    //qDebug() << "---------   "<< type << " " << style;
+    setOrientation( Qt::Horizontal);
+
+    //_childLayouts = new  QList<Layout*>();
+    setInstantInvalidatePropagation(true);
+    setVisible(true);
+    setSpacing(0);
+    //setOpacity(0.5);
+
+
+}
+
+void Layout::setStyleE(Style *style) {
+    AbstractElement::setStyleE(style);
+
+    if (OrientationEnum::horizontal == _style->getOrientation()) {
+        setOrientation( Qt::Horizontal);
+    } else {
+        setOrientation( Qt::Vertical);
+    }
+}
+
 
 Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
     : QObject(),

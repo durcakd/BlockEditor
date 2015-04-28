@@ -6,6 +6,14 @@
 
 class Layout;
 
+AbstractElement::AbstractElement(QGraphicsLinearLayout *layoutParrent)
+{
+    _layoutParrentor = static_cast<Layout*>(layoutParrent);
+    _next = NULL;
+    _previous = NULL;
+    _enablePaint = false;
+}
+
 AbstractElement::AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent)
 {
     _type = type;
