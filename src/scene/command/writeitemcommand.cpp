@@ -17,7 +17,7 @@
 #include "item/state/elementstate.h"
 #include "item/state/elementstable.h"
 #include "item/state/elementchanged.h"
-
+#include "scene/parser.h"
 
 
 
@@ -63,6 +63,7 @@ void WriteItemCommand::execute() {
 }
 
 void WriteItemCommand::simpleAddition() {
+
     qDebug() << "  simple addition";
     QTextCursor cursor(_item->textCursor());
     QChar newChar = _item->document()->characterAt(pos);
@@ -70,22 +71,34 @@ void WriteItemCommand::simpleAddition() {
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
         qDebug() << "  spacedItem="<<_item->state()->isSpaced()<< "   simple soltion";
-        _item->document()->clearUndoRedoStacks();
+        //_item->document()->clearUndoRedoStacks();
 
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
-        _item->document()->undo();
+        qDebug() << _item->document()->isUndoAvailable();
+        _item->blockSignals(true);
+        // undo
+        if (0 == pos) {
+            _item->setPlainText(_item->toPlainText().mid(1));
+        } else {
+            //_item->document()->undo(&cursor);
+            cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+            _item->setTextCursor(cursor);
+        }
+        _item->blockSignals(false);
+
+
         Layout *parent = _item->getLayoutParrent();
 
+
         if (newChar.isSpace()) {
-            // blank
-            newItem = new Item( "changed_text", QString(newChar), StyleUtil::instance()->getStyle("changed_text"), _item->getLayoutParrent());
-            newItem->setState(new ElementStable);
+            newItem = Parser::instance()->createStableItem(_item->getLayoutParrent(), QString(newChar));
         } else {
-            newItem = new Item( "changed_text", QString(newChar), StyleUtil::instance()->getStyle("changed_text"), _item->getLayoutParrent());
-            newItem->setState(new ElementChanged);
+            newItem = Parser::instance()->createChangedItem(_item->getLayoutParrent(), QString(newChar));
         }
+
 
         if (0 == pos) {
             qDebug() << "add at start  new Item";
@@ -93,22 +106,19 @@ void WriteItemCommand::simpleAddition() {
             if (NULL != previous && previous->state()->isSpaced() == newChar.isSpace()) {
                 qDebug() << "posible merge with previous";
 
-
-//                QTextCursor cursor(previous->textCursor());
-//                cursor.beginEditBlock();
-//                cursor.movePosition(QTextCursor::StartOfWord);
-//                cursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
-//                cursor.endEditBlock();
-
-
-//                cursor.setPosition(previous->textLength(true));
-//                cursor.insertText(QString(newChar));
-                //previous->setTextCursor(cursor);
-                //previous->setFocus();
+                _item->clearFocus();
+                _item->show();
+                previous->setFocus();
+                previous->blockSignals(true);
+                cursor = previous->textCursor();
+                cursor.beginEditBlock();
+                cursor.movePosition(QTextCursor::End);
+                cursor.insertText(QString(newChar));
+                cursor.endEditBlock();
+                previous->setTextCursor(cursor);
+                previous->blockSignals(false);
 
             } else {
-
-
                 parent->insertBefore(_item, newItem);
                 BlockScene::instance()->addItem( newItem);
             }
@@ -122,13 +132,14 @@ void WriteItemCommand::simpleAddition() {
 
                 next->setFocus();
                 next->blockSignals(true);
-                QTextCursor c(next->textCursor());
-                c.beginEditBlock();
-                c.movePosition(QTextCursor::Start);
-                c.insertText(QString(newChar));
-                c.endEditBlock();
-                next->setTextCursor(c);
+                cursor = next->textCursor();
+                cursor.beginEditBlock();
+                cursor.movePosition(QTextCursor::Start);
+                cursor.insertText(QString(newChar));
+                cursor.endEditBlock();
+                next->setTextCursor(cursor);
                 next->blockSignals(false);
+
 
             } else {
                 parent->insertBehind(_item, newItem);
@@ -138,15 +149,15 @@ void WriteItemCommand::simpleAddition() {
             qDebug() << "add in the middle";
         }
 
+
         //newItem->updateGeometry();
-//        parent->invalidate();
-//        parent->update();
-//        parent->updateGeometry();
+        parent->invalidate();
+        parent->update();
+        parent->updateGeometry();
 //        newItem->update();
 //        newItem->updateGeometry();
-//        _item->update();
-//        _item->updateGeometry();
-
+        _item->update();
+        _item->updateGeometry();
 
 
     }
