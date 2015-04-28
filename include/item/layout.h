@@ -24,8 +24,6 @@ public:
 
     explicit Layout(QGraphicsLayoutItem *parent = 0);
 
-    explicit Layout(QString type, Style *style, QGraphicsLayoutItem *parent = 0);
-
     QSizeF elementSizeHint(Qt::SizeHint which) const;
 
     //QSizeF childrenSizeHint(Qt::SizeHint which) const;

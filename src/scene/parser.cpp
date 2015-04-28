@@ -37,13 +37,13 @@ Parser::Parser(QString type) :
 
 
 void Parser::init() {
-      //_state.set("send_commit");
+    //_state.set("send_commit");
     _state.set("addBasicItem",
                [this] (lua::String elementType,
-                       lua::String elementText,
-                       lua::Pointer parentPointer,
-                       lua::Integer elementIndex)
-               -> lua::Pointer
+               lua::String elementText,
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
     {
         //elementText.
         QString text = elementText;
@@ -60,23 +60,11 @@ void Parser::init() {
             }
         }
         qDebug()<<" >"<< onlyText <<"<>"<<afterText;
-
-
-        // text
         Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
-
-        //Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
-        //newItem->setState(new ElementValid);
-
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            // blank
             Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
-
-            //Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
-            //newItem->setState(new ElementStable);
-
             emit addElementItem(newItem);
         }
 
@@ -84,17 +72,13 @@ void Parser::init() {
     });
     _state.set("addBasicLayout",
                [this] (lua::String elementType,
-                       lua::Pointer parentPointer,
-                       lua::Integer elementIndex)
-               -> lua::Pointer
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
     {
-
-        //Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         qDebug() << "parsing layout "<< elementType;
         Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
-
         emit addElementLayout(newLayout);
-
         return newLayout;
     });
 
@@ -109,7 +93,7 @@ void Parser::loadStyle()
 {
     _state.set("addStyle",
                [this] ( lua::Value style,
-                        lua::String elementType)
+               lua::String elementType)
             -> lua::Pointer
     {
         Style *newStyle = new Style(elementType);
@@ -144,7 +128,7 @@ void Parser::loadGrammar()
         //QMessageBox msgBox;
         //msgBox.setText(QString("Error while loading grammar style: ")
         //.append(_textType));
-       // msgBox.setInformativeText(ex.what());
+        // msgBox.setInformativeText(ex.what());
         //msgBox.setStandardButtons(QMessageBox::Ok);
         //msgBox.exec();
         qDebug() << "Error while loading grammar style: " << _textType;

@@ -34,28 +34,6 @@ void Layout::setStyleE(Style *style) {
 }
 
 
-Layout::Layout(QString type, Style *style, QGraphicsLayoutItem *parent)
-    : QObject(),
-      QGraphicsLinearLayout( parent),
-      AbstractElement(type, style, dynamic_cast<QGraphicsLinearLayout*>(parent)),
-      QGraphicsItem(dynamic_cast<QGraphicsItem*>(parent))
-{
-    //qDebug() << "---------   "<< type << " " << style;
-    if (OrientationEnum::horizontal == _style->getOrientation()) {
-        this->setOrientation( Qt::Horizontal);
-    } else {
-        this->setOrientation( Qt::Vertical);
-    }
-    //_childLayouts = new  QList<Layout*>();
-    setInstantInvalidatePropagation(true);
-    setVisible(true);
-    setSpacing(0);
-    //setOpacity(0.5);
-
-
-}
-
-
 void Layout::childItemChanged() {
     this->updateGeometry();
 }

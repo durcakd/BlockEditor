@@ -67,41 +67,6 @@ void Item::setStyleE(Style *style) {
     }
 }
 
-
-Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)), AbstractElement(type, style, parent)
-{
-    //_text = text.trimmed();
-    _text = text;
-
-
-    _document = this->document();
-    _document->setPlainText(_text);
-    setTextInteractionFlags( Qt::TextEditorInteraction);
-
-    //setFlag(ItemIsMovable);
-    setFlag(ItemSendsGeometryChanges);
-    setFlag(ItemIsSelectable);
-    setFlag(ItemIsFocusable);
-
-    if (style->getIsColor()){
-        setDefaultTextColor(Qt::blue);
-    }
-    // draging
-    setAcceptDrops(true);
-    //color = QColor(Qt::lightGray);
-
-
-
-    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    setFont(fixedFont);
-
-connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
-
-
-    // setGeometry();
-}
-
 void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
 

@@ -11,9 +11,8 @@ class Layout;
 class ElementState;
 
 class AbstractElement {
-public:
-    explicit AbstractElement(QString type, Style *style, QGraphicsLinearLayout *layoutParrent = 0);
 
+public:
     explicit AbstractElement(QGraphicsLinearLayout *layoutParrent);
 
     QString getType() const;

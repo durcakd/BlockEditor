@@ -17,7 +17,6 @@ class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public Abst
 {
 
 public:
-    explicit Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent = 0);
     explicit Item(Layout *parent = 0, QString text = "");
 
     void setGeometry(const QRectF &geom);
