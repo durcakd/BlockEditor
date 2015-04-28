@@ -67,84 +67,19 @@ void WriteItemCommand::simpleAddition() {
     qDebug() << "  simple addition";
     QTextCursor cursor(_item->textCursor());
     QChar newChar = _item->document()->characterAt(pos);
-    Item *newItem = NULL;
+//    Item *newItem = NULL;
 
-    if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        qDebug() << "  spacedItem="<<_item->state()->isSpaced()<< "   simple soltion";
-        //_item->document()->clearUndoRedoStacks();
+    if ( _item->state()->isSpaced() != newChar.isSpace()) {
 
-
-    } else {
         qDebug() << "  different item types, added:" << newChar;
-        qDebug() << _item->document()->isUndoAvailable();
-        _item->blockSignals(true);
-        // undo
-        if (0 == pos) {
-            _item->setPlainText(_item->toPlainText().mid(1));
-        } else {
-            //_item->document()->undo(&cursor);
-            cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
-            _item->setTextCursor(cursor);
-        }
-        _item->blockSignals(false);
-
+        undoSimpleAddition();
 
         Layout *parent = _item->getLayoutParrent();
 
-
-        if (newChar.isSpace()) {
-            newItem = Parser::instance()->createStableItem(_item->getLayoutParrent(), QString(newChar));
-        } else {
-            newItem = Parser::instance()->createChangedItem(_item->getLayoutParrent(), QString(newChar));
-        }
-
-
-        if (0 == pos) {
-            qDebug() << "add at start  new Item";
-            Item *previous = dynamic_cast<Item*>(_item->nextPreviousAlsoHor(false));
-            if (NULL != previous && previous->state()->isSpaced() == newChar.isSpace()) {
-                qDebug() << "posible merge with previous";
-
-                _item->clearFocus();
-                _item->show();
-                previous->setFocus();
-                previous->blockSignals(true);
-                cursor = previous->textCursor();
-                cursor.beginEditBlock();
-                cursor.movePosition(QTextCursor::End);
-                cursor.insertText(QString(newChar));
-                cursor.endEditBlock();
-                previous->setTextCursor(cursor);
-                previous->blockSignals(false);
-
-            } else {
-                parent->insertBefore(_item, newItem);
-                BlockScene::instance()->addItem( newItem);
-            }
-
+        if (cursor.atStart()) {
+            simpleAdditionInStartOrEnd(newChar, true);
         } else if (cursor.atEnd()) {
-            qDebug() << "add at end  new item";
-            Item *next = dynamic_cast<Item*>(_item->nextPreviousAlsoHor(true));
-            if (NULL != next && next->state()->isSpaced() == newChar.isSpace()) {
-                qDebug() << "posible merge with next";
-
-
-                next->setFocus();
-                next->blockSignals(true);
-                cursor = next->textCursor();
-                cursor.beginEditBlock();
-                cursor.movePosition(QTextCursor::Start);
-                cursor.insertText(QString(newChar));
-                cursor.endEditBlock();
-                next->setTextCursor(cursor);
-                next->blockSignals(false);
-
-
-            } else {
-                parent->insertBehind(_item, newItem);
-                BlockScene::instance()->addItem( newItem);
-            }
+            simpleAdditionInStartOrEnd(newChar, false);
         } else {
             qDebug() << "add in the middle";
         }
@@ -154,8 +89,8 @@ void WriteItemCommand::simpleAddition() {
         parent->invalidate();
         parent->update();
         parent->updateGeometry();
-//        newItem->update();
-//        newItem->updateGeometry();
+        //        newItem->update();
+        //        newItem->updateGeometry();
         _item->update();
         _item->updateGeometry();
 
@@ -168,11 +103,65 @@ void WriteItemCommand::simpleAddition() {
 
 }
 
+void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
+    qDebug() << ( inStart ? "add at start  new Item" : "add at end  new item");
+    Layout *parent = _item->getLayoutParrent();
+    Item *neighbor = dynamic_cast<Item*>(_item->nextPreviousAlsoHor( !inStart));
 
-void WriteItemCommand::complexAddition() {
+    if (NULL != neighbor && neighbor->state()->isSpaced() == newChar.isSpace()) {
+        qDebug() << ( inStart ? "merge with previous" : "merge with next");
 
+        neighbor->setFocus();
+        neighbor->blockSignals(true);
+        QTextCursor cursor = neighbor->textCursor();
+        cursor.beginEditBlock();
+        if (inStart) {
+            cursor.movePosition(QTextCursor::End);
+        } else {
+            cursor.movePosition(QTextCursor::Start);
+        }
+        cursor.insertText(QString(newChar));
+        cursor.endEditBlock();
+        neighbor->setTextCursor(cursor);
+        neighbor->blockSignals(false);
+
+        neighbor->setState( new ElementChanged);
+
+    } else {
+        Item *newItem = createItemForInsert( newChar);
+        if (inStart) {
+            parent->insertBefore(_item, newItem);
+        } else {
+            parent->insertBehind(_item, newItem);
+        }
+        BlockScene::instance()->addItem( newItem);
+    }
 }
 
+
+Item *WriteItemCommand::createItemForInsert(QChar newChar) {
+    if (newChar.isSpace()) {
+        return Parser::instance()->createStableItem(_item->getLayoutParrent(), QString(newChar));
+    } else {
+        return Parser::instance()->createChangedItem(_item->getLayoutParrent(), QString(newChar));
+    }
+}
+
+void WriteItemCommand::undoSimpleAddition() {
+    _item->blockSignals(true);
+    // undo
+    if (0 == pos) {
+        _item->setPlainText(_item->toPlainText().mid(1));
+    } else {
+        //_item->document()->undo(&cursor);
+        QTextCursor cursor(_item->textCursor());
+        cursor.clearSelection();
+        cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+        cursor.removeSelectedText();
+        _item->setTextCursor(cursor);
+    }
+    _item->blockSignals(false);
+}
 
 bool WriteItemCommand::hasSpace(const QString str) const {
     QString::ConstIterator it;
@@ -184,6 +173,9 @@ bool WriteItemCommand::hasSpace(const QString str) const {
     return false;
 }
 
+void WriteItemCommand::complexAddition() {
+
+}
 
 void WriteItemCommand::undo() {
     qDebug() << "UNDO writeItemCommand ";

@@ -20,6 +20,10 @@ protected:
 
     void simpleAddition();
     void complexAddition();
+    void undoSimpleAddition();
+    void simpleAdditionInStartOrEnd(QChar newChar, bool inStart);
+
+    Item *createItemForInsert(QChar newChar);
 
     Item *_item;
     int pos;
