@@ -6,11 +6,15 @@
 #include <QStringBuilder>
 #include <item/state/elementvalid.h>
 #include <item/state/elementstable.h>
+#include <item/elementbuilder.h>
+#include <item/standardelementbuilder.h>
+#include <QGraphicsLinearLayout>
 
 Parser::Parser(QString type) :
     QObject()
 {
     _textType = type;
+    _elementBuilder = new StandardElementBuilder();
     init();
     loadGrammar();
     loadStyle();
@@ -45,15 +49,19 @@ void Parser::init() {
 
 
         // text
-        Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
-        newItem->setState(new ElementValid);
+        Item *newItem = createNewItem(*_elementBuilder, static_cast<Layout*>(parentPointer), elementType, onlyText);
+
+        //Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        //newItem->setState(new ElementValid);
 
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
             // blank
-            Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
-            newItem->setState(new ElementStable);
+            Item *newItem = createNewStableItem(*_elementBuilder, static_cast<Layout*>(parentPointer), afterText);
+
+            //Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+            //newItem->setState(new ElementStable);
 
             emit addElementItem(newItem);
         }
@@ -66,7 +74,11 @@ void Parser::init() {
                        lua::Integer elementIndex)
                -> lua::Pointer
     {
-        Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+
+        //Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        qDebug() << "parsing layout "<< elementType;
+        Layout *newLayout= createNewLayout( *_elementBuilder, static_cast<Layout*>(parentPointer), elementType);
+
         emit addElementLayout(newLayout);
 
         return newLayout;
@@ -76,6 +88,8 @@ void Parser::init() {
     _state.doFile("scripts/core.lua");
 
 }
+
+
 
 void Parser::loadStyle()
 {
@@ -130,4 +144,30 @@ void Parser::parse(QString text) {
     _state["parseTextNew"]( text.toStdString().c_str());
     qDebug() << "... parsing DONE";
     emit parsingFinished();
+}
+
+
+Item *Parser::createNewItem(ElementBuilder &builder, Layout *parent, QString type, QString text) {
+    builder.buildItem(parent, text);
+    builder.buildType(type);
+    builder.buildStyle();
+    builder.buildState();
+    return dynamic_cast<Item*>(builder.getElement());
+}
+
+Item *Parser::createNewStableItem(ElementBuilder &builder, Layout *parent, QString text) {
+    builder.buildItem(parent, text);
+    builder.buildType("spaced_text");
+    builder.buildStyle();
+    builder.buildState( new ElementStable());
+    return dynamic_cast<Item*>(builder.getElement());
+}
+
+Layout *Parser::createNewLayout(ElementBuilder &builder, Layout *parent, QString type) {
+    //qDebug() << "inside building layout , parent = "<< parent;
+    builder.buildLayout(parent);
+    builder.buildType(type);
+    builder.buildStyle();
+    builder.buildState();
+    return dynamic_cast<Layout*>(builder.getElement());
 }
