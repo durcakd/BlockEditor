@@ -72,7 +72,6 @@ void WriteItemCommand::simpleAddition() {
     if ( _item->state()->isSpaced() != newChar.isSpace()) {
 
         qDebug() << "  different item types, added:" << newChar;
-        undoSimpleAddition();
 
         Layout *parent = _item->getLayoutParrent();
 
@@ -82,6 +81,24 @@ void WriteItemCommand::simpleAddition() {
             simpleAdditionInStartOrEnd(newChar, false);
         } else {
             qDebug() << "add in the middle";
+
+            QString text = _item->toPlainText();
+            _item->setPlainText(text.mid(0,pos));
+
+            Item *second = createItemForInsert( newChar);
+            Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
+
+            parent->insertBehind(_item, second);
+            parent->insertBehind(second, third);
+            BlockScene::instance()->addItem(second);
+            BlockScene::instance()->addItem(third);
+
+            second->setFocus();
+            cursor = second->textCursor();
+            cursor.movePosition(QTextCursor::End);
+            second->setTextCursor(cursor);
+
+            setChangedIfNeed(_item);
         }
 
 
@@ -93,10 +110,9 @@ void WriteItemCommand::simpleAddition() {
         //        newItem->updateGeometry();
         _item->update();
         _item->updateGeometry();
+
     } else {
-        if (!_item->state()->isSpaced()) {
-            _item->setState( new ElementChanged);
-        }
+        setChangedIfNeed(_item);
     }
 
     qDebug();
@@ -107,6 +123,7 @@ void WriteItemCommand::simpleAddition() {
 
 void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
     qDebug() << ( inStart ? "add at start  new Item" : "add at end  new item");
+    undoSimpleAddition();
     Layout *parent = _item->getLayoutParrent();
     Item *neighbor = dynamic_cast<Item*>(_item->nextPreviousAlsoHor( !inStart));
 
@@ -127,7 +144,7 @@ void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        neighbor->setState( new ElementChanged);
+        setChangedIfNeed(neighbor);
 
     } else {
         Item *newItem = createItemForInsert( newChar);
@@ -136,16 +153,20 @@ void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
         } else {
             parent->insertBehind(_item, newItem);
         }
-        BlockScene::instance()->addItem( newItem);
+        BlockScene::instance()->addItem(newItem);
     }
 }
 
 
 Item *WriteItemCommand::createItemForInsert(QChar newChar) {
-    if (newChar.isSpace()) {
-        return Parser::instance()->createStableItem(_item->getLayoutParrent(), QString(newChar));
+    return createItemForInsert(newChar.isSpace(), QString(newChar));
+}
+
+Item *WriteItemCommand::createItemForInsert(bool stable, QString text) {
+    if (stable) {
+        return Parser::instance()->createStableItem(_item->getLayoutParrent(), text);
     } else {
-        return Parser::instance()->createChangedItem(_item->getLayoutParrent(), QString(newChar));
+        return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
     }
 }
 
@@ -165,6 +186,12 @@ void WriteItemCommand::undoSimpleAddition() {
     _item->blockSignals(false);
 }
 
+void WriteItemCommand::setChangedIfNeed(Item *item) {
+    if (!item->state()->isSpaced()) {
+        item->setState( new ElementChanged);
+    }
+}
+
 bool WriteItemCommand::hasSpace(const QString str) const {
     QString::ConstIterator it;
     for (it = str.constBegin(); it != str.constEnd(); it++) {
@@ -174,6 +201,8 @@ bool WriteItemCommand::hasSpace(const QString str) const {
     }
     return false;
 }
+
+
 
 void WriteItemCommand::complexAddition() {
 
