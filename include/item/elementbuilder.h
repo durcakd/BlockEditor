@@ -2,16 +2,23 @@
 #define ELEMENTBUILDER_H
 
 
-class Item;
-class Element;
-
-
+class AbstractElement;
+class ElementState;
+class Layout;
 
 class ElementBuilder
 {
 
 public:
-    explicit ElementBuilder();
+
+    virtual void buildItem(Layout *parent, QString text) = 0;
+    virtual void buildLayout(Layout *parent) = 0;
+    virtual void buildStyle() = 0;
+    virtual void buildState() = 0;
+    virtual void buildState(ElementState *state) = 0;
+    virtual void buildType(QString type) = 0;
+
+    virtual AbstractElement* getElement() = 0;
 
 };
 
