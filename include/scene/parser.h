@@ -18,11 +18,13 @@ class Parser : public QObject {
     Q_OBJECT
 
 public:
-    Parser(QString type);
+    static Parser *instance(QString type = "");
+
     void parse(QString text);
-    Item *createNewItem(ElementBuilder &builder, Layout *parent, QString type, QString text);
-    Item *createNewStableItem(ElementBuilder &builder, Layout *parent, QString text);
-    Layout *createNewLayout(ElementBuilder &builder, Layout *parent, QString type);
+    Item *createNewItem(Layout *parent, QString type, QString text);
+    Item *createStableItem(Layout *parent, QString text);
+    Item *createChangedItem(Layout *parent, QString text);
+    Layout *createNewLayout(Layout *parent, QString type);
 
 signals:
     void addElementItem( Item* item);
@@ -31,6 +33,9 @@ signals:
     void parsingFinished();
 
 private:
+    static Parser *_instance;
+    Parser(QString type);
+
 
     void init();
     void loadGrammar();

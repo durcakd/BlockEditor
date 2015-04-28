@@ -6,9 +6,23 @@
 #include <QStringBuilder>
 #include <item/state/elementvalid.h>
 #include <item/state/elementstable.h>
+#include <item/state/elementchanged.h>
 #include <item/elementbuilder.h>
 #include <item/standardelementbuilder.h>
 #include <QGraphicsLinearLayout>
+
+
+Parser *Parser::_instance = NULL;
+
+Parser *Parser::instance(QString type) {
+    if (_instance == NULL) {
+        if (type.isEmpty()) {
+            qDebug() << "Warning: parser type undefined!";
+        }
+        _instance = new Parser(type);
+    }
+    return _instance;
+}
 
 Parser::Parser(QString type) :
     QObject()
@@ -49,7 +63,7 @@ void Parser::init() {
 
 
         // text
-        Item *newItem = createNewItem(*_elementBuilder, static_cast<Layout*>(parentPointer), elementType, onlyText);
+        Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
 
         //Item *newItem= new Item( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         //newItem->setState(new ElementValid);
@@ -58,7 +72,7 @@ void Parser::init() {
 
         if (!afterText.isEmpty()){
             // blank
-            Item *newItem = createNewStableItem(*_elementBuilder, static_cast<Layout*>(parentPointer), afterText);
+            Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
 
             //Item *newItem= new Item( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
             //newItem->setState(new ElementStable);
@@ -77,7 +91,7 @@ void Parser::init() {
 
         //Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
         qDebug() << "parsing layout "<< elementType;
-        Layout *newLayout= createNewLayout( *_elementBuilder, static_cast<Layout*>(parentPointer), elementType);
+        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
 
         emit addElementLayout(newLayout);
 
@@ -147,27 +161,35 @@ void Parser::parse(QString text) {
 }
 
 
-Item *Parser::createNewItem(ElementBuilder &builder, Layout *parent, QString type, QString text) {
-    builder.buildItem(parent, text);
-    builder.buildType(type);
-    builder.buildStyle();
-    builder.buildState();
-    return dynamic_cast<Item*>(builder.getElement());
+Item *Parser::createNewItem(Layout *parent, QString type, QString text) {
+    _elementBuilder->buildItem(parent, text);
+    _elementBuilder->buildType(type);
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState();
+    return dynamic_cast<Item*>(_elementBuilder->getElement());
 }
 
-Item *Parser::createNewStableItem(ElementBuilder &builder, Layout *parent, QString text) {
-    builder.buildItem(parent, text);
-    builder.buildType("spaced_text");
-    builder.buildStyle();
-    builder.buildState( new ElementStable());
-    return dynamic_cast<Item*>(builder.getElement());
+Item *Parser::createStableItem(Layout *parent, QString text) {
+    _elementBuilder->buildItem(parent, text);
+    _elementBuilder->buildType("spaced_text");
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState( new ElementStable());
+    return dynamic_cast<Item*>(_elementBuilder->getElement());
 }
 
-Layout *Parser::createNewLayout(ElementBuilder &builder, Layout *parent, QString type) {
+Item *Parser::createChangedItem(Layout *parent, QString text) {
+    _elementBuilder->buildItem(parent, text);
+    _elementBuilder->buildType("changed_text");
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState( new ElementChanged);
+    return dynamic_cast<Item*>(_elementBuilder->getElement());
+}
+
+Layout *Parser::createNewLayout(Layout *parent, QString type) {
     //qDebug() << "inside building layout , parent = "<< parent;
-    builder.buildLayout(parent);
-    builder.buildType(type);
-    builder.buildStyle();
-    builder.buildState();
-    return dynamic_cast<Layout*>(builder.getElement());
+    _elementBuilder->buildLayout(parent);
+    _elementBuilder->buildType(type);
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState();
+    return dynamic_cast<Layout*>(_elementBuilder->getElement());
 }
