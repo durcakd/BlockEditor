@@ -1,5 +1,7 @@
 #include "item/abstractelement.h"
+
 #include "item/layout.h"
+#include "item/state/elementstate.h"
 #include <QDebug>
 
 #include <QGraphicsLinearLayout>
@@ -12,11 +14,20 @@ AbstractElement::AbstractElement(QGraphicsLinearLayout *layoutParrent)
     _next = NULL;
     _previous = NULL;
     _enablePaint = false;
+    _state = NULL;
 }
 
 QString AbstractElement::getType() const
 {
     return _type;
+}
+
+void AbstractElement::setState(ElementState *state) {
+    if (_state != NULL) {
+        state->exit(this);
+    }
+    _state = state;
+    _state->entry(this);
 }
 
 Layout* AbstractElement::getLayoutParrent() const

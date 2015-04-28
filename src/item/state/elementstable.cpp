@@ -11,3 +11,12 @@ ElementStable::ElementStable()
 bool ElementStable::isSpaced() const {
     return true;
 }
+
+
+void ElementStable::entry(AbstractElement *) const {
+
+}
+
+void ElementStable::exit(AbstractElement *) const {
+
+}

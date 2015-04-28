@@ -36,7 +36,7 @@ public:
     virtual void setStyleE(Style *style) { _style = style;}
 
     ElementState *state() const {return _state;}
-    void setState(ElementState *state) { _state = state;}
+    void setState(ElementState *state);
 
     bool isPaintEnabled() const {return _enablePaint;}
     bool isParent(AbstractElement *checkedParent);
