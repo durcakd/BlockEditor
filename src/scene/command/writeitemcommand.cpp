@@ -67,7 +67,7 @@ void WriteItemCommand::simpleAddition() {
     qDebug() << "  simple addition";
     QTextCursor cursor(_item->textCursor());
     QChar newChar = _item->document()->characterAt(pos);
-//    Item *newItem = NULL;
+    //    Item *newItem = NULL;
 
     if ( _item->state()->isSpaced() != newChar.isSpace()) {
 
@@ -93,8 +93,10 @@ void WriteItemCommand::simpleAddition() {
         //        newItem->updateGeometry();
         _item->update();
         _item->updateGeometry();
-
-
+    } else {
+        if (!_item->state()->isSpaced()) {
+            _item->setState( new ElementChanged);
+        }
     }
 
     qDebug();
