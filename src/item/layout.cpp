@@ -158,6 +158,9 @@ QString Layout::textE() const
     for ( int i=0; i < count(); i++) {
         if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
             text += element->textE();
+            if (orientation() == Qt::Vertical) {
+                text += "\n";
+            }
         }
     }
     return text;

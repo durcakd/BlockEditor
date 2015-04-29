@@ -48,13 +48,15 @@ void Parser::init() {
         //elementText.
         QString text = elementText;
         QString onlyText;
-        QString afterText;
+        QString afterText = "";
 
         QString::ConstIterator it;
         for (it = text.constBegin(); it != text.constEnd(); it++) {
             //qDebug() << "--------- " << *it << "  space:"<<it->isSpace() <<"  isLN:"<<it->isLetterOrNumber() <<"  isPrint:"<<it->isPrint() <<"  isSymbol:"<<it->isSymbol();
             if (it->isSpace()) {
-                afterText += *it;
+                if (it->unicode() != 10){
+                    afterText += *it;
+                }
             } else {
                 onlyText += *it;
             }

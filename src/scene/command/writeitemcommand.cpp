@@ -55,8 +55,6 @@ void WriteItemCommand::execute() {
         if (1 == charsAdded ){
             simpleAddition();
         }
-
-
     }
 
     if (1 == charsRemoved) {
@@ -79,6 +77,13 @@ void WriteItemCommand::simpleAddition() {
     QTextCursor cursor(_item->textCursor());
     QChar newChar = _item->document()->characterAt(pos);
     //    Item *newItem = NULL;
+
+    if (newChar.unicode() == 8233) {
+        qDebug() << "ENTER";
+        undoSimpleAddition();
+        return;
+    }
+
 
     if ( _item->state()->isSpaced() != newChar.isSpace()) {
 
