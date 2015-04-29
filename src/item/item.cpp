@@ -64,6 +64,8 @@ void Item::setStyleE(Style *style) {
 
     if (style->getIsColor()){
         setDefaultTextColor(Qt::blue);
+    } else {
+        setDefaultTextColor(Qt::black);
     }
 }
 

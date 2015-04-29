@@ -98,7 +98,10 @@ void WriteItemCommand::simpleAddition() {
             cursor.movePosition(QTextCursor::End);
             second->setTextCursor(cursor);
 
-            setChangedIfNeed(_item);
+
+            _item->state()->edited(_item);
+            second->state()->edited(second);
+            third->state()->edited(third);
         }
 
 
@@ -112,7 +115,7 @@ void WriteItemCommand::simpleAddition() {
         _item->updateGeometry();
 
     } else {
-        setChangedIfNeed(_item);
+        _item->state()->edited(_item);
     }
 
     qDebug();
@@ -144,7 +147,7 @@ void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        setChangedIfNeed(neighbor);
+        neighbor->state()->edited(neighbor);
 
     } else {
         Item *newItem = createItemForInsert( newChar);
@@ -184,12 +187,6 @@ void WriteItemCommand::undoSimpleAddition() {
         _item->setTextCursor(cursor);
     }
     _item->blockSignals(false);
-}
-
-void WriteItemCommand::setChangedIfNeed(Item *item) {
-    if (!item->state()->isSpaced()) {
-        item->setState( new ElementChanged);
-    }
 }
 
 bool WriteItemCommand::hasSpace(const QString str) const {

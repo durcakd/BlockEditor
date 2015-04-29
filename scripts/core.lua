@@ -48,6 +48,7 @@ function parseTextNew(newText)
             element.instance = addBasicLayout( element.type, parent.instance, index)
         end
         )
+    return newTree ~= nil
 end
 
 
@@ -76,6 +77,7 @@ function parseNew(parser, text, addItemFnc, addGridFnc)
 
     print "ADDING ......."
     sendNode(1, root, {});
+    return root
 
 end
 

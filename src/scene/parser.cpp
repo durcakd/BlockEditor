@@ -144,6 +144,23 @@ void Parser::parse(QString text) {
     emit parsingFinished();
 }
 
+bool Parser::reparse(QString text) {
+    bool ok = true;
+
+    try {
+        blockSignals(true);
+        qDebug() << "Request text reparse for:\n"<< text;
+        ok = _state["parseTextNew"]( text.toStdString().c_str());
+        //emit parsingFinished()
+    }
+    catch (lua::RuntimeError ex) {
+        ok = false;
+    }
+    blockSignals(false);
+    qDebug() << "... parsing DONE";
+    return ok;
+}
+
 
 Item *Parser::createNewItem(Layout *parent, QString type, QString text) {
     _elementBuilder->buildItem(parent, text);

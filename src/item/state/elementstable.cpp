@@ -20,3 +20,7 @@ void ElementStable::entry(AbstractElement *) const {
 void ElementStable::exit(AbstractElement *) const {
 
 }
+
+void ElementStable::edited(AbstractElement *element) const {
+
+}

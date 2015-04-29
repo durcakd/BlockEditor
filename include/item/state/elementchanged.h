@@ -13,7 +13,10 @@ public:
 
     void entry(AbstractElement *element) const;
     void exit(AbstractElement *element) const;
+    void edited(AbstractElement *element) const;
     bool isSpaced() const;
+
+    void handleChange(AbstractElement *element) const;
 
 };
 

@@ -25,7 +25,6 @@ protected:
 
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);
-    void setChangedIfNeed(Item *item);
 
     Item *_item;
     int pos;

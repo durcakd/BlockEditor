@@ -21,6 +21,8 @@ public:
     static Parser *instance(QString type = "");
 
     void parse(QString text);
+    bool reparse(QString text);
+
     Item *createNewItem(Layout *parent, QString type, QString text);
     Item *createStableItem(Layout *parent, QString text);
     Item *createChangedItem(Layout *parent, QString text);

@@ -27,6 +27,8 @@ public:
     SceneState *getSceneState() const { return _sceneState;}
     void addCommand(Command *command);
 
+    Layout *root() const { return _root;}
+
 
 public slots:
 
