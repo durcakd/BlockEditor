@@ -19,6 +19,7 @@ protected:
     bool hasSpace(const QString str) const;
 
     void simpleAddition();
+    void simpleRemove();
     void complexAddition();
     void undoSimpleAddition();
     void simpleAdditionInStartOrEnd(QChar newChar, bool inStart);

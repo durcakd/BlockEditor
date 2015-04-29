@@ -56,10 +56,21 @@ void WriteItemCommand::execute() {
             simpleAddition();
         }
 
+
+    }
+
+    if (1 == charsRemoved) {
+        simpleRemove();
     }
 
 
 
+
+}
+
+void WriteItemCommand::simpleRemove() {
+    qDebug() << "  simple remove";
+    _item->state()->edited(_item);
 }
 
 void WriteItemCommand::simpleAddition() {
@@ -123,6 +134,9 @@ void WriteItemCommand::simpleAddition() {
 
 
 }
+
+
+
 
 void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
     qDebug() << ( inStart ? "add at start  new Item" : "add at end  new item");
