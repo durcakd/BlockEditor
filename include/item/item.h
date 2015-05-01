@@ -31,6 +31,7 @@ public:
     bool isLayoutE() const;
 
     QString getText() const {return _text;}
+    QString textOnLineForPos(int pos, bool toRight) const;
     QPixmap toPixmap();
 
 public slots:

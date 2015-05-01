@@ -86,23 +86,21 @@ void WriteItemCommand::simpleRemove() {
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
         }
 
+        //// TODO ??? state()->edited(_item);
+
     } else {
         ////_item->state()->edited(_item);
     }
 }
 
-AbstractElement *WriteItemCommand::findInsteadtoSelect() {
-    AbstractElement *instead = _item->nextPreviousAlsoHor(false);
-    if (NULL == instead) {
-        instead = _item->nextPreviousAlsoHor(true);
-    }
-    if (NULL == instead) {
-        instead = _item->nextPreviousAlsoVert(false);
-    }
-    if (NULL == instead) {
-        instead = _item->nextPreviousAlsoVert(true);
-    }
-    return instead;
+void WriteItemCommand::simpleAdditionEnter() {
+    qDebug() << "ENTER";
+    undoSimpleAddition();
+
+    qDebug() << "left:  "<< _item->textOnLineForPos(pos, false);
+    qDebug() << "right: "<< _item->textOnLineForPos(pos, true);
+
+
 }
 
 void WriteItemCommand::simpleAddition() {
@@ -112,9 +110,8 @@ void WriteItemCommand::simpleAddition() {
     QChar newChar = _item->document()->characterAt(pos);
 
     if (newChar.unicode() == 8233) {
-        qDebug() << "ENTER";
-        undoSimpleAddition();
-        return;
+        simpleAdditionEnter();
+        return; // TODO
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
@@ -226,6 +223,20 @@ void WriteItemCommand::undoSimpleAddition() {
         _item->setTextCursor(cursor);
     }
     _item->blockSignals(false);
+}
+
+AbstractElement *WriteItemCommand::findInsteadtoSelect() {
+    AbstractElement *instead = _item->nextPreviousAlsoHor(false);
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoHor(true);
+    }
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoVert(false);
+    }
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoVert(true);
+    }
+    return instead;
 }
 
 bool WriteItemCommand::hasSpace(const QString str) const {

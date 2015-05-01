@@ -25,10 +25,12 @@ protected:
     void undoSimpleAddition();
     void simpleAdditionStartEnd(QChar newChar, bool inStart);
     void simpleAdditionMiddle(QChar newChar);
-    AbstractElement *findInsteadtoSelect();
+    void simpleAdditionEnter();
 
+    AbstractElement *findInsteadtoSelect();
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);
+
 
     Item *_item;
     int pos;

@@ -150,7 +150,38 @@ QString Item::textE() const
     return toPlainText();
 }
 
+QString Item::textOnLineForPos(int pos, bool toRight) const {
+    QString text;
+    if (toRight) {
+        text = toPlainText().mid(pos);
+    } else {
+        text = toPlainText().mid(0,pos);
+    }
 
+    Layout *parent = getLayoutParrent();
+    const AbstractElement *element = this;
+
+    while (parent != NULL && Qt::Horizontal == parent->orientation()) {
+        AbstractElement *neighbor = element->nextPrevius(toRight);
+        while (neighbor) {
+            if (toRight) {
+                text += neighbor->textE();
+            } else {
+                text = neighbor->textE() + text;
+            }
+
+            neighbor = neighbor->nextPrevius(toRight);
+        }
+        element = parent;
+        parent = parent->getLayoutParrent();
+    }
+
+    if (parent == NULL) {
+        qDebug() << "WARNING!!! editing - add Enter, build text, parent=NULL";
+    }
+
+    return text;
+}
 
 
 // ---------------
