@@ -113,29 +113,46 @@ void WriteItemCommand::simpleAdditionEnter() {
         qDebug() << "WARNING!!! simple addition enter - vertical parent is NULL";
         return;
     }
+
+    bool addLeft = true;
+    bool addRight = true;
     if (rightLine.isEmpty()) {
         rightLine = " ";
+        addLeft = false;
     }
     if (leftLine.isEmpty()) {
         leftLine = " ";
+        addRight = false;
     }
 
-    Item *leftItem = Parser::instance()->createNewItem( vParent, "changed_text", leftLine);
-    Item *rightItem = Parser::instance()->createNewItem( vParent, "changed_text", rightLine);
+    Item *rightItem = NULL;
+    Item *leftItem = NULL;
+    if (addRight) {
+        qDebug() << "   addd right half";
+        rightItem = Parser::instance()->createNewItem( vParent, "changed_text", rightLine);
+        vParent->insertBehind(toReplace, rightItem);
+        BlockScene::instance()->addItem(rightItem);
 
+        rightItem->setFocus();
+        QTextCursor cursor(rightItem->textCursor());
+        cursor.setPosition(0);
+        rightItem->setTextCursor(cursor);
+    }
+    if (addLeft) {
+        qDebug() << "   addd left half";
+        leftItem = Parser::instance()->createNewItem( vParent, "changed_text", leftLine);
+        vParent->insertBefore(toReplace, leftItem);
+        BlockScene::instance()->addItem(leftItem);
+    }
+    if (addLeft && addRight) {
+        qDebug() << "  remove old line";
+        vParent->removeElement(toReplace);
+        BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
+    }
 
-    vParent->insertBehind(toReplace, leftItem);
-    vParent->insertBehind(leftItem, rightItem);
-    BlockScene::instance()->addItem(leftItem);
-    BlockScene::instance()->addItem(rightItem);
-
-    vParent->removeElement(toReplace);
-    BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
-
-    rightItem->setFocus();
-    QTextCursor cursor(rightItem->textCursor());
-    cursor.setPosition(0);
-    rightItem->setTextCursor(cursor);
+    ////  TODO ???
+    ////  rightItem->state()->edited(rightItem);
+    ////  leftItem->state()->edited(leftItem);
 }
 
 void WriteItemCommand::simpleAddition() {
