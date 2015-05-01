@@ -129,7 +129,8 @@ void WriteItemCommand::simpleAdditionEnter() {
     Item *leftItem = NULL;
     if (addRight) {
         qDebug() << "   addd right half";
-        rightItem = Parser::instance()->createNewItem( vParent, "changed_text", rightLine);
+        rightItem = createItemForInsert( !addLeft, rightLine, vParent);
+
         vParent->insertBehind(toReplace, rightItem);
         BlockScene::instance()->addItem(rightItem);
 
@@ -140,7 +141,8 @@ void WriteItemCommand::simpleAdditionEnter() {
     }
     if (addLeft) {
         qDebug() << "   addd left half";
-        leftItem = Parser::instance()->createNewItem( vParent, "changed_text", leftLine);
+        leftItem = createItemForInsert( !addRight, leftLine, vParent);
+
         vParent->insertBefore(toReplace, leftItem);
         BlockScene::instance()->addItem(leftItem);
     }
@@ -253,11 +255,15 @@ Item *WriteItemCommand::createItemForInsert(QChar newChar) {
 }
 
 Item *WriteItemCommand::createItemForInsert(bool stable, QString text) {
+    return createItemForInsert(stable, text, _item->getLayoutParrent());
+}
+
+Item *WriteItemCommand::createItemForInsert(bool stable, QString text, Layout *parent) {
     if (stable) {
-        return Parser::instance()->createStableItem(_item->getLayoutParrent(), text);
+        return Parser::instance()->createStableItem(parent, text);
     } else {
         //return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
-        return Parser::instance()->createNewItem(_item->getLayoutParrent(), "changed_text", text);
+        return Parser::instance()->createNewItem(parent, "changed_text", text);
     }
 }
 

@@ -7,6 +7,7 @@
 class QGraphicsItem;
 class AbstractElement;
 class Item;
+class Layout;
 
 class WriteItemCommand : public Command {
 public:
@@ -30,6 +31,7 @@ protected:
     AbstractElement *findInsteadtoSelect();
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);
+    Item *createItemForInsert(bool stable, QString text, Layout *parent);
 
 
     Item *_item;
