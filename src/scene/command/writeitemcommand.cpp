@@ -97,10 +97,45 @@ void WriteItemCommand::simpleAdditionEnter() {
     qDebug() << "ENTER";
     undoSimpleAddition();
 
-    qDebug() << "left:  "<< _item->textOnLineForPos(pos, false);
-    qDebug() << "right: "<< _item->textOnLineForPos(pos, true);
+    QString leftLine = _item->textOnLineForPos(pos, false);
+    QString rightLine = _item->textOnLineForPos(pos, true);
+    qDebug() << "left:  "<< leftLine;
+    qDebug() << "right: "<< rightLine;
 
 
+    Layout *vParent = _item->getLayoutParrent();
+    AbstractElement *toReplace = _item;
+    while (vParent != NULL && Qt::Horizontal == vParent->orientation()) {
+        toReplace = vParent;
+        vParent = vParent->getLayoutParrent();
+    }
+    if (vParent == NULL) {
+        qDebug() << "WARNING!!! simple addition enter - vertical parent is NULL";
+        return;
+    }
+    if (rightLine.isEmpty()) {
+        rightLine = " ";
+    }
+    if (leftLine.isEmpty()) {
+        leftLine = " ";
+    }
+
+    Item *leftItem = Parser::instance()->createNewItem( vParent, "changed_text", leftLine);
+    Item *rightItem = Parser::instance()->createNewItem( vParent, "changed_text", rightLine);
+
+
+    vParent->insertBehind(toReplace, leftItem);
+    vParent->insertBehind(leftItem, rightItem);
+    BlockScene::instance()->addItem(leftItem);
+    BlockScene::instance()->addItem(rightItem);
+
+    vParent->removeElement(toReplace);
+    BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
+
+    rightItem->setFocus();
+    QTextCursor cursor(rightItem->textCursor());
+    cursor.setPosition(0);
+    rightItem->setTextCursor(cursor);
 }
 
 void WriteItemCommand::simpleAddition() {
