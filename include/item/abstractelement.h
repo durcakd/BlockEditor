@@ -31,7 +31,7 @@ public:
 
     void setNext(AbstractElement *next) { _next = next; }
     void setPrevius(AbstractElement *previous) { _previous = previous; }
-    void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
+    //void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
     Style *styleE() const {return _style;}
     virtual void setStyleE(Style *style) { _style = style;}
 
@@ -40,8 +40,6 @@ public:
 
     bool isPaintEnabled() const {return _enablePaint;}
     bool isParent(AbstractElement *checkedParent);
-
-
 
     virtual void setPaintEnable( bool enablePaint ) { _enablePaint = enablePaint;}
 

@@ -39,6 +39,7 @@ public:
 
     void insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
     void insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
+    void removeElement( AbstractElement *element);
 
 
     QGraphicsLayoutItem  *firstLastChildrenElement(bool first) const;

@@ -54,7 +54,7 @@ Item::Item(Layout *parent, QString text)
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(fixedFont);
 
-connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
+    connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
 
     // setGeometry();
 }
@@ -98,8 +98,11 @@ void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
             BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
         }
     }
-    updateGeometry();
-    getLayoutParrent()->invalidate();
+
+    if (getLayoutParrent()) {
+        updateGeometry();
+        getLayoutParrent()->invalidate();
+    }
 }
 
 QSizeF Item::elementSizeHint(Qt::SizeHint which) const

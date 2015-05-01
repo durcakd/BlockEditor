@@ -89,7 +89,6 @@ AbstractElement *AbstractElement::firstLastItem(bool first) {
 }
 
 
-
 bool AbstractElement::isParent(AbstractElement *checkedParent) {
     AbstractElement *parent = dynamic_cast<AbstractElement*>(this->getLayoutParrent());
     while (parent) {

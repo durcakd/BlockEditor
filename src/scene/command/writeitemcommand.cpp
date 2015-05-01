@@ -65,7 +65,44 @@ void WriteItemCommand::execute() {
 
 void WriteItemCommand::simpleRemove() {
     qDebug() << "  simple remove";
-    ////_item->state()->edited(_item);
+    if (_item->textLength() == 0) {
+        qDebug() << "remove item";
+        AbstractElement *toRemove = _item;
+        Layout *parent = _item->getLayoutParrent();
+
+        while (parent != NULL && parent->count() < 2) {
+            qDebug() << "up";
+            toRemove = parent;
+            parent = parent->getLayoutParrent();
+        }
+
+        if (parent != NULL) {
+            // select else one
+            AbstractElement *instead = findInsteadtoSelect();
+            dynamic_cast <Item*>(instead)->setFocus();
+
+            // remove
+            parent->removeElement(toRemove);
+            BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
+        }
+
+    } else {
+        ////_item->state()->edited(_item);
+    }
+}
+
+AbstractElement *WriteItemCommand::findInsteadtoSelect() {
+    AbstractElement *instead = _item->nextPreviousAlsoHor(false);
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoHor(true);
+    }
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoVert(false);
+    }
+    if (NULL == instead) {
+        instead = _item->nextPreviousAlsoVert(true);
+    }
+    return instead;
 }
 
 void WriteItemCommand::simpleAddition() {

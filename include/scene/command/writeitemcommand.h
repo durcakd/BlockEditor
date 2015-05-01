@@ -5,6 +5,7 @@
 #include "scene/command/command.h"
 
 class QGraphicsItem;
+class AbstractElement;
 class Item;
 
 class WriteItemCommand : public Command {
@@ -24,6 +25,7 @@ protected:
     void undoSimpleAddition();
     void simpleAdditionStartEnd(QChar newChar, bool inStart);
     void simpleAdditionMiddle(QChar newChar);
+    AbstractElement *findInsteadtoSelect();
 
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);

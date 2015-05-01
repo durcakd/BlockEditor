@@ -215,9 +215,6 @@ void Layout::insertBefore( AbstractElement *oldElement, AbstractElement *newElem
     insertItem( index, dynamic_cast<QGraphicsLayoutItem*>(newElement));
 
     newElement->setLayoutParrent(this);
-
-
-
     newElement->setPrevius(oldElement->getPrevius());
     newElement->setNext(oldElement);
 
@@ -227,6 +224,24 @@ void Layout::insertBefore( AbstractElement *oldElement, AbstractElement *newElem
     oldElement->setPrevius(newElement);
 }
 
+void Layout::removeElement( AbstractElement *element) {
+
+    if( element->getPrevius()) {
+        element->getPrevius()->setNext( element->getNext());
+    }
+    if( element->getNext()) {
+        element->getNext()->setPrevius( element->getPrevius());
+    }
+
+    element->setNext(NULL);
+    element->setPrevius(NULL);
+    element->setLayoutParrent(NULL);
+    removeItem( dynamic_cast<QGraphicsLayoutItem*>(element));
+
+    if (count() == 0) {
+        qDebug() << "WARNING!!!  RemoveElement only child";
+    }
+}
 
 /*
 QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
