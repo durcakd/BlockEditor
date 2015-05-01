@@ -5,6 +5,7 @@
 
 #include "item/item.h"
 #include "item/layout.h"
+#include "QStack"
 
 
 
@@ -12,6 +13,7 @@ class QGraphicsLinearLayout;
 class QGraphicsWidget;
 class SceneEventObserver;
 class SceneState;
+class Command;
 
 class BlockScene : public QGraphicsScene
 {
@@ -19,21 +21,16 @@ class BlockScene : public QGraphicsScene
 
 public:
     static BlockScene *instance( QObject *parent = 0);
-    void addItem(QGraphicsItem *item);
-    void test();
+    void addItem(QGraphicsItem *graphicItem);
 
-    AbstractElement *selectedLeaf() const {return _selectedLeaf;}
-    AbstractElement *paintedElemement() const {return _paintedElemement;}
+
     SceneState *getSceneState() const { return _sceneState;}
+    void addCommand(Command *command);
 
-    void setSelectedE(AbstractElement *selectedLeaf, AbstractElement *paintedElemement)
-    {
-        _selectedLeaf = selectedLeaf;
-        _paintedElemement = paintedElemement;
-    }
+    Layout *root() const { return _root;}
+
 
 public slots:
-
 
     Item* addParserItem( Item *item);
     Layout* addParserLayout( Layout *layout);
@@ -47,10 +44,10 @@ private:
     QGraphicsLinearLayout *_vLayout;
     QGraphicsWidget *_form;
     Layout *_root;
-    AbstractElement *_selectedLeaf;
-    AbstractElement *_paintedElemement;
     SceneEventObserver *_eventFilter;
     SceneState *_sceneState;
+
+    QStack<Command *> _commandStack;
 
 };
 

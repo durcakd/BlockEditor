@@ -36,5 +36,8 @@ void DragElementLeaveCommand::execute() {
     //_item->update();
 }
 
+void DragElementLeaveCommand::undo() {
+    qDebug() << "UNDO dragElementLeaveCommand ";
+}
 
 

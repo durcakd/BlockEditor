@@ -15,9 +15,6 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) {}
 
     bool sceneEventFilter ( QGraphicsItem * watched, QEvent * event );
-    //bool eventFilter(QObject *object, QEvent *event);
-
-    bool addCommand(Command *command);
 
 private:
     Command *keyCommand(QGraphicsItem *watched, QKeyEvent *event);

@@ -48,7 +48,7 @@ MainWindow::MainWindow()
     setUnifiedTitleAndToolBarOnMac(true);
 
     _textType = "lua";
-    parser = new Parser(_textType);
+    parser = Parser::instance(_textType);
 
     QObject::connect( parser, &Parser::addElementItem,
                      scene, &BlockScene::addParserItem );

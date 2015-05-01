@@ -8,6 +8,7 @@
 
 #include "scene/sceneeventobserver.h"
 #include "scene/scenestate.h"
+#include "scene/command/command.h"
 
 BlockScene *BlockScene::inst = 0;
 
@@ -26,18 +27,21 @@ BlockScene::BlockScene( QObject *parent)
     //setSceneRect(0, 0, 300, 300);
     _form = new QGraphicsWidget;
     addItem(_form);
-    _selectedLeaf = NULL;
-    _paintedElemement = NULL;
-    //test();
+
     _sceneState = new SceneState;
     _eventFilter = new SceneEventObserver;
     addItem(_eventFilter);
 
 }
 
-void BlockScene::addItem(QGraphicsItem *item) {
+void BlockScene::addItem(QGraphicsItem *graphicItem) {
     qDebug() << "A  ";
-    QGraphicsScene::addItem(item);
+    QGraphicsScene::addItem(graphicItem);
+    Item *item = dynamic_cast<Item *>( graphicItem);
+    if (item) {
+        graphicItem->installSceneEventFilter( _eventFilter);
+        QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+    }
 }
 
 Item *BlockScene::addParserItem(Item *item)
@@ -61,10 +65,6 @@ Item *BlockScene::addParserItem(Item *item)
 
     }
     addItem( item);
-    item->installSceneEventFilter( _eventFilter);
-
-QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
-
     return item;
 }
 
@@ -74,7 +74,8 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
-        _root->setParrentE(NULL);
+        _root->setLayoutParrent(NULL);
+
         //setSceneRect(0, 0, 800, 600);
 
     } else {
@@ -98,62 +99,9 @@ void BlockScene::updateTreeNeighbors()
 
 }
 
-
-void BlockScene::test()
+void BlockScene::addCommand(Command *command)
 {
-    /*
-    Item *i1 =  new Item("-1-", "-");
-    Item *i2 =  new Item("-2-", "-");
-    Item *i3 =  new Item("-3-", "-");
-    Item *i4 =  new Item("-4-", "-");
-    Item *i5 =  new Item("-5-", "-");
-    Item *i6 =  new Item("-6-", "-");
-    Item *i7 =  new Item("-7-", "-");
-    Item *i8 =  new Item("-8-", "-");
-    Item *i9 =  new Item("-9-", "-");
-    Item *i10 =  new Item("-10-", "-");
-
-
-    QGraphicsLinearLayout *v1 = new QGraphicsLinearLayout(Qt::Vertical);
-    QGraphicsLinearLayout *vv1 = new QGraphicsLinearLayout(Qt::Vertical, v1);
-    QGraphicsLinearLayout *hh2 = new QGraphicsLinearLayout(Qt::Horizontal, v1);
-    QGraphicsLinearLayout *vv3 = new QGraphicsLinearLayout(Qt::Vertical, v1);
-    QGraphicsLinearLayout *vv4 = new QGraphicsLinearLayout(Qt::Vertical, vv1);
-    QGraphicsLinearLayout *vv5 = new QGraphicsLinearLayout(Qt::Vertical, vv1);
-    QGraphicsLinearLayout *vv6 = new QGraphicsLinearLayout(Qt::Vertical, vv4);
-
-
-    v1->addItem(i1);
-   v1->addItem(vv1);
-  vv1->addItem(vv4);
-  vv1->addItem(vv5);
-  vv4->addItem(vv6);
-  v1->addItem(hh2);
-  v1->addItem(vv3);
-
-
-    v1->addItem(i2);
-    vv1->addItem(i3);
-    vv4->addItem(i4);
-    vv5->addItem(i5);
-    vv6->addItem(i6);
-    v1->addItem(i7);
-    hh2->addItem(i8);
-    hh2->addItem(i9);
-    vv3->addItem(i10);
-    _form->setLayout(v1);
-
-    addItem(i1);
-    addItem(i2);
-    addItem(i3);
-    addItem(i4);
-    addItem(i5);
-    addItem(i6);
-    addItem(i7);
-    addItem(i8);
-    addItem(i9);
-    addItem(i10);
-
-    qDebug() << "test" << vv4->isLayout();
-*/
+    command->execute();
+    _commandStack.push( command);
 }
+

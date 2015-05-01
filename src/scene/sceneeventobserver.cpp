@@ -14,6 +14,7 @@
 #include "scene/command/dragelemententercommand.h"
 #include "scene/command/dragelementleavecommand.h"
 #include "scene/command/dropelementcommand.h"
+#include "scene/blockscene.h"
 
 SceneEventObserver::SceneEventObserver(QGraphicsItem *parent)
     : QGraphicsItem(parent) {
@@ -34,7 +35,9 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
     else if (event->type() == QEvent::GraphicsSceneMousePress) {
         qDebug() << "SEFO  MOUSE press EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        command = new SelectItemCommand(watched, mouseEvent);
+        if (mouseEvent->buttons() & Qt::LeftButton) {
+            command = new SelectItemCommand(watched, mouseEvent);
+        }
     }
     else if (event->type() == QEvent::GraphicsSceneMouseRelease) {
         //QGraphicsSceneMouseEvent * mp = static_cast<QGraphicsSceneMouseEvent *>(event);
@@ -43,7 +46,9 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
     else if (event->type() == QEvent::GraphicsSceneMouseMove) {
         qDebug() << "SEFO  MOUSE move EVENT";
         QGraphicsSceneMouseEvent *mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
-        command = new MoveElementCommand(watched, mouseEvent);
+        if (Qt::ControlModifier & mouseEvent->modifiers()) {
+            command = new MoveElementCommand(watched, mouseEvent);
+        }
     }
 
     else if (event->type() == QEvent::GraphicsSceneDragEnter) {
@@ -68,32 +73,23 @@ bool SceneEventObserver::sceneEventFilter ( QGraphicsItem * watched, QEvent *eve
         command = keyCommand( watched, keyEvent);
     }
 
-    return addCommand( command);
-}
-
-bool SceneEventObserver::addCommand(Command *command) {
     if (NULL == command) {
         return false;
     }
-    command->execute();
+    BlockScene::instance()->addCommand(command);
     return true;
 }
 
 
+
 // Key Command
 Command *SceneEventObserver::keyCommand(QGraphicsItem *watched, QKeyEvent *event) {
-    Command *command = NULL;
-
-    //    //if (!+Qt::ControlModifier & event->modifiers()) {
-    //    AbstractElement *targed;
-    //    QTextCursor cursor = textCursor();
 
     if ( event->key() == Qt::Key_Left  ||
          event->key() == Qt::Key_Right ||
          event->key() == Qt::Key_Up    ||
          event->key() == Qt::Key_Down ) {
-        command = new CursorMoveCommand(watched, event);
+        return new CursorMoveCommand(watched, event);
     }
-
-   return command;
+   return NULL;
 }

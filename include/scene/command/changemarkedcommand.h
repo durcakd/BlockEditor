@@ -15,6 +15,7 @@ public:
     explicit ChangeMarkedCommand(QGraphicsItem *watched, QGraphicsSceneWheelEvent *event);
 
     void execute();
+    void undo();
 
 protected:
 

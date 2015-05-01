@@ -17,7 +17,7 @@ class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public Abst
 {
 
 public:
-    explicit Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent = 0);
+    explicit Item(Layout *parent = 0, QString text = "");
 
     void setGeometry(const QRectF &geom);
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
@@ -25,14 +25,18 @@ public:
     int textLength(bool length = true) const;
     QString textE() const;
 
+    void setStyleE(Style *style);
+
     QTextDocument *_document;
     bool isLayoutE() const;
 
     QString getText() const {return _text;}
+    QString textOnLineForPos(int pos, bool toRight) const;
     QPixmap toPixmap();
 
 public slots:
-    void textUpdatedSlot();
+
+    void textChanged( int pos, int charsRemoved, int charsAdded);
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
@@ -47,7 +51,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
-
 
     QString _text;
     QColor color;
