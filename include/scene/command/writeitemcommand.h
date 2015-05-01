@@ -22,7 +22,8 @@ protected:
     void simpleRemove();
     void complexAddition();
     void undoSimpleAddition();
-    void simpleAdditionInStartOrEnd(QChar newChar, bool inStart);
+    void simpleAdditionStartEnd(QChar newChar, bool inStart);
+    void simpleAdditionMiddle(QChar newChar);
 
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);

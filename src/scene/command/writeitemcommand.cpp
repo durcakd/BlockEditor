@@ -50,7 +50,7 @@ void WriteItemCommand::execute() {
     if ( 0 == charsRemoved || charsAdded > charsRemoved) {
         charsAdded -= charsRemoved;
         charsRemoved = 0;
-        qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
+        qDebug() << "*"<<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
 
         if (1 == charsAdded ){
             simpleAddition();
@@ -68,7 +68,7 @@ void WriteItemCommand::execute() {
 
 void WriteItemCommand::simpleRemove() {
     qDebug() << "  simple remove";
-    _item->state()->edited(_item);
+    ////_item->state()->edited(_item);
 }
 
 void WriteItemCommand::simpleAddition() {
@@ -76,7 +76,6 @@ void WriteItemCommand::simpleAddition() {
     qDebug() << "  simple addition";
     QTextCursor cursor(_item->textCursor());
     QChar newChar = _item->document()->characterAt(pos);
-    //    Item *newItem = NULL;
 
     if (newChar.unicode() == 8233) {
         qDebug() << "ENTER";
@@ -91,33 +90,12 @@ void WriteItemCommand::simpleAddition() {
 
         Layout *parent = _item->getLayoutParrent();
 
-        if (cursor.atStart()) {
-            simpleAdditionInStartOrEnd(newChar, true);
+        if (0 == pos) {
+            simpleAdditionStartEnd(newChar, true);
         } else if (cursor.atEnd()) {
-            simpleAdditionInStartOrEnd(newChar, false);
+            simpleAdditionStartEnd(newChar, false);
         } else {
-            qDebug() << "add in the middle";
-
-            QString text = _item->toPlainText();
-            _item->setPlainText(text.mid(0,pos));
-
-            Item *second = createItemForInsert( newChar);
-            Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
-
-            parent->insertBehind(_item, second);
-            parent->insertBehind(second, third);
-            BlockScene::instance()->addItem(second);
-            BlockScene::instance()->addItem(third);
-
-            second->setFocus();
-            cursor = second->textCursor();
-            cursor.movePosition(QTextCursor::End);
-            second->setTextCursor(cursor);
-
-
-            _item->state()->edited(_item);
-            second->state()->edited(second);
-            third->state()->edited(third);
+            simpleAdditionMiddle(newChar);
         }
 
 
@@ -131,19 +109,46 @@ void WriteItemCommand::simpleAddition() {
         _item->updateGeometry();
 
     } else {
-        _item->state()->edited(_item);
+        ////_item->state()->edited(_item);
     }
 
-    qDebug();
+    qDebug() << " end simple addition";
 
 
 
 }
 
+void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
+    qDebug() << " add in the middle";
+    Layout *parent = _item->getLayoutParrent();
+
+    QString text = _item->toPlainText();
+    _item->blockSignals(true);
+    _item->setPlainText(text.mid(0,pos));
+    _item->blockSignals(false);
+
+    Item *second = createItemForInsert( newChar);
+    Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
+
+    //parent->insertBehind(_item, third);
+    parent->insertBehind(_item, second);
+    parent->insertBehind(second, third);
+    BlockScene::instance()->addItem(second);
+    BlockScene::instance()->addItem(third);
+
+    second->setFocus();
+    QTextCursor cursor = second->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    second->setTextCursor(cursor);
+
+    //// _item->state()->edited(_item);
+    //// second->state()->edited(second);
+    //// third->state()->edited(third);
+
+}
 
 
-
-void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
+void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
     qDebug() << ( inStart ? "add at start  new Item" : "add at end  new item");
     undoSimpleAddition();
     Layout *parent = _item->getLayoutParrent();
@@ -166,9 +171,10 @@ void WriteItemCommand::simpleAdditionInStartOrEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        neighbor->state()->edited(neighbor);
+        ////neighbor->state()->edited(neighbor);
 
     } else {
+        qDebug() << "no merge";
         Item *newItem = createItemForInsert( newChar);
         if (inStart) {
             parent->insertBefore(_item, newItem);
@@ -188,7 +194,8 @@ Item *WriteItemCommand::createItemForInsert(bool stable, QString text) {
     if (stable) {
         return Parser::instance()->createStableItem(_item->getLayoutParrent(), text);
     } else {
-        return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
+        //return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
+        return Parser::instance()->createNewItem(_item->getLayoutParrent(), "changed_text", text);
     }
 }
 

@@ -92,8 +92,11 @@ void Item::setGeometry(const QRectF &geom) {
 
 
 void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
-    if (charsRemoved!=charsAdded){
-        BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
+    if (!signalsBlocked()) {
+        qDebug() <<"text changed, but signal blocked="<< signalsBlocked();
+        if (charsRemoved!=charsAdded){
+            BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
+        }
     }
     updateGeometry();
     getLayoutParrent()->invalidate();
