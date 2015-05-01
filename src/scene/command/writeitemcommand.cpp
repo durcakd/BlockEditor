@@ -57,13 +57,10 @@ void WriteItemCommand::execute() {
         }
     }
 
-    if (1 == charsRemoved) {
+    // REMOVE
+    else if (1 == charsRemoved) {
         simpleRemove();
     }
-
-
-
-
 }
 
 void WriteItemCommand::simpleRemove() {
@@ -83,13 +80,11 @@ void WriteItemCommand::simpleAddition() {
         return;
     }
 
+    if ( _item->state()->isSpaced() == newChar.isSpace()) {
+        ////_item->state()->edited(_item);
 
-    if ( _item->state()->isSpaced() != newChar.isSpace()) {
-
+    } else {
         qDebug() << "  different item types, added:" << newChar;
-
-        Layout *parent = _item->getLayoutParrent();
-
         if (0 == pos) {
             simpleAdditionStartEnd(newChar, true);
         } else if (cursor.atEnd()) {
@@ -97,25 +92,7 @@ void WriteItemCommand::simpleAddition() {
         } else {
             simpleAdditionMiddle(newChar);
         }
-
-
-        //newItem->updateGeometry();
-        parent->invalidate();
-        parent->update();
-        parent->updateGeometry();
-        //        newItem->update();
-        //        newItem->updateGeometry();
-        _item->update();
-        _item->updateGeometry();
-
-    } else {
-        ////_item->state()->edited(_item);
     }
-
-    qDebug() << " end simple addition";
-
-
-
 }
 
 void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
@@ -130,7 +107,6 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     Item *second = createItemForInsert( newChar);
     Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
 
-    //parent->insertBehind(_item, third);
     parent->insertBehind(_item, second);
     parent->insertBehind(second, third);
     BlockScene::instance()->addItem(second);
