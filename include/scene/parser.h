@@ -25,7 +25,7 @@ public:
 
     Item *createNewItem(Layout *parent, QString type, QString text);
     Item *createStableItem(Layout *parent, QString text);
-    Item *createChangedItem(Layout *parent, QString text);
+    //Item *createChangedItem(Layout *parent, QString text);
     Layout *createNewLayout(Layout *parent, QString type);
 
 signals:

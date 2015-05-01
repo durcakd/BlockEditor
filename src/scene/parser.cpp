@@ -180,13 +180,13 @@ Item *Parser::createStableItem(Layout *parent, QString text) {
     return dynamic_cast<Item*>(_elementBuilder->getElement());
 }
 
-Item *Parser::createChangedItem(Layout *parent, QString text) {
-    _elementBuilder->buildItem(parent, text);
-    _elementBuilder->buildType("changed_text");
-    _elementBuilder->buildStyle();
-    _elementBuilder->buildState( new ElementChanged);
-    return dynamic_cast<Item*>(_elementBuilder->getElement());
-}
+//Item *Parser::createChangedItem(Layout *parent, QString text) {
+//    _elementBuilder->buildItem(parent, text);
+//    _elementBuilder->buildType("changed_text");
+//    _elementBuilder->buildStyle();
+//    _elementBuilder->buildState( new ElementChanged);
+//    return dynamic_cast<Item*>(_elementBuilder->getElement());
+//}
 
 Layout *Parser::createNewLayout(Layout *parent, QString type) {
     //qDebug() << "inside building layout , parent = "<< parent;
