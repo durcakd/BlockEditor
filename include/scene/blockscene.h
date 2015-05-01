@@ -21,11 +21,13 @@ class BlockScene : public QGraphicsScene
 
 public:
     static BlockScene *instance( QObject *parent = 0);
-    void addItem(QGraphicsItem *item);
+    void addItem(QGraphicsItem *graphicItem);
 
 
     SceneState *getSceneState() const { return _sceneState;}
     void addCommand(Command *command);
+
+    Layout *root() const { return _root;}
 
 
 public slots:

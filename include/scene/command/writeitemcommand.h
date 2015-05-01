@@ -5,7 +5,9 @@
 #include "scene/command/command.h"
 
 class QGraphicsItem;
+class AbstractElement;
 class Item;
+class Layout;
 
 class WriteItemCommand : public Command {
 public:
@@ -15,8 +17,22 @@ public:
     void undo();
 
 protected:
-    //void horCursorMovement(QTextCursor &cursor, bool toNext);
-    //void verCursorMovement(QTextCursor &cursor, bool down);
+
+    bool hasSpace(const QString str) const;
+
+    void simpleAddition();
+    void simpleRemove();
+    void complexAddition();
+    void undoSimpleAddition();
+    void simpleAdditionStartEnd(QChar newChar, bool inStart);
+    void simpleAdditionMiddle(QChar newChar);
+    void simpleAdditionEnter();
+
+    AbstractElement *findInsteadtoSelect();
+    Item *createItemForInsert(QChar newChar);
+    Item *createItemForInsert(bool stable, QString text);
+    Item *createItemForInsert(bool stable, QString text, Layout *parent);
+
 
     Item *_item;
     int pos;

@@ -34,9 +34,14 @@ BlockScene::BlockScene( QObject *parent)
 
 }
 
-void BlockScene::addItem(QGraphicsItem *item) {
+void BlockScene::addItem(QGraphicsItem *graphicItem) {
     qDebug() << "A  ";
-    QGraphicsScene::addItem(item);
+    QGraphicsScene::addItem(graphicItem);
+    Item *item = dynamic_cast<Item *>( graphicItem);
+    if (item) {
+        graphicItem->installSceneEventFilter( _eventFilter);
+        QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+    }
 }
 
 Item *BlockScene::addParserItem(Item *item)
@@ -60,10 +65,6 @@ Item *BlockScene::addParserItem(Item *item)
 
     }
     addItem( item);
-    item->installSceneEventFilter( _eventFilter);
-
-QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
-
     return item;
 }
 
@@ -73,7 +74,8 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
-        _root->setParrentE(NULL);
+        _root->setLayoutParrent(NULL);
+
         //setSceneRect(0, 0, 800, 600);
 
     } else {

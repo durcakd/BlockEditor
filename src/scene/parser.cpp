@@ -1,16 +1,34 @@
 #include "scene/parser.h"
 #include "item/item.h"
-#include "item/textitem.h"
-#include "item/blankitem.h"
 #include "item/layout.h"
 #include "style/style.h"
 #include <QDebug>
 #include <QStringBuilder>
+#include <item/state/elementvalid.h>
+#include <item/state/elementstable.h>
+#include <item/state/elementchanged.h>
+#include <item/elementbuilder.h>
+#include <item/standardelementbuilder.h>
+#include <QGraphicsLinearLayout>
+
+
+Parser *Parser::_instance = NULL;
+
+Parser *Parser::instance(QString type) {
+    if (_instance == NULL) {
+        if (type.isEmpty()) {
+            qDebug() << "Warning: parser type undefined!";
+        }
+        _instance = new Parser(type);
+    }
+    return _instance;
+}
 
 Parser::Parser(QString type) :
     QObject()
 {
     _textType = type;
+    _elementBuilder = new StandardElementBuilder();
     init();
     loadGrammar();
     loadStyle();
@@ -19,36 +37,36 @@ Parser::Parser(QString type) :
 
 
 void Parser::init() {
-      //_state.set("send_commit");
+    //_state.set("send_commit");
     _state.set("addBasicItem",
                [this] (lua::String elementType,
-                       lua::String elementText,
-                       lua::Pointer parentPointer,
-                       lua::Integer elementIndex)
-               -> lua::Pointer
+               lua::String elementText,
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
     {
         //elementText.
         QString text = elementText;
         QString onlyText;
-        QString afterText;
+        QString afterText = "";
 
         QString::ConstIterator it;
         for (it = text.constBegin(); it != text.constEnd(); it++) {
             //qDebug() << "--------- " << *it << "  space:"<<it->isSpace() <<"  isLN:"<<it->isLetterOrNumber() <<"  isPrint:"<<it->isPrint() <<"  isSymbol:"<<it->isSymbol();
             if (it->isSpace()) {
-                afterText += *it;
+                if (it->unicode() != 10){
+                    afterText += *it;
+                }
             } else {
                 onlyText += *it;
             }
         }
         qDebug()<<" >"<< onlyText <<"<>"<<afterText;
-
-
-        Item *newItem= new TextItem( elementType, onlyText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem= new BlankItem( elementType, afterText, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+            Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
             emit addElementItem(newItem);
         }
 
@@ -56,13 +74,13 @@ void Parser::init() {
     });
     _state.set("addBasicLayout",
                [this] (lua::String elementType,
-                       lua::Pointer parentPointer,
-                       lua::Integer elementIndex)
-               -> lua::Pointer
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
     {
-        Layout *newLayout= new Layout( elementType, StyleUtil::instance()->getStyle(elementType), static_cast<Layout*>(parentPointer));
+        qDebug() << "parsing layout "<< elementType;
+        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
         emit addElementLayout(newLayout);
-
         return newLayout;
     });
 
@@ -71,11 +89,13 @@ void Parser::init() {
 
 }
 
+
+
 void Parser::loadStyle()
 {
     _state.set("addStyle",
                [this] ( lua::Value style,
-                        lua::String elementType)
+               lua::String elementType)
             -> lua::Pointer
     {
         Style *newStyle = new Style(elementType);
@@ -110,7 +130,7 @@ void Parser::loadGrammar()
         //QMessageBox msgBox;
         //msgBox.setText(QString("Error while loading grammar style: ")
         //.append(_textType));
-       // msgBox.setInformativeText(ex.what());
+        // msgBox.setInformativeText(ex.what());
         //msgBox.setStandardButtons(QMessageBox::Ok);
         //msgBox.exec();
         qDebug() << "Error while loading grammar style: " << _textType;
@@ -124,4 +144,55 @@ void Parser::parse(QString text) {
     _state["parseTextNew"]( text.toStdString().c_str());
     qDebug() << "... parsing DONE";
     emit parsingFinished();
+}
+
+bool Parser::reparse(QString text) {
+    bool ok = true;
+
+    try {
+        blockSignals(true);
+        qDebug() << "Request text reparse for:\n"<< text;
+        ok = _state["parseTextNew"]( text.toStdString().c_str());
+        //emit parsingFinished()
+    }
+    catch (lua::RuntimeError ex) {
+        ok = false;
+    }
+    blockSignals(false);
+    qDebug() << "... parsing DONE";
+    return ok;
+}
+
+
+Item *Parser::createNewItem(Layout *parent, QString type, QString text) {
+    _elementBuilder->buildItem(parent, text);
+    _elementBuilder->buildType(type);
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState();
+    return dynamic_cast<Item*>(_elementBuilder->getElement());
+}
+
+Item *Parser::createStableItem(Layout *parent, QString text) {
+    _elementBuilder->buildItem(parent, text);
+    _elementBuilder->buildType("spaced_text");
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState( new ElementStable());
+    return dynamic_cast<Item*>(_elementBuilder->getElement());
+}
+
+//Item *Parser::createChangedItem(Layout *parent, QString text) {
+//    _elementBuilder->buildItem(parent, text);
+//    _elementBuilder->buildType("changed_text");
+//    _elementBuilder->buildStyle();
+//    _elementBuilder->buildState( new ElementChanged);
+//    return dynamic_cast<Item*>(_elementBuilder->getElement());
+//}
+
+Layout *Parser::createNewLayout(Layout *parent, QString type) {
+    //qDebug() << "inside building layout , parent = "<< parent;
+    _elementBuilder->buildLayout(parent);
+    _elementBuilder->buildType(type);
+    _elementBuilder->buildStyle();
+    _elementBuilder->buildState();
+    return dynamic_cast<Layout*>(_elementBuilder->getElement());
 }

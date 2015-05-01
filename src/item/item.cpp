@@ -30,11 +30,11 @@
 #include "scene/mimedata.h"
 
 
-
-Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *parent)
-    :  QGraphicsLayoutItem(parent), QGraphicsTextItem(), AbstractElement(type, style, parent)
+Item::Item(Layout *parent, QString text)
+    : QGraphicsLayoutItem(parent),
+      QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)),
+      AbstractElement(parent)
 {
-    //_text = text.trimmed();
     _text = text;
 
 
@@ -45,23 +45,28 @@ Item::Item(QString type, QString text, Style *style, QGraphicsLinearLayout *pare
     //setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setFlag(ItemIsSelectable);
+    setFlag(ItemIsFocusable);
 
-    if (style->getIsColor()){
-        setDefaultTextColor(Qt::blue);
-    }
+
     // draging
     setAcceptDrops(true);
-    //color = QColor(Qt::lightGray);
-
-
 
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(fixedFont);
 
-connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
-
+    connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
 
     // setGeometry();
+}
+
+void Item::setStyleE(Style *style) {
+    AbstractElement::setStyleE(style);
+
+    if (style->getIsColor()){
+        setDefaultTextColor(Qt::blue);
+    } else {
+        setDefaultTextColor(Qt::black);
+    }
 }
 
 void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
@@ -87,11 +92,17 @@ void Item::setGeometry(const QRectF &geom) {
 
 
 void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
+    if (!signalsBlocked()) {
+        qDebug() <<"text changed, but signal blocked="<< signalsBlocked();
+        if (charsRemoved!=charsAdded){
+            BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
+        }
+    }
 
-    BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
-
-    updateGeometry();
-    getLayoutParrent()->invalidate();
+    if (getLayoutParrent()) {
+        updateGeometry();
+        getLayoutParrent()->invalidate();
+    }
 }
 
 QSizeF Item::elementSizeHint(Qt::SizeHint which) const
@@ -139,7 +150,38 @@ QString Item::textE() const
     return toPlainText();
 }
 
+QString Item::textOnLineForPos(int pos, bool toRight) const {
+    QString text;
+    if (toRight) {
+        text = toPlainText().mid(pos);
+    } else {
+        text = toPlainText().mid(0,pos);
+    }
 
+    Layout *parent = getLayoutParrent();
+    const AbstractElement *element = this;
+
+    while (parent != NULL && Qt::Horizontal == parent->orientation()) {
+        AbstractElement *neighbor = element->nextPrevius(toRight);
+        while (neighbor) {
+            if (toRight) {
+                text += neighbor->textE();
+            } else {
+                text = neighbor->textE() + text;
+            }
+
+            neighbor = neighbor->nextPrevius(toRight);
+        }
+        element = parent;
+        parent = parent->getLayoutParrent();
+    }
+
+    if (parent == NULL) {
+        qDebug() << "WARNING!!! editing - add Enter, build text, parent=NULL";
+    }
+
+    return text;
+}
 
 
 // ---------------

@@ -59,20 +59,7 @@ void DropElementCommand::execute() {
         // insert to new position
         Layout *parrent = dynamic_cast <Layout*>( _item->getLayoutParrent());
         if(parrent) {
-            item->setLayoutParrent(parrent);
-            //item->setParentLayoutItem(parrent);
-            int index = parrent->indexOf(_item);
-            parrent->insertItem(index+1,dynamic_cast<QGraphicsLayoutItem*>(item));
-
-
-            item->setNext(_item->getNext());
-            item->setPrevius(_item);
-            if( _item->getNext()) {
-                _item->getNext()->setPrevius(item);
-            }
-            _item->setNext(item);
-
-            //parrent->updateGeometry();
+            parrent->insertBehind( _item, item);
         }
 
         _event->setDropAction(Qt::MoveAction);
