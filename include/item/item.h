@@ -8,10 +8,6 @@
 
 #include "item/abstractelement.h"
 
-//class QGraphicsSceneDragDropEvent;
-//class QGraphicsSceneMouseEvent;
-
-
 
 class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public AbstractElement
 {
@@ -19,45 +15,32 @@ class Item :   public QGraphicsLayoutItem, public QGraphicsTextItem, public Abst
 public:
     explicit Item(Layout *parent = 0, QString text = "");
 
-    void setGeometry(const QRectF &geom);
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
-    QSizeF elementSizeHint(Qt::SizeHint which) const;
-    int textLength(bool length = true) const;
+    // reimplement from QGraphicsLayoutItem
+    QSizeF  sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
+    void    setGeometry(const QRectF &geom);
+
+
+    // reimplemented from Abstract Element
+    QSizeF  elementSizeHint(Qt::SizeHint which) const;
+    bool    isLayoutE() const;
+    int     textLength( bool length = true) const;
     QString textE() const;
-
-    void setStyleE(Style *style);
-
-    QTextDocument *_document;
-    bool isLayoutE() const;
-
-    QString getText() const {return _text;}
-    QString textOnLineForPos(int pos, bool toRight) const;
     QPixmap toPixmap();
+    void    setStyleE(Style *style);
 
-public slots:
 
-    void textChanged( int pos, int charsRemoved, int charsAdded);
+    // methods
+    QString textOnLineForPos(int pos, bool toRight) const;
 
-    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
+    // reimplement from QGraphicsTextItem
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
-
 protected:
-
-
-
-
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
-    QString _text;
-    QColor color;
-
-private:
+public slots:
+    void textChanged( int pos, int charsRemoved, int charsAdded);
 
 };
-
-
 #endif

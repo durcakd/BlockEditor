@@ -1,7 +1,7 @@
 #include "item/layout.h"
-#include "style/style.h"
 #include <QDebug>
 
+#include "style/style.h"
 #include "scene/blockscene.h"
 
 
@@ -23,50 +23,31 @@ Layout::Layout(QGraphicsLayoutItem *parent)
 
 }
 
-void Layout::setStyleE(Style *style) {
-    AbstractElement::setStyleE(style);
+// ----------------------------------------------------------
+// -- reimplement from QGraphicsLinearLayout ----------------
+// ----------------------------------------------------------
 
-    if (OrientationEnum::horizontal == _style->getOrientation()) {
-        setOrientation( Qt::Horizontal);
-    } else {
-        setOrientation( Qt::Vertical);
-    }
-}
-
-
-void Layout::childItemChanged() {
-    this->updateGeometry();
-}
-
-QSizeF Layout::elementSizeHint(Qt::SizeHint which) const
-{
-    return sizeHint(which);
-}
-
-
-// **************************************************
-// redefine QGRaphics rectangular method
-
-QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
-{
+QSizeF Layout::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const {
     return  QGraphicsLinearLayout::sizeHint(which);
 }
 
-void Layout::setGeometry(const QRectF &geom)
-{
+void Layout::setGeometry(const QRectF &geom) {
     prepareGeometryChange();
     QGraphicsLinearLayout::setGeometry( geom);
     setPos(0,0);
 }
 
-QRectF Layout::boundingRect() const
-{
+
+// ----------------------------------------------------------
+// -- reimplement from QGraphicsItem ------------------------
+// ----------------------------------------------------------
+
+QRectF Layout::boundingRect() const {
     return QRectF(geometry().adjusted(0,0,5,22));
 }
 
 void Layout::paint(QPainter *painter,
-                   const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
-{
+                   const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) {
     Q_UNUSED(widget);
     Q_UNUSED(option);
 
@@ -82,8 +63,86 @@ void Layout::paint(QPainter *painter,
     }
 }
 
-void Layout::updateChildNeighbors()
-{
+
+// ----------------------------------------------------------
+// -- reimplement from Abstract Element ---------------------
+// ----------------------------------------------------------
+
+QSizeF Layout::elementSizeHint(Qt::SizeHint which) const {
+    return sizeHint(which);
+}
+
+bool Layout::isLayoutE() const {
+    return true;
+}
+
+int Layout::textLength(bool length) const {
+    if(length) {
+        int sum = 0;
+        for ( int i=0; i < count(); i++) {
+            if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
+                sum += element->textLength(length);
+            }
+        }
+        return sum;
+    } else {
+        return 0;
+    }
+}
+
+QString Layout::textE() const {
+    QString text;
+    for ( int i=0; i < count(); i++) {
+        if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
+            text += element->textE();
+            if (orientation() == Qt::Vertical) {
+                text += "\n";
+            }
+        }
+    }
+    return text;
+}
+
+QPixmap Layout::toPixmap() {
+    BlockScene *scene = BlockScene::instance();
+    QRectF r = boundingRect();
+    r.adjust(0,0,5,0);
+
+    QPixmap pixmap(r.width(), r.height());
+    pixmap.fill(QColor(0, 0, 0, 10));
+    QPainter painter(&pixmap);
+
+    scene->render(&painter, QRectF(), sceneBoundingRect().translated(-3,5));
+    painter.end();
+
+    return pixmap.copy(0,10,r.width(),r.height()-13);
+}
+
+void Layout::setStyleE(Style *style) {
+    AbstractElement::setStyleE(style);
+
+    if (OrientationEnum::horizontal == _style->getOrientation()) {
+        setOrientation( Qt::Horizontal);
+    } else {
+        setOrientation( Qt::Vertical);
+    }
+}
+
+void Layout::setPaintEnable( bool enablePaint ) {
+    _enablePaint = enablePaint;
+    update();
+}
+
+
+// ----------------------------------------------------------
+// -- class methods -----------------------------------------
+// ----------------------------------------------------------
+
+void Layout::childItemChanged() {
+    this->updateGeometry();
+}
+
+void Layout::updateChildNeighbors() {
     qDebug() << "  chids: " << count();
     AbstractElement *previous = NULL;
     for (int i=0; i < count(); i++) {
@@ -123,77 +182,13 @@ void Layout::updateChildNeighbors()
     qDebug() << "";
 }
 
-bool Layout::isLayoutE() const
-{
-    return true;
-}
-
-QGraphicsLayoutItem  *Layout::firstLastChildrenElement(bool first) const
-{
-    if (first) {
-        return itemAt(0);
-    } else {
-        return itemAt(count()-1);
-    }
-}
-
-int Layout::textLength(bool length) const
-{
-    if(length) {
-        int sum = 0;
-        for ( int i=0; i < count(); i++) {
-            if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
-                sum += element->textLength(length);
-            }
-        }
-        return sum;
-    } else {
-        return 0;
-    }
-}
-
-QString Layout::textE() const
-{
-    QString text;
-    for ( int i=0; i < count(); i++) {
-        if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
-            text += element->textE();
-            if (orientation() == Qt::Vertical) {
-                text += "\n";
-            }
-        }
-    }
-    return text;
-}
-
-int Layout::indexOf(AbstractElement *element)
-{
+int Layout::indexOf(AbstractElement *element) {
     for ( int i=0; i < count(); i++) {
         if (dynamic_cast <AbstractElement*>(itemAt(i)) == element) {
             return i;
         }
     }
     return -1;
-}
-
-void Layout::setPaintEnable( bool enablePaint ) {
-    _enablePaint = enablePaint;
-    update();
-}
-
-QPixmap Layout::toPixmap() {
-    BlockScene *scene = BlockScene::instance();
-    QRectF r = boundingRect();
-    r.adjust(0,0,5,0);
-
-    QPixmap pixmap(r.width(), r.height());
-    pixmap.fill(QColor(0, 0, 0, 10));
-    QPainter painter(&pixmap);
-
-    scene->render(&painter, QRectF(), sceneBoundingRect().translated(-3,5));
-    painter.end();
-
-    return pixmap.copy(0,10,r.width(),r.height()-13);
 }
 
 void Layout::insertBehind( AbstractElement *oldElement, AbstractElement *newElement) {
@@ -243,33 +238,10 @@ void Layout::removeElement( AbstractElement *element) {
     }
 }
 
-/*
-QSizeF Layout::childrenSizeHint(Qt::SizeHint which) const
-{
-    //qDebug() << "childrenSizeHint";
-    qreal h = 0, w = 0;
-    foreach (AbstractElement* child, _childLayouts) {
-        QSizeF size = child->elementSizeHint(which);
-        if( Qt::Vertical == orientation()) {
-            h += size.height();
-            w = w < size.width() ? size.width() : w;
-        } else {
-            w += size.width();
-            h = h < size.height() ? size.height() : h;
-        }
-
+QGraphicsLayoutItem  *Layout::firstLastChildrenElement(bool first) const {
+    if (first) {
+        return itemAt(0);
+    } else {
+        return itemAt(count()-1);
     }
-    //qDebug() <<"CHSH  "<< w << "  " << h;
-    return QSizeF(w,h);
 }
-
-void Layout::addLayoutChild(AbstractElement *child)
-{
-    _childLayouts.append(child);
-}
-
-QList<AbstractElement *> Layout::getChildLayouts() const
-{
-    return _childLayouts;
-}
-*/

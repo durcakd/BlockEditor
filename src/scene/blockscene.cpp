@@ -47,7 +47,7 @@ void BlockScene::addItem(QGraphicsItem *graphicItem) {
     }
     if (item) {
         graphicItem->installSceneEventFilter( _eventFilter);
-        QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+        QConnect:connect( item->document(), SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
     }
 }
 

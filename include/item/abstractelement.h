@@ -20,10 +20,10 @@ public:
     AbstractElement *getNext() const;
     AbstractElement *getPrevius() const;
     QString getType() const;
-    Layout *getLayoutParrent() const;
-    Style *styleE() const;
+    Layout  *getLayoutParrent() const;
+    Style   *styleE() const;
     ElementState *state() const;
-    bool isPaintEnabled() const;
+    bool    isPaintEnabled() const;
 
     void setNext(AbstractElement *next);
     void setPrevius(AbstractElement *previous);
@@ -66,8 +66,8 @@ protected:
     AbstractElement *_next;
     AbstractElement *_previous;
 
-    Layout *_layoutParrentor;  // TODO
-    Style *_style;
+    Layout  *_layoutParrentor;  // TODO
+    Style   *_style;
     ElementState *_state;
     std::list<ElementObserver*> _observers;
 };
