@@ -14,6 +14,7 @@ class QGraphicsWidget;
 class SceneEventObserver;
 class SceneState;
 class Command;
+class Reparser;
 
 class BlockScene : public QGraphicsScene
 {
@@ -45,6 +46,7 @@ private:
     QGraphicsWidget *_form;
     Layout *_root;
     SceneEventObserver *_eventFilter;
+    Reparser *_reparser;
     SceneState *_sceneState;
 
     QStack<Command *> _commandStack;

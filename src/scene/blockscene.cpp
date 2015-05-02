@@ -6,6 +6,7 @@
 #include <QGraphicsWidget>
 #include <QLabel>
 
+#include "scene/reparser.h"
 #include "scene/sceneeventobserver.h"
 #include "scene/scenestate.h"
 #include "scene/command/command.h"
@@ -29,6 +30,7 @@ BlockScene::BlockScene( QObject *parent)
     addItem(_form);
 
     _sceneState = new SceneState;
+    _reparser = new Reparser();
     _eventFilter = new SceneEventObserver;
     addItem(_eventFilter);
 
@@ -38,6 +40,11 @@ void BlockScene::addItem(QGraphicsItem *graphicItem) {
     qDebug() << "A  ";
     QGraphicsScene::addItem(graphicItem);
     Item *item = dynamic_cast<Item *>( graphicItem);
+    AbstractElement *element = dynamic_cast<AbstractElement *>( graphicItem);
+    // observers
+    if (element) {
+        element->attach(_reparser);
+    }
     if (item) {
         graphicItem->installSceneEventFilter( _eventFilter);
         QConnect:connect( item->_document, SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
