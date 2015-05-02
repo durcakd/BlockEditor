@@ -84,12 +84,13 @@ void WriteItemCommand::simpleRemove() {
             // remove
             parent->removeElement(toRemove);
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
+
+            parent->edited();
+        } else {
+            _item->edited();
         }
-
-        //// TODO ??? state()->edited(_item);
-
     } else {
-        ////_item->state()->edited(_item);
+        _item->edited();
     }
 }
 
@@ -150,11 +151,10 @@ void WriteItemCommand::simpleAdditionEnter() {
         qDebug() << "  remove old line";
         vParent->removeElement(toReplace);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
-    }
 
-    ////  TODO ???
-    ////  rightItem->state()->edited(rightItem);
-    ////  leftItem->state()->edited(leftItem);
+        leftItem->edited();
+        rightItem->edited();
+    }
 }
 
 void WriteItemCommand::simpleAddition() {
@@ -169,7 +169,7 @@ void WriteItemCommand::simpleAddition() {
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        ////_item->state()->edited(_item);
+        _item->edited();
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
@@ -205,10 +205,9 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     cursor.movePosition(QTextCursor::End);
     second->setTextCursor(cursor);
 
-    //// _item->state()->edited(_item);
-    //// second->state()->edited(second);
-    //// third->state()->edited(third);
-
+    _item->edited();
+    second->edited();
+    third->edited();
 }
 
 
@@ -235,8 +234,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        ////neighbor->state()->edited(neighbor);
-
+        neighbor->edited();
     } else {
         qDebug() << "no merge";
         Item *newItem = createItemForInsert( newChar);
@@ -246,6 +244,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
             parent->insertBehind(_item, newItem);
         }
         BlockScene::instance()->addItem(newItem);
+        newItem->edited();
     }
 }
 

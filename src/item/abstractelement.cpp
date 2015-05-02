@@ -137,3 +137,7 @@ void AbstractElement::notify() {
         (*it)->update(this);
     }
 }
+
+void AbstractElement::edited() {
+    state()->edited(this);
+}

@@ -60,6 +60,8 @@ public:
     virtual void detach(ElementObserver *observer);
     virtual void notify();
 
+    void edited();
+
 protected:
     QString _type;
     bool _elementType;
