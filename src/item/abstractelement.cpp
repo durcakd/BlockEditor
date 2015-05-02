@@ -1,13 +1,13 @@
 #include "item/abstractelement.h"
+#include <QDebug>
 
+
+#include <QGraphicsLinearLayout>
 #include "item/layout.h"
 #include "item/state/elementstate.h"
 #include "scene/elementobserver.h"
-#include <QDebug>
 
-#include <QGraphicsLinearLayout>
 
-class Layout;
 
 AbstractElement::AbstractElement(QGraphicsLinearLayout *layoutParrent)
 {
@@ -19,9 +19,54 @@ AbstractElement::AbstractElement(QGraphicsLinearLayout *layoutParrent)
 
 }
 
-QString AbstractElement::getType() const
-{
+
+// --------------------------------------
+// -- get/set ---------------------------
+// --------------------------------------
+
+AbstractElement *AbstractElement::getNext() const {
+    return _next;
+}
+
+AbstractElement *AbstractElement::getPrevius() const {
+    return _previous;
+}
+
+QString AbstractElement::getType() const {
     return _type;
+}
+
+Layout* AbstractElement::getLayoutParrent() const {
+    return _layoutParrentor;
+}
+
+Style *AbstractElement::styleE() const {
+    return _style;
+}
+
+ElementState *AbstractElement::state() const {
+    return _state;
+}
+
+bool AbstractElement::isPaintEnabled() const {
+    return _enablePaint;
+}
+
+
+void AbstractElement::setNext(AbstractElement *next) {
+    _next = next;
+}
+
+void AbstractElement::setPrevius(AbstractElement *previous) {
+    _previous = previous;
+}
+
+void AbstractElement::setType(QString type) {
+    _type = type;
+}
+
+void AbstractElement::setLayoutParrent(Layout *parrent) {
+    _layoutParrentor = parrent;
 }
 
 void AbstractElement::setState(ElementState *state) {
@@ -32,9 +77,25 @@ void AbstractElement::setState(ElementState *state) {
     _state->entry(this);
 }
 
-Layout* AbstractElement::getLayoutParrent() const
-{
-    return _layoutParrentor;
+void AbstractElement::setStyleE(Style *style) {
+    _style = style;
+}
+
+void AbstractElement::setPaintEnable( bool enablePaint ) {
+    _enablePaint = enablePaint;
+}
+
+
+// --------------------------------------
+// -- other methods ---------------------
+// --------------------------------------
+
+QString AbstractElement::toString() const {
+    QString parentType= "";
+    if(getLayoutParrent()) {
+        parentType = getLayoutParrent()->getType();
+    }
+    return getType() + "   " + parentType + "  " + textE();
 }
 
 AbstractElement *AbstractElement::nextPrevius(bool next) const {
@@ -65,10 +126,10 @@ AbstractElement *AbstractElement::nextPreviousAlsoHor(bool toNext) {
 AbstractElement *AbstractElement::nextPreviousAlsoVert(bool toNext) {
     const AbstractElement *element = this;
     do {
-       if (NULL != element->nextPrevius(toNext)) {
-           return firstLastItemOf( element->nextPrevius(toNext), toNext);
-       }
-       element = element->getLayoutParrent();
+        if (NULL != element->nextPrevius(toNext)) {
+            return firstLastItemOf( element->nextPrevius(toNext), toNext);
+        }
+        element = element->getLayoutParrent();
     } while (element != NULL);
     return NULL;
 }
@@ -90,7 +151,6 @@ AbstractElement *AbstractElement::firstLastItem(bool first) {
     return targed;
 }
 
-
 bool AbstractElement::isParent(AbstractElement *checkedParent) {
     AbstractElement *parent = dynamic_cast<AbstractElement*>(this->getLayoutParrent());
     while (parent) {
@@ -102,14 +162,12 @@ bool AbstractElement::isParent(AbstractElement *checkedParent) {
     return false;
 }
 
-QString AbstractElement::toString() const
-{
-    QString parentType= "";
-    if(getLayoutParrent()) {
-       parentType = getLayoutParrent()->getType();
-    }
-    return getType() + "   " + parentType + "  " + textE();
+void AbstractElement::edited() {
+    state()->edited(this);
 }
+
+
+// -- element observers ----------------------------
 
 void AbstractElement::attach(ElementObserver *observer) {
     std::list<ElementObserver*>::const_iterator it;
@@ -136,8 +194,4 @@ void AbstractElement::notify() {
     for (it = _observers.begin(); it != _observers.end(); it++) {
         (*it)->update(this);
     }
-}
-
-void AbstractElement::edited() {
-    state()->edited(this);
 }

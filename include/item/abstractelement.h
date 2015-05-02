@@ -16,64 +16,60 @@ class AbstractElement {
 public:
     explicit AbstractElement(QGraphicsLinearLayout *layoutParrent);
 
+    // get/set
+    AbstractElement *getNext() const;
+    AbstractElement *getPrevius() const;
     QString getType() const;
-    void setType(QString type) {_type = type;}
     Layout *getLayoutParrent() const;
-    void setLayoutParrent(Layout *parrent) {_layoutParrentor = parrent;}
+    Style *styleE() const;
+    ElementState *state() const;
+    bool isPaintEnabled() const;
 
-    AbstractElement *getNext() const { return _next; }
-    AbstractElement *getPrevius() const { return _previous; }
+    void setNext(AbstractElement *next);
+    void setPrevius(AbstractElement *previous);
+    void setType(QString type);
+    void setLayoutParrent(Layout *parrent);
+    void setState(ElementState *state);
+
+
+    // other methods
+    QString toString() const;
     AbstractElement *nextPrevius(bool next) const;
     AbstractElement *nextPreviousAlsoHor(bool toNext);
     AbstractElement *nextPreviousAlsoVert(bool toNext);
     AbstractElement *firstLastItem(bool first);
     AbstractElement *firstLastItemOf(AbstractElement *parent, bool first);
-
-
-    void setNext(AbstractElement *next) { _next = next; }
-    void setPrevius(AbstractElement *previous) { _previous = previous; }
-    //void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
-    Style *styleE() const {return _style;}
-    virtual void setStyleE(Style *style) { _style = style;}
-
-    ElementState *state() const {return _state;}
-    void setState(ElementState *state);
-
-    bool isPaintEnabled() const {return _enablePaint;}
     bool isParent(AbstractElement *checkedParent);
-
-    virtual void setPaintEnable( bool enablePaint ) { _enablePaint = enablePaint;}
-
-
-    virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
-    virtual bool isLayoutE() const = 0;
-    virtual int textLength(bool length = true) const = 0;
-    virtual QString textE() const = 0;
+    void edited();
 
 
-    virtual QPixmap toPixmap() = 0;
-
-
-    QString toString() const;
-
+    virtual void setStyleE(Style *style);
+    virtual void setPaintEnable( bool enablePaint );
+    // element observer
     virtual void attach(ElementObserver *observer);
     virtual void detach(ElementObserver *observer);
     virtual void notify();
 
-    void edited();
+    // pure virtual methods
+    virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
+    virtual bool isLayoutE() const = 0;
+    virtual int textLength(bool length = true) const = 0;
+    virtual QString textE() const = 0;
+    virtual QPixmap toPixmap() = 0;
+
 
 protected:
     QString _type;
     bool _elementType;
-    Style *_style;
-    ElementState *_state;
+    bool _enablePaint;   // TODO
 
-    Layout *_layoutParrentor;
     AbstractElement *_next;
     AbstractElement *_previous;
-    bool _enablePaint;
-    std::list<ElementObserver*> _observers;
 
+    Layout *_layoutParrentor;  // TODO
+    Style *_style;
+    ElementState *_state;
+    std::list<ElementObserver*> _observers;
 };
 
 #endif
