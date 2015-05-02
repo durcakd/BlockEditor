@@ -3,12 +3,13 @@
 
 #include <QGraphicsTextItem>
 #include <QSizeF>
-
+#include <list>
 
 class QGraphicsLinearLayout;
 class Style;
 class Layout;
 class ElementState;
+class ElementObserver;
 
 class AbstractElement {
 
@@ -55,6 +56,10 @@ public:
 
     QString toString() const;
 
+    virtual void attach(ElementObserver *observer);
+    virtual void detach(ElementObserver *observer);
+    virtual void notify();
+
 protected:
     QString _type;
     bool _elementType;
@@ -65,6 +70,7 @@ protected:
     AbstractElement *_next;
     AbstractElement *_previous;
     bool _enablePaint;
+    std::list<ElementObserver*> _observers;
 
 };
 

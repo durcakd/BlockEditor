@@ -2,6 +2,7 @@
 
 #include "item/layout.h"
 #include "item/state/elementstate.h"
+#include "scene/elementobserver.h"
 #include <QDebug>
 
 #include <QGraphicsLinearLayout>
@@ -15,6 +16,7 @@ AbstractElement::AbstractElement(QGraphicsLinearLayout *layoutParrent)
     _previous = NULL;
     _enablePaint = false;
     _state = NULL;
+
 }
 
 QString AbstractElement::getType() const
@@ -107,4 +109,31 @@ QString AbstractElement::toString() const
        parentType = getLayoutParrent()->getType();
     }
     return getType() + "   " + parentType + "  " + textE();
+}
+
+void AbstractElement::attach(ElementObserver *observer) {
+    std::list<ElementObserver*>::const_iterator it;
+    for (it = _observers.cbegin(); it != _observers.cend(); it++) {
+        if  ((*it) == observer) {
+            return;
+        }
+    }
+    _observers.push_back(observer);
+}
+
+void AbstractElement::detach(ElementObserver *observer) {
+    std::list<ElementObserver*>::iterator it;
+    for (it = _observers.begin(); it != _observers.end(); it++) {
+        if  ((*it) == observer) {
+            _observers.erase(it);
+            return;
+        }
+    }
+}
+
+void AbstractElement::notify() {
+    std::list<ElementObserver*>::iterator it;
+    for (it = _observers.begin(); it != _observers.end(); it++) {
+        (*it)->update(this);
+    }
 }
