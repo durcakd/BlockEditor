@@ -36,19 +36,45 @@ BlockScene::BlockScene( QObject *parent)
 
 }
 
-void BlockScene::addItem(QGraphicsItem *graphicItem) {
+void BlockScene::addItem(QGraphicsItem *graphicItem, bool recursive) {
     qDebug() << "A  ";
     QGraphicsScene::addItem(graphicItem);
-    Item *item = dynamic_cast<Item *>( graphicItem);
-    AbstractElement *element = dynamic_cast<AbstractElement *>( graphicItem);
-    // observers
-    if (element) {
-        element->attach(_reparser);
-    }
+
+    Item   *item = dynamic_cast<Item *>( graphicItem);
+    Layout *layout = dynamic_cast<Layout *>( graphicItem);
     if (item) {
+        item->attach(_reparser);
         graphicItem->installSceneEventFilter( _eventFilter);
-        QConnect:connect( item->document(), SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
+QConnect:connect( item->document(), SIGNAL(contentsChanged()), _root, SLOT(childItemChanged()));
     }
+
+    if (layout) {
+        layout->attach(_reparser);
+    }
+
+    if (recursive && layout) {
+        for (int i=0; i < layout->count(); i++) {
+            QGraphicsItem *child = dynamic_cast<QGraphicsItem*>(layout->itemAt(i));
+            if (child) {
+                addItem(child, recursive);
+            }
+        }
+    }
+}
+
+void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
+    if (recursive) {
+        Layout *layout = dynamic_cast<Layout*>( graphicItem);
+        if (layout) {
+            for (int i=0; i < layout->count(); i++) {
+                QGraphicsItem *child = dynamic_cast<QGraphicsItem*>(layout->itemAt(i));
+                if (child) {
+                    removeItem(child, recursive);
+                }
+            }
+        }
+    }
+    QGraphicsScene::removeItem(graphicItem);
 }
 
 Item *BlockScene::addParserItem(Item *item)

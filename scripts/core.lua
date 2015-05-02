@@ -64,17 +64,25 @@ function parseNew(parser, text, addItemFnc, addGridFnc)
         parsedCharacters = newTree[#newTree].positionEnd
     end
 
+    print('text= '..text)
+    print('#text+1      = '..(#text+1))
+    print('persed chars = '..parsedCharacters)
+
     if #text + 1 ~= parsedCharacters then
         -- if grammar failed to parse whole tree, return error
         print ('Parsed ' .. tostring(parsedCharacters) .. ' characters, ')
         print 'reparsing done with error!\n'
+
+        --local root = { type = 'root' , value = newTree }
+        --printTree(nil, root, " ")
         return nil, parsedCharacters
     end
 
     local root = { type = 'root' , value = newTree }
 
-    --printTree(nil, root, " ")
 
+
+    --printTree(nil, root, " ")
     print "ADDING ......."
     sendNode(1, root, {});
     return root
@@ -118,8 +126,72 @@ function printTable(value, u)
     if type(value) == "table" then
             for k,v in pairs(value) do
                 if type(v) ~= "table" then
-                    print (">>  "..u.."  "..k.." >".. v.."<" )
+                    if k ~= 'instance' then
+                        print (">>  "..u.."  "..k.." >".. v.."<" )
+                    else
+                        print (">>  "..u.."  "..k )
+                    end
                 end
             end
     end
+end
+
+
+function reparseTextNew(newText)
+    print ("\nReparsing text ===============================")
+    local newReTree = reparseNew(currentActiveParser, newText,
+        -- Add Item
+        function(index, element, parent)
+            --print('ADD ITEM: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            element.instance = createBasicItem( element.type, element.value, parent.instance, index)
+        end,
+
+        -- Add Grid
+        function(index, element, parent)
+            --print('ADD GRID: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
+            element.instance = createBasicLayout( element.type, parent.instance, index)
+        end
+        )
+    return newReTree ~= nil
+end
+
+function reparseNew(parser, text, addItemFnc, addGridFnc)
+    print("REPARSE AST **************************************")
+    addItem = addItemFnc
+    addGrid = addGridFnc
+    local newTree = parser:match(text)
+
+    local parsedCharacters = 0
+
+    if newTree ~= nil and #newTree > 0 then
+        parsedCharacters = newTree[#newTree].positionEnd
+    end
+
+    print('text= '..text)
+    print('#text+1      = '..(#text+1))
+    print('persed chars = '..parsedCharacters)
+
+    if #text + 1 ~= parsedCharacters then
+        -- if grammar failed to parse whole tree, return error
+        print ('Parsed ' .. tostring(parsedCharacters) .. ' characters, ')
+        print 'reparsing done with error!\n'
+
+        local root = { type = 'root' , value = newTree }
+        printTree(nil, root, " ")
+        return nil, parsedCharacters
+    end
+
+    local root = { type = 'root' , value = newTree }
+
+
+
+    --printTree(nil, root, " ")
+    print "ADDING ......."
+    sendNode(1, root, {});
+    print " end ADDING"
+    printTree(nil, root, " ")
+
+    sendRetree( root.instance, true, parsedCharacters)
+    return root
+
 end

@@ -1,6 +1,7 @@
 #include "scene/parser.h"
 #include "item/item.h"
 #include "item/layout.h"
+#include "item/abstractelement.h"
 #include "style/style.h"
 #include <QDebug>
 #include <QStringBuilder>
@@ -37,7 +38,6 @@ Parser::Parser(QString type) :
 
 
 void Parser::init() {
-    //_state.set("send_commit");
     _state.set("addBasicItem",
                [this] (lua::String elementType,
                lua::String elementText,
@@ -72,6 +72,8 @@ void Parser::init() {
 
         return newItem;
     });
+
+
     _state.set("addBasicLayout",
                [this] (lua::String elementType,
                lua::Pointer parentPointer,
@@ -82,6 +84,81 @@ void Parser::init() {
         Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
         emit addElementLayout(newLayout);
         return newLayout;
+    });
+
+
+    _state.set("createBasicItem",
+               [this] (lua::String elementType,
+               lua::String elementText,
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
+    {
+        QString text = elementText;
+        QString onlyText;
+        QString afterText = "";
+
+        QString::ConstIterator it;
+        for (it = text.constBegin(); it != text.constEnd(); it++) {
+            if (it->isSpace()) {
+                if (it->unicode() != 10){
+                    afterText += *it;
+                }
+            } else {
+                onlyText += *it;
+            }
+        }
+        Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
+        if( newItem->parentLayoutItem()){
+            newItem->getLayoutParrent()->addItem(newItem);
+        }
+
+        if (!afterText.isEmpty()){
+            Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
+            if( newItem->parentLayoutItem()){
+                newItem->getLayoutParrent()->addItem(newItem);
+            }
+        }
+
+        return newItem;
+    });
+
+    _state.set("createBasicLayout",
+               [this] (lua::String elementType,
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
+    {
+
+        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
+        if( newLayout->parentLayoutItem()){
+            newLayout->getLayoutParrent()->addItem(newLayout);
+        } else {
+            qDebug() << "ROOOOOOOOOOOOT";
+            _retree = newLayout;
+        }
+        qDebug() << "parsing layout "<< elementType << "  " << dynamic_cast<AbstractElement*>(newLayout);
+        return newLayout;
+    });
+
+    _state.set("sendRetree",
+               [this] ( lua::Pointer pointer,
+               lua::Boolean ok,
+               lua::Integer parsedChars)
+            -> lua::Pointer
+    {
+        qDebug() << "////////////////////////////////////";
+        qDebug() << "sendRetree";
+        //_retree = static_cast<AbstractElement*>(pointer);
+        if (!_retree) {
+            qDebug() << "WARNING!!! sendRetree - _retree after conversion == NULL";
+            _parsedChars = 0;
+        } else {
+            _parsedChars = parsedChars;
+            qDebug() << "sendRetree " << bool(ok) << "  " << _parsedChars << "  "<< _retree;
+        }
+
+        return NULL;
     });
 
     _state.doFile("scripts/init.lua");
@@ -146,20 +223,27 @@ void Parser::parse(QString text) {
     emit parsingFinished();
 }
 
-bool Parser::reparse(QString text) {
+bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
+    *res = _retree = NULL;
+    parsedChars = _parsedChars = 0;
+
     bool ok = true;
 
     try {
         blockSignals(true);
         qDebug() << "Request text reparse for:\n"<< text;
-        ok = _state["parseTextNew"]( text.toStdString().c_str());
+        ok = _state["reparseTextNew"]( text.toStdString().c_str());
         //emit parsingFinished()
-    }
-    catch (lua::RuntimeError ex) {
+    } catch (lua::RuntimeError ex) {
         ok = false;
     }
     blockSignals(false);
     qDebug() << "... parsing DONE";
+    if (ok) {
+        *res = _retree;
+        parsedChars = _parsedChars;
+    }
+
     return ok;
 }
 
