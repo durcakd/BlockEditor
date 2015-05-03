@@ -12,6 +12,8 @@
 #include "scene/blockscene.h"
 #include "item/abstractelement.h"
 #include "item/layout.h"
+#include "item/item.h"
+#include "QTextCursor"
 
 
 Reparser::Reparser()
@@ -23,6 +25,7 @@ Reparser::~Reparser() {
 }
 
 void Reparser::update(AbstractElement *element) {
+    _chandedElement = element;
     qDebug() << " REPARSER update: "<< element->textE();
 
 
@@ -61,7 +64,9 @@ void Reparser::reparse(AbstractElement *element) {
         if (layout) {
             qDebug() << "count = "<< layout->count();
         }
+        int pos = cursorAbsolutePosition(element, _chandedElement);
         replaceElement(element, res);
+        setSursorPosition(res, pos);
         //element->setState( new ElementValid);
     } else {
         //element->setState( new ElementInvalid);
@@ -85,7 +90,7 @@ void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem)
 
         parent->updateChildNeighbors();
 
-// focus  TODO
+        // focus  TODO
 
     }
 
@@ -119,4 +124,63 @@ AbstractElement *Reparser::firstChild(Layout *parent) {
     return dynamic_cast<AbstractElement*>(parent->itemAt(0));
 }
 
+int Reparser::cursorAbsolutePosition(AbstractElement *topParent, AbstractElement *focused) const {
+    Item *item = NULL;
+    if (focused->isLayoutE()) {
+        Layout *layout = dynamic_cast<Layout*>(focused);
+        item = layout->getFocusedItem();
+    } else {
+        item = dynamic_cast<Item*>(focused);
 
+    }
+
+
+    int pos = item->textCursor().position();
+    AbstractElement *element = item;
+
+    while (element != NULL && element != topParent) {
+        AbstractElement *neighbor = element->getPrevius();
+        while (neighbor) {
+            pos += neighbor->textLength();
+            neighbor = neighbor->getPrevius();
+        }
+        element = element->getLayoutParrent();
+    }
+    return pos;
+}
+
+void Reparser::setSursorPosition(AbstractElement *topParent, int pos) const {
+    AbstractElement *targed = topParent;
+    while (targed->isLayoutE()) {
+        Layout *layout = dynamic_cast<Layout*>(targed);
+        AbstractElement *child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
+
+        int len = skipChild( child, pos);
+        while ( 0 < len) {
+            pos -= len;
+            child = child->getNext();
+            len = skipChild(child, pos);
+        }
+        targed = child;
+    }
+
+    int len = targed->textLength();
+    pos = pos < len ? pos : len;
+    Item *item = dynamic_cast <Item*>(targed);
+    item->setFocus();
+    QTextCursor cursor = item->textCursor();
+    cursor.setPosition(pos);
+    item->setTextCursor(cursor);
+}
+
+int Reparser::skipChild(AbstractElement *child, int pos) const {
+    if (child == NULL) {
+        return 0;
+    }
+    int len = child->textLength();
+    if (len < pos
+            && NULL != child->getNext()) {
+        return len;
+    }
+    return 0;
+}

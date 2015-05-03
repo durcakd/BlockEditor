@@ -10,6 +10,7 @@ class Style;
 class Layout;
 class ElementState;
 class ElementObserver;
+class Item;
 
 class AbstractElement {
 
@@ -40,9 +41,9 @@ public:
     AbstractElement *firstLastItem(bool first);
     AbstractElement *firstLastItemOf(AbstractElement *parent, bool first);
     bool isParent(AbstractElement *checkedParent);
-    void edited();
 
 
+    virtual void edited(Item *);
     virtual void setStyleE(Style *style);
     virtual void setPaintEnable( bool enablePaint );
     // element observer

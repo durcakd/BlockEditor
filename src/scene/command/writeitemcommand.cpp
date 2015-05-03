@@ -78,19 +78,19 @@ void WriteItemCommand::simpleRemove() {
 
         if (parent != NULL) {
             // select else one
-            AbstractElement *instead = findInsteadtoSelect();
-            dynamic_cast <Item*>(instead)->setFocus();
+            Item *instead = dynamic_cast <Item*>(findInsteadtoSelect());
+            instead->setFocus();
 
             // remove
             parent->removeElement(toRemove);
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
 
-            parent->edited();
+            parent->edited(instead);
         } else {
-            _item->edited();
+            _item->edited(_item);
         }
     } else {
-        _item->edited();
+        _item->edited(_item);
     }
 }
 
@@ -152,8 +152,8 @@ void WriteItemCommand::simpleAdditionEnter() {
         vParent->removeElement(toReplace);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
 
-        leftItem->edited();
-        rightItem->edited();
+        leftItem->edited(rightItem);
+        rightItem->edited(rightItem);
     }
 }
 
@@ -169,7 +169,7 @@ void WriteItemCommand::simpleAddition() {
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        _item->edited();
+        _item->edited(_item);
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
@@ -205,9 +205,9 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     cursor.movePosition(QTextCursor::End);
     second->setTextCursor(cursor);
 
-    _item->edited();
-    second->edited();
-    third->edited();
+    _item->edited(second);
+    second->edited(second);
+    third->edited(second);
 }
 
 
@@ -234,7 +234,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        neighbor->edited();
+        neighbor->edited(neighbor);
     } else {
         qDebug() << "no merge";
         Item *newItem = createItemForInsert( newChar);
@@ -244,7 +244,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
             parent->insertBehind(_item, newItem);
         }
         BlockScene::instance()->addItem(newItem);
-        newItem->edited();
+        newItem->edited(newItem);
     }
 }
 

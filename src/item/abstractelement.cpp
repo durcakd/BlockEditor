@@ -162,7 +162,7 @@ bool AbstractElement::isParent(AbstractElement *checkedParent) {
     return false;
 }
 
-void AbstractElement::edited() {
+void AbstractElement::edited(Item */*focusedItem*/) {
     state()->edited(this);
 }
 

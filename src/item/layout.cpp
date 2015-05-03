@@ -13,14 +13,13 @@ Layout::Layout(QGraphicsLayoutItem *parent)
 {
     //qDebug() << "---------   "<< type << " " << style;
     setOrientation( Qt::Horizontal);
+    _focusedItem = NULL;
 
     //_childLayouts = new  QList<Layout*>();
     setInstantInvalidatePropagation(true);
     setVisible(true);
     setSpacing(0);
     //setOpacity(0.5);
-
-
 }
 
 // ----------------------------------------------------------
@@ -133,10 +132,17 @@ void Layout::setPaintEnable( bool enablePaint ) {
     update();
 }
 
-
+void Layout::edited(Item *focusedItem) {
+    _focusedItem = focusedItem;
+    AbstractElement::edited(focusedItem);
+}
 // ----------------------------------------------------------
 // -- class methods -----------------------------------------
 // ----------------------------------------------------------
+
+Item *Layout::getFocusedItem() const {
+    return _focusedItem;
+}
 
 void Layout::childItemChanged() {
     this->updateGeometry();

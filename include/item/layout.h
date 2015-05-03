@@ -7,6 +7,7 @@
 #include <QObject>
 
 class Style;
+class Item;
 
 class Layout :
         public QObject,
@@ -35,8 +36,10 @@ public:
     QPixmap toPixmap();
     void    setStyleE(Style *style);
     void    setPaintEnable( bool enablePaint );
+    void    edited(Item *focusedItem);
 
     // class methods
+    Item    *getFocusedItem() const;
     void    updateChildNeighbors();
     int     indexOf(AbstractElement *element);
     void    insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
@@ -50,6 +53,7 @@ public slots:
 protected:
 
     QString _layoutType;
+    Item *_focusedItem;
 
 };
 
