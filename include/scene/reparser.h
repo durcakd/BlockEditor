@@ -9,6 +9,7 @@ class Layout;
 class Reparser : public ElementObserver{
 public:
     explicit Reparser();
+    ~Reparser();
 
     void update(AbstractElement *element);
 

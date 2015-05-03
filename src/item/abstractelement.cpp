@@ -190,8 +190,13 @@ void AbstractElement::detach(ElementObserver *observer) {
 }
 
 void AbstractElement::notify() {
-    std::list<ElementObserver*>::iterator it;
-    for (it = _observers.begin(); it != _observers.end(); it++) {
-        (*it)->update(this);
+    qDebug() << "NOTIFY for "<< textE();
+    std::list<ElementObserver*>::iterator it, itprev;
+    it = _observers.begin();
+    while (it != _observers.end()) {
+        itprev = it;
+        it++;
+        qDebug() << "notify update " << textE();
+        (*itprev)->update(this);
     }
 }

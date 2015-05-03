@@ -63,6 +63,15 @@ QConnect:connect( item->document(), SIGNAL(contentsChanged()), _root, SLOT(child
 }
 
 void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
+
+    graphicItem->removeSceneEventFilter(_eventFilter);
+    AbstractElement *element = dynamic_cast<AbstractElement *>( graphicItem);
+    if (element) {
+        element->detach(_reparser);
+
+    }
+
+
     if (recursive) {
         Layout *layout = dynamic_cast<Layout*>( graphicItem);
         if (layout) {

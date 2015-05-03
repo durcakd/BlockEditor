@@ -18,6 +18,10 @@ Reparser::Reparser()
     : ElementObserver() {
 }
 
+Reparser::~Reparser() {
+    qDebug() << "destructor";
+}
+
 void Reparser::update(AbstractElement *element) {
     qDebug() << " REPARSER update: "<< element->textE();
 
@@ -77,6 +81,7 @@ void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem)
 
         parent->removeElement(oldElem);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(oldElem), true);
+        qDebug() << "removed";
 
         parent->updateChildNeighbors();
 
