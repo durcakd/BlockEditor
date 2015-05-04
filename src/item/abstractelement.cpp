@@ -7,6 +7,7 @@
 #include "item/item.h"
 #include "item/state/elementstate.h"
 #include "scene/elementobserver.h"
+#include "vector"
 
 
 
@@ -204,6 +205,37 @@ int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const 
         return len;
     }
     return 0;
+}
+
+AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, AbstractElement *second) {
+    std::vector<AbstractElement*> fParents;
+    std::vector<AbstractElement*> sParents;
+    AbstractElement *p = first;
+    while (p) {
+        fParents.push_back(p);
+        p = p->getLayoutParrent();
+    }
+    p = second;
+    while (p) {
+        sParents.push_back(p);
+        p = p->getLayoutParrent();
+    }
+    int si = sParents.size()-1;
+    int fi = fParents.size()-1;
+
+    AbstractElement *parent = NULL;
+    while (si >= 0 && fi >= 0
+           && sParents.at(si) == fParents.at(fi)) {
+        parent = sParents.at(si);
+        si--;
+        fi--;
+    }
+    if (NULL == parent) {
+        qDebug() << "WARNING findMutualParent: now one same parent!";
+    }
+    fParents.clear();
+    sParents.clear();
+    return parent;
 }
 
 

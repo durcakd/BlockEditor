@@ -45,6 +45,7 @@ public:
     bool isParent(AbstractElement *checkedParent);
     void setSursorPosition(int pos);
     int posibleAbsoluteSkip(AbstractElement *child, int pos) const;
+    AbstractElement *findMutualParent(AbstractElement *first, AbstractElement *second);
 
 
     virtual void edited(Item *);
