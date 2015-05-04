@@ -6,6 +6,7 @@
 #include "item/layout.h"
 #include "item/item.h"
 #include "item/state/elementstate.h"
+#include "style/style.h"
 #include "scene/elementobserver.h"
 #include "vector"
 
@@ -207,7 +208,7 @@ int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const 
     return 0;
 }
 
-AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, AbstractElement *second) {
+AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, AbstractElement *second) const {
     std::vector<AbstractElement*> fParents;
     std::vector<AbstractElement*> sParents;
     AbstractElement *p = first;
@@ -236,6 +237,15 @@ AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, Abstr
     fParents.clear();
     sParents.clear();
     return parent;
+}
+
+AbstractElement *AbstractElement::getParsableParent() {
+    AbstractElement *element = this;
+    while ( element->getLayoutParrent()
+            && !(element->styleE()->getIsParsable())) {
+        element = element->getLayoutParrent();
+    }
+    return element;
 }
 
 
