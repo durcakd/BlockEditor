@@ -22,7 +22,7 @@ public:
 
 
 private:
-    AbstractElement *_chandedElement;
+
 
 };
 

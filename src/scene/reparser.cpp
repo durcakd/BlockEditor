@@ -25,25 +25,35 @@ Reparser::~Reparser() {
 }
 
 void Reparser::update(AbstractElement *element) {
-    _chandedElement = element;
     qDebug() << " REPARSER update: "<< element->textE();
 
 
-    AbstractElement *fParent = findBiggerParnet(element);
-    if (fParent == NULL) {
-        qDebug() << " warning f root";
-        fParent = element;
-    }
-    reparse(fParent);
 
-    AbstractElement *sParent = findBiggerParnet(fParent);
-    if (sParent == NULL) {
-        qDebug() << " warning s root";
-        sParent = fParent;
-    }
     //reparse(sParent);
     qDebug() << " end REPARSER";
 }
+
+
+//void Reparser::update(AbstractElement *element) {
+//    _chandedElement = element;
+//    qDebug() << " REPARSER update: "<< element->textE();
+
+
+//    AbstractElement *fParent = findBiggerParnet(element);
+//    if (fParent == NULL) {
+//        qDebug() << " warning f root";
+//        fParent = element;
+//    }
+//    reparse(fParent);
+
+//    AbstractElement *sParent = findBiggerParnet(fParent);
+//    if (sParent == NULL) {
+//        qDebug() << " warning s root";
+//        sParent = fParent;
+//    }
+//    //reparse(sParent);
+//    qDebug() << " end REPARSER";
+//}
 
 void Reparser::reparse(AbstractElement *element) {
     int parsedChars = 0;

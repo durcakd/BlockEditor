@@ -208,10 +208,11 @@ int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const 
     return 0;
 }
 
-AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, AbstractElement *second) const {
+AbstractElement *AbstractElement::findMutualParent(AbstractElement *second) {
+    qDebug() << "find mutual";
     std::vector<AbstractElement*> fParents;
     std::vector<AbstractElement*> sParents;
-    AbstractElement *p = first;
+    AbstractElement *p = this;
     while (p) {
         fParents.push_back(p);
         p = p->getLayoutParrent();
@@ -240,16 +241,18 @@ AbstractElement *AbstractElement::findMutualParent(AbstractElement *first, Abstr
 }
 
 AbstractElement *AbstractElement::getParsableParent() {
+    //qDebug() << "getParseble parent for: "<< getType() << "   " << textE();
     AbstractElement *element = this;
     while ( element->getLayoutParrent()
             && !(element->styleE()->getIsParsable())) {
         element = element->getLayoutParrent();
+        //qDebug() << " * new PP: "<< element->getType() << "   " << element->textE();
     }
     return element;
 }
 
 
-void AbstractElement::edited(Item */*focusedItem*/) {
+void AbstractElement::edited() {
     state()->edited(this);
 }
 
@@ -276,13 +279,13 @@ void AbstractElement::detach(ElementObserver *observer) {
 }
 
 void AbstractElement::notify() {
-    qDebug() << "NOTIFY for "<< textE();
+    //qDebug() << "NOTIFY for "<< textE();
     std::list<ElementObserver*>::iterator it, itprev;
     it = _observers.begin();
     while (it != _observers.end()) {
         itprev = it;
         it++;
-        qDebug() << "notify update " << textE();
+        //qDebug() << "notify update " << textE();
         (*itprev)->update(this);
     }
 }
