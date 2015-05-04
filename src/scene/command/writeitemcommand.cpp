@@ -34,7 +34,7 @@ WriteItemCommand::WriteItemCommand(QGraphicsItem *watched, int pos, int charsRem
 
 void WriteItemCommand::execute() {
 
-    qDebug() << "EXE writeItemCommand";
+    qDebug() << "\n\n\n\nEXE writeItemCommand";
     qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
 
     //    QTextCursor cursor = _item->textCursor();

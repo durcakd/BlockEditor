@@ -16,12 +16,14 @@ public:
     bool getIsItem() const;
     bool getIsLayout() const;
     bool getIsColor() const;
+    bool getIsParsable() const;
 
     void setOrientation(OrientationEnum orientation);
     void setOrientation(QString orientation);
     void setIsItem(bool isItem);
     void setIsLayout(bool isLayout);
     void setIsColor(bool isColor);
+    void setIsParsable(bool isParsable);
 
     QString toString() const;
 
@@ -31,6 +33,7 @@ private:
     bool _isItem;
     bool _isLayout;
     bool _isColor;
+    bool _isParsable;
 
 };
 

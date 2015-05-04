@@ -61,7 +61,7 @@ void Parser::init() {
                 onlyText += *it;
             }
         }
-        qDebug()<<" >"<< onlyText <<"<>"<<afterText;
+        //qDebug()<<" >"<< onlyText <<"<>"<<afterText;
         Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
         emit addElementItem(newItem);
 
@@ -80,7 +80,7 @@ void Parser::init() {
                lua::Integer elementIndex)
             -> lua::Pointer
     {
-        qDebug() << "parsing layout "<< elementType;
+        //qDebug() << "parsing layout "<< elementType;
         Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
         emit addElementLayout(newLayout);
         return newLayout;
@@ -179,6 +179,7 @@ void Parser::loadStyle()
 
         newStyle->setIsItem( style["item"]);
         newStyle->setIsLayout( style["grid"]);
+        newStyle->setIsParsable( style["parsable"]);
         lua::String object = style["object"];
 
         if (strcmp(object, "text") == 0){

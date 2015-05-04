@@ -37,7 +37,7 @@ BlockScene::BlockScene( QObject *parent)
 }
 
 void BlockScene::addItem(QGraphicsItem *graphicItem, bool recursive) {
-    qDebug() << "A  ";
+    //qDebug() << "A  ";
     QGraphicsScene::addItem(graphicItem);
 
     Item   *item = dynamic_cast<Item *>( graphicItem);
@@ -88,14 +88,14 @@ void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
 
 Item *BlockScene::addParserItem(Item *item)
 {
-    qDebug() << "-- added item " << item->toPlainText() << "   " << item->getType();
+    //qDebug() << "-- added item " << item->toPlainText() << "   " << item->getType();
 
     if( item->getLayoutParrent() == NULL){
         //addItem(item);
-        qDebug() << "also in scene";
+      //  qDebug() << "also in scene";
 
     } else {
-        qDebug() << "      with parrent: " << item->getLayoutParrent()->getType();
+        //qDebug() << "      with parrent: " << item->getLayoutParrent()->getType();
 
         item->getLayoutParrent()->addItem(item);
         //item->getLayoutParrent()->activate();
@@ -111,9 +111,9 @@ Item *BlockScene::addParserItem(Item *item)
 }
 
 Layout* BlockScene::addParserLayout( Layout *layout) {
-    qDebug() << "-- added layout " << layout->getType();
+    //qDebug() << "-- added layout " << layout->getType();
     if( layout->parentLayoutItem() == NULL){
-        qDebug() << "also in scene";
+       // qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
         _root->setLayoutParrent(NULL);
@@ -121,7 +121,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
         //setSceneRect(0, 0, 800, 600);
 
     } else {
-        qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();
+      //  qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
         layout->getLayoutParrent()->addItem(layout);
