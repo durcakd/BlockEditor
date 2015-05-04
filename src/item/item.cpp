@@ -1,33 +1,11 @@
 #include "item/item.h"
 #include <QDebug>
-#include <QFontMetrics>
-#include <QTextDocument>
-#include <QTextCursor>
-#include <QMimeData>
-#include <QDrag>
-#include <QFontDatabase>
 
-#include <QGraphicsLinearLayout>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
-#include <QGraphicsSceneWheelEvent>
-#include <QStyleOptionGraphicsItem>
-#include <QWidget>
 #include <QGraphicsItem>
-#include <QDrag>
-#include <QPixmap>
-#include <QBitmap>
-#include <QPainter>
-#include <QWidget>
-#include <QStyle>
-#include <QApplication>
 #include <item/layout.h>
 #include "style/style.h"
 #include "scene/blockscene.h"
 #include "scene/command/writeitemcommand.h"
-
-
-#include "scene/mimedata.h"
 
 
 Item::Item(Layout *parent, QString text)
@@ -35,11 +13,7 @@ Item::Item(Layout *parent, QString text)
       QGraphicsTextItem(dynamic_cast<QGraphicsItem*>(parent)),
       AbstractElement(parent)
 {
-    _text = text;
-
-
-    _document = this->document();
-    _document->setPlainText(_text);
+    document()->setPlainText(text);
     setTextInteractionFlags( Qt::TextEditorInteraction);
 
     //setFlag(ItemIsMovable);
@@ -54,65 +28,17 @@ Item::Item(Layout *parent, QString text)
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     setFont(fixedFont);
 
-    connect( _document, &QTextDocument::contentsChange, this , &Item::textChanged );
+    connect( document(), &QTextDocument::contentsChange, this , &Item::textChanged );
 
     // setGeometry();
 }
 
-void Item::setStyleE(Style *style) {
-    AbstractElement::setStyleE(style);
 
-    if (style->getIsColor()){
-        setDefaultTextColor(Qt::blue);
-    } else {
-        setDefaultTextColor(Qt::black);
-    }
-}
+// ----------------------------------------------------------
+// -- reimplement from QGraphicsLayoutItem ------------------
+// ----------------------------------------------------------
 
-void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
-{
-
-    QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
-    o->state &= ~QStyle::State_HasFocus;
-    o->state &= ~QStyle::State_Selected;
-
-    QGraphicsTextItem::paint(painter, o, widget);
-}
-
-void Item::setGeometry(const QRectF &geom) {
-
-    //qDebug() << "GG" << geom.size().width() <<"  "<< geom.size().height() << _type ;
-    //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y();
-    //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y()+boundingRect().size().width();
-    //prepareGeometryChange();
-    //QGraphicsLayoutItem::setGeometry(geom);
-    setPos(geom.bottomLeft());
-
-}
-
-
-void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
-    if (!signalsBlocked()) {
-        qDebug() <<"text changed, but signal blocked="<< signalsBlocked();
-        if (charsRemoved!=charsAdded){
-            BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
-        }
-    }
-
-    if (getLayoutParrent()) {
-        updateGeometry();
-        getLayoutParrent()->invalidate();
-    }
-}
-
-QSizeF Item::elementSizeHint(Qt::SizeHint which) const
-{
-    return sizeHint(which);
-}
-
-
-QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
-{
+QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const {
     QFontMetrics fm(font());
     QString text = toPlainText();
     //text.
@@ -130,14 +56,53 @@ QSizeF Item::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
     //return constraint;
 }
 
-bool Item::isLayoutE() const
-{
+void Item::setGeometry(const QRectF &geom) {
+    //qDebug() << "GG" << geom.size().width() <<"  "<< geom.size().height() << _type ;
+    //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y();
+    //qDebug() << "  " << geom.topLeft().x() <<"  "<< geom.topLeft().y()+boundingRect().size().width();
+    //prepareGeometryChange();
+    //QGraphicsLayoutItem::setGeometry(geom);
+    setPos(geom.bottomLeft());
+
+}
+
+// ----------------------------------------------------------
+// -- reimplement from QGraphicsTextItem --------------------
+// ----------------------------------------------------------
+
+void Item::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget) {
+
+    QStyleOptionGraphicsItem *o = const_cast<QStyleOptionGraphicsItem*>(option);
+    o->state &= ~QStyle::State_HasFocus;
+    o->state &= ~QStyle::State_Selected;
+
+    QGraphicsTextItem::paint(painter, o, widget);
+}
+
+void Item::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsTextItem::mousePressEvent(event);
+}
+
+void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    setCursor(Qt::ArrowCursor);
+    QGraphicsTextItem::mouseReleaseEvent(event);
+}
+
+
+// ----------------------------------------------------------
+// -- reimplemented from Abstract Element -------------------
+// ----------------------------------------------------------
+
+QSizeF Item::elementSizeHint(Qt::SizeHint which) const {
+    return sizeHint(which);
+}
+
+bool Item::isLayoutE() const {
     return false;
 }
 
 
-int Item::textLength(bool length) const
-{
+int Item::textLength(bool length) const {
     if(length) {
         return toPlainText().length();
     } else {
@@ -145,9 +110,59 @@ int Item::textLength(bool length) const
     }
 }
 
-QString Item::textE() const
-{
+QString Item::textE() const {
     return toPlainText();
+}
+
+
+void Item::setStyleE(Style *style) {
+    AbstractElement::setStyleE(style);
+
+    if (style->getIsColor()){
+        setDefaultTextColor(Qt::blue);
+    } else {
+        setDefaultTextColor(Qt::black);
+    }
+}
+
+QPixmap Item::toPixmap() {
+    QSizeF elementSize = elementSizeHint(Qt::MinimumSize);
+    QPixmap pixmap(elementSize.width()+3, elementSize.height()+3);
+    pixmap.fill(QColor(0,0,0,10));
+
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.translate(-2, -3);
+
+    QStyleOptionGraphicsItem opt;
+    QWidget wid;
+    paint(&painter, &opt, &wid);
+
+    QRectF rect(3,3,elementSize.width(),elementSize.height());
+    painter.drawRoundedRect(rect, 3.0, 3.0);
+
+    painter.end();
+    return pixmap;
+}
+
+
+
+// ----------------------------------------------------------
+// -- class methods -----------------------------------------
+// ----------------------------------------------------------
+
+void Item::textChanged(int pos, int charsRemoved, int charsAdded) {
+    if (!signalsBlocked()) {
+        qDebug() <<"text changed, but signal blocked="<< signalsBlocked();
+        if (charsRemoved!=charsAdded){
+            BlockScene::instance()->addCommand(new WriteItemCommand(this, pos, charsRemoved, charsAdded));
+        }
+    }
+
+    if (getLayoutParrent()) {
+        updateGeometry();
+        getLayoutParrent()->invalidate();
+    }
 }
 
 QString Item::textOnLineForPos(int pos, bool toRight) const {
@@ -183,34 +198,18 @@ QString Item::textOnLineForPos(int pos, bool toRight) const {
     return text;
 }
 
+int Item::cursorPositionIn(AbstractElement *topParent) const {
+    int pos = textCursor().position();
+    const AbstractElement *element = this;
 
-// ---------------
-void Item::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsTextItem::mousePressEvent(event);
+    while (element != NULL && element != topParent) {
+        AbstractElement *neighbor = element->getPrevius();
+        while (neighbor) {
+            pos += neighbor->textLength();
+            neighbor = neighbor->getPrevius();
+        }
+        element = element->getLayoutParrent();
+    }
+    return pos;
 }
 
-void Item::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    setCursor(Qt::ArrowCursor);
-    QGraphicsTextItem::mouseReleaseEvent(event);
-}
-
-QPixmap Item::toPixmap() {
-    QSizeF elementSize = elementSizeHint(Qt::MinimumSize);
-    QPixmap pixmap(elementSize.width()+3, elementSize.height()+3);
-    pixmap.fill(QColor(0,0,0,10));
-
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.translate(-2, -3);
-
-    QStyleOptionGraphicsItem opt;
-    QWidget wid;
-    paint(&painter, &opt, &wid);
-
-    QRectF rect(3,3,elementSize.width(),elementSize.height());
-    painter.drawRoundedRect(rect, 3.0, 3.0);
-
-    painter.end();
-    return pixmap;
-}

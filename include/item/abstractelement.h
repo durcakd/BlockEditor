@@ -3,69 +3,80 @@
 
 #include <QGraphicsTextItem>
 #include <QSizeF>
-
+#include <list>
 
 class QGraphicsLinearLayout;
 class Style;
 class Layout;
 class ElementState;
+class ElementObserver;
+class Item;
 
 class AbstractElement {
 
 public:
     explicit AbstractElement(QGraphicsLinearLayout *layoutParrent);
 
+    // get/set
+    AbstractElement *getNext() const;
+    AbstractElement *getPrevius() const;
     QString getType() const;
-    void setType(QString type) {_type = type;}
-    Layout *getLayoutParrent() const;
-    void setLayoutParrent(Layout *parrent) {_layoutParrentor = parrent;}
+    Layout  *getLayoutParrent() const;
+    Style   *styleE() const;
+    ElementState *state() const;
+    bool    isPaintEnabled() const;
+    int  getCurPos() const;
 
-    AbstractElement *getNext() const { return _next; }
-    AbstractElement *getPrevius() const { return _previous; }
+    void setNext(AbstractElement *next);
+    void setPrevius(AbstractElement *previous);
+    void setType(QString type);
+    void setLayoutParrent(Layout *parrent);
+    void setState(ElementState *state);
+    void setCurPos(int curpos);
+
+
+    // other methods
+    QString toString() const;
     AbstractElement *nextPrevius(bool next) const;
     AbstractElement *nextPreviousAlsoHor(bool toNext);
     AbstractElement *nextPreviousAlsoVert(bool toNext);
     AbstractElement *firstLastItem(bool first);
     AbstractElement *firstLastItemOf(AbstractElement *parent, bool first);
-
-
-    void setNext(AbstractElement *next) { _next = next; }
-    void setPrevius(AbstractElement *previous) { _previous = previous; }
-    //void setParrentE(Layout *parrent) { _layoutParrentor = parrent; }
-    Style *styleE() const {return _style;}
-    virtual void setStyleE(Style *style) { _style = style;}
-
-    ElementState *state() const {return _state;}
-    void setState(ElementState *state);
-
-    bool isPaintEnabled() const {return _enablePaint;}
     bool isParent(AbstractElement *checkedParent);
+    void setCursorPosition(int pos);
+    int posibleAbsoluteSkip(AbstractElement *child, int pos) const;
+    AbstractElement *findMutualParent(AbstractElement *second);
+    AbstractElement *getParsableParent();
 
-    virtual void setPaintEnable( bool enablePaint ) { _enablePaint = enablePaint;}
+    void edited();
+    virtual void setStyleE(Style *style);
+    virtual void setPaintEnable( bool enablePaint );
+    // element observer
+    virtual void attach(ElementObserver *observer);
+    virtual void detach(ElementObserver *observer);
+    virtual void notify();
 
-
+    // pure virtual methods
     virtual QSizeF elementSizeHint(Qt::SizeHint which) const = 0;
     virtual bool isLayoutE() const = 0;
     virtual int textLength(bool length = true) const = 0;
     virtual QString textE() const = 0;
-
-
     virtual QPixmap toPixmap() = 0;
 
-
-    QString toString() const;
 
 protected:
     QString _type;
     bool _elementType;
-    Style *_style;
-    ElementState *_state;
+    bool _enablePaint;   // TODO
+    int  _curpos;
 
-    Layout *_layoutParrentor;
     AbstractElement *_next;
     AbstractElement *_previous;
-    bool _enablePaint;
 
+    Layout  *_layoutParrentor;  // TODO
+    Style   *_style;
+    ElementState *_state;
+    std::list<ElementObserver*> _observers;
 };
 
 #endif
