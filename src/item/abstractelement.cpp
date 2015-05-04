@@ -4,6 +4,7 @@
 
 #include <QGraphicsLinearLayout>
 #include "item/layout.h"
+#include "item/item.h"
 #include "item/state/elementstate.h"
 #include "scene/elementobserver.h"
 
@@ -52,6 +53,10 @@ bool AbstractElement::isPaintEnabled() const {
     return _enablePaint;
 }
 
+int  AbstractElement::getCurPos() const {
+    return _curpos;
+}
+
 
 void AbstractElement::setNext(AbstractElement *next) {
     _next = next;
@@ -85,6 +90,9 @@ void AbstractElement::setPaintEnable( bool enablePaint ) {
     _enablePaint = enablePaint;
 }
 
+void AbstractElement::setCurPos(int curpos) {
+    _curpos = curpos;
+}
 
 // --------------------------------------
 // -- other methods ---------------------
@@ -162,10 +170,46 @@ bool AbstractElement::isParent(AbstractElement *checkedParent) {
     return false;
 }
 
+void AbstractElement::setSursorPosition(int pos) {
+    AbstractElement *targed = this;
+    while (targed->isLayoutE()) {
+        Layout *layout = dynamic_cast<Layout*>(targed);
+        AbstractElement *child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
+
+        int len = posibleAbsoluteSkip(child, pos);
+        while ( 0 < len) {
+            pos -= len;
+            child = child->getNext();
+            len = posibleAbsoluteSkip(child, pos);
+        }
+        targed = child;
+    }
+
+    int len = targed->textLength();
+    pos = pos < len ? pos : len;
+    Item *item = dynamic_cast <Item*>(targed);
+    item->setFocus();
+    QTextCursor cursor = item->textCursor();
+    cursor.setPosition(pos);
+    item->setTextCursor(cursor);
+}
+
+int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const {
+    if (child == NULL) {
+        return 0;
+    }
+    int len = child->textLength();
+    if (len < pos
+            && NULL != child->getNext()) {
+        return len;
+    }
+    return 0;
+}
+
+
 void AbstractElement::edited(Item */*focusedItem*/) {
     state()->edited(this);
 }
-
 
 // -- element observers ----------------------------
 

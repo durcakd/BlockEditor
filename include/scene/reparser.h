@@ -21,10 +21,6 @@ public:
     void reparse(AbstractElement *element);
 
 
-    int     cursorAbsolutePosition(AbstractElement *topParent, AbstractElement *focused) const;
-    void    setSursorPosition(AbstractElement *topParent, int pos) const;
-    int     skipChild(AbstractElement *child, int pos) const;
-
 private:
     AbstractElement *_chandedElement;
 

@@ -198,3 +198,18 @@ QString Item::textOnLineForPos(int pos, bool toRight) const {
     return text;
 }
 
+int Item::cursorPositionIn(AbstractElement *topParent) const {
+    int pos = textCursor().position();
+    const AbstractElement *element = this;
+
+    while (element != NULL && element != topParent) {
+        AbstractElement *neighbor = element->getPrevius();
+        while (neighbor) {
+            pos += neighbor->textLength();
+            neighbor = neighbor->getPrevius();
+        }
+        element = element->getLayoutParrent();
+    }
+    return pos;
+}
+
