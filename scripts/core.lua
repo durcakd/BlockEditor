@@ -188,8 +188,8 @@ function reparseNew(parser, text, addItemFnc, addGridFnc)
     --printTree(nil, root, " ")
     print "ADDING ......."
     sendNode(1, root, {});
-    print " end ADDING"
-    printTree(nil, root, " ")
+    --print " end ADDING"
+    --printTree(nil, root, " ")
 
     sendRetree( root.instance, true, parsedCharacters)
     return root

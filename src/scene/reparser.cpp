@@ -26,11 +26,34 @@ Reparser::~Reparser() {
 
 void Reparser::update(AbstractElement *element) {
     qDebug() << " REPARSER update: "<< element->textE();
-
-
-
-    //reparse(sParent);
+    reparse(element);
     qDebug() << " end REPARSER";
+}
+
+void Reparser::reparse(AbstractElement *element) {
+    int parsedChars = 0;
+    AbstractElement *res = NULL;
+    QString text = element->textE();
+    qDebug()<< "text len = " << text.length();
+
+    bool ok = Parser::instance()->reparse(text, &res, parsedChars);
+
+    if (ok) {
+        qDebug() << "Reparsing OK";
+        res = firstChild(res);
+        qDebug() << "parsed c= "<< parsedChars;
+        qDebug() << "res = "<< res->getType();
+        Layout* layout = dynamic_cast<Layout*>(res);
+        if (layout) {
+            qDebug() << "count = "<< layout->count();
+        }
+        replaceElement(element, res);
+        res->setCursorPosition( element->getCurPos());
+        //element->setState( new ElementValid);
+    } else {
+        qDebug() << "Reparsing FAIL";
+        //element->setState( new ElementInvalid);
+    }
 }
 
 
@@ -55,39 +78,41 @@ void Reparser::update(AbstractElement *element) {
 //    qDebug() << " end REPARSER";
 //}
 
-void Reparser::reparse(AbstractElement *element) {
-    int parsedChars = 0;
-    AbstractElement *res = NULL;
 
-    QString text = element->textE();
-    qDebug()<< "text len = " << text.length();
 
-    bool ok = Parser::instance()->reparse(text, &res, parsedChars);
-    if (!ok) {qDebug() << "Reparsing parent error";}
-    if (ok) {qDebug() << "Reparsing parent ok";}
+//void Reparser::reparse(AbstractElement *element) {
+//    int parsedChars = 0;
+//    AbstractElement *res = NULL;
 
-    if (ok) {
-        res = firstChild(res);
-        qDebug() << "parsed c= "<< parsedChars;
-        qDebug() << "res = "<< res->getType();
-        Layout* layout = dynamic_cast<Layout*>(res);
-        if (layout) {
-            qDebug() << "count = "<< layout->count();
-        }
-        ////int pos = cursorAbsolutePosition(element, _chandedElement);
-        replaceElement(element, res);
-        ////setSursorPosition(res, pos);
-        //element->setState( new ElementValid);
-    } else {
-        //element->setState( new ElementInvalid);
-    }
-}
+//    QString text = element->textE();
+//    qDebug()<< "text len = " << text.length();
+
+//    bool ok = Parser::instance()->reparse(text, &res, parsedChars);
+//    if (!ok) {qDebug() << "Reparsing parent error";}
+//    if (ok) {qDebug() << "Reparsing parent ok";}
+
+//    if (ok) {
+//        res = firstChild(res);
+//        qDebug() << "parsed c= "<< parsedChars;
+//        qDebug() << "res = "<< res->getType();
+//        Layout* layout = dynamic_cast<Layout*>(res);
+//        if (layout) {
+//            qDebug() << "count = "<< layout->count();
+//        }
+//        ////int pos = cursorAbsolutePosition(element, _chandedElement);
+//        replaceElement(element, res);
+//        ////setSursorPosition(res, pos);
+//        //element->setState( new ElementValid);
+//    } else {
+//        //element->setState( new ElementInvalid);
+//    }
+//}
 
 void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem) {
     Layout *parent = oldElem->getLayoutParrent();
     if (NULL == parent) {
         // TODO ????? maybe new ROOT
-
+        qDebug() << "WARNING !!! reparser: replace element with NULL parent!";
 
 
     } else {
@@ -96,13 +121,9 @@ void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem)
 
         parent->removeElement(oldElem);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(oldElem), true);
-        qDebug() << "removed";
-
         parent->updateChildNeighbors();
-
-        // focus  TODO
-
-    }
+        qDebug() << "replaced";
+      }
 
 
 }

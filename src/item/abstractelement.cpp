@@ -172,7 +172,7 @@ bool AbstractElement::isParent(AbstractElement *checkedParent) {
     return false;
 }
 
-void AbstractElement::setSursorPosition(int pos) {
+void AbstractElement::setCursorPosition(int pos) {
     AbstractElement *targed = this;
     while (targed->isLayoutE()) {
         Layout *layout = dynamic_cast<Layout*>(targed);

@@ -134,10 +134,10 @@ void Parser::init() {
         if( newLayout->parentLayoutItem()){
             newLayout->getLayoutParrent()->addItem(newLayout);
         } else {
-            qDebug() << "ROOOOOOOOOOOOT";
+            //qDebug() << "ROOOOOOOOOOOOT";
             _retree = newLayout;
         }
-        qDebug() << "parsing layout "<< elementType << "  " << dynamic_cast<AbstractElement*>(newLayout);
+        //qDebug() << "parsing layout "<< elementType << "  " << dynamic_cast<AbstractElement*>(newLayout);
         return newLayout;
     });
 
