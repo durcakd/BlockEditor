@@ -31,6 +31,7 @@ public:
 
     // methods
     QString textOnLineForPos(int pos, bool toRight) const;
+    int cursorPositionIn(AbstractElement *topParent) const;
 
     // reimplement from QGraphicsTextItem
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;

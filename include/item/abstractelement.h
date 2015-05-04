@@ -10,6 +10,7 @@ class Style;
 class Layout;
 class ElementState;
 class ElementObserver;
+class Item;
 
 class AbstractElement {
 
@@ -24,12 +25,14 @@ public:
     Style   *styleE() const;
     ElementState *state() const;
     bool    isPaintEnabled() const;
+    int  getCurPos() const;
 
     void setNext(AbstractElement *next);
     void setPrevius(AbstractElement *previous);
     void setType(QString type);
     void setLayoutParrent(Layout *parrent);
     void setState(ElementState *state);
+    void setCurPos(int curpos);
 
 
     // other methods
@@ -40,9 +43,12 @@ public:
     AbstractElement *firstLastItem(bool first);
     AbstractElement *firstLastItemOf(AbstractElement *parent, bool first);
     bool isParent(AbstractElement *checkedParent);
+    void setCursorPosition(int pos);
+    int posibleAbsoluteSkip(AbstractElement *child, int pos) const;
+    AbstractElement *findMutualParent(AbstractElement *second);
+    AbstractElement *getParsableParent();
+
     void edited();
-
-
     virtual void setStyleE(Style *style);
     virtual void setPaintEnable( bool enablePaint );
     // element observer
@@ -62,6 +68,7 @@ protected:
     QString _type;
     bool _elementType;
     bool _enablePaint;   // TODO
+    int  _curpos;
 
     AbstractElement *_next;
     AbstractElement *_previous;

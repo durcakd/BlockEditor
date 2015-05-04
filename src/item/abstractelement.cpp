@@ -4,8 +4,11 @@
 
 #include <QGraphicsLinearLayout>
 #include "item/layout.h"
+#include "item/item.h"
 #include "item/state/elementstate.h"
+#include "style/style.h"
 #include "scene/elementobserver.h"
+#include "vector"
 
 
 
@@ -52,6 +55,10 @@ bool AbstractElement::isPaintEnabled() const {
     return _enablePaint;
 }
 
+int  AbstractElement::getCurPos() const {
+    return _curpos;
+}
+
 
 void AbstractElement::setNext(AbstractElement *next) {
     _next = next;
@@ -85,6 +92,9 @@ void AbstractElement::setPaintEnable( bool enablePaint ) {
     _enablePaint = enablePaint;
 }
 
+void AbstractElement::setCurPos(int curpos) {
+    _curpos = curpos;
+}
 
 // --------------------------------------
 // -- other methods ---------------------
@@ -162,10 +172,89 @@ bool AbstractElement::isParent(AbstractElement *checkedParent) {
     return false;
 }
 
+void AbstractElement::setCursorPosition(int pos) {
+    AbstractElement *targed = this;
+    while (targed->isLayoutE()) {
+        Layout *layout = dynamic_cast<Layout*>(targed);
+        AbstractElement *child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
+
+        int len = posibleAbsoluteSkip(child, pos);
+        while ( 0 < len) {
+            pos -= len;
+            child = child->getNext();
+            len = posibleAbsoluteSkip(child, pos);
+        }
+        targed = child;
+    }
+
+    int len = targed->textLength();
+    pos = pos < len ? pos : len;
+    Item *item = dynamic_cast <Item*>(targed);
+    item->setFocus();
+    QTextCursor cursor = item->textCursor();
+    cursor.setPosition(pos);
+    item->setTextCursor(cursor);
+}
+
+int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const {
+    if (child == NULL) {
+        return 0;
+    }
+    int len = child->textLength();
+    if (len < pos
+            && NULL != child->getNext()) {
+        return len;
+    }
+    return 0;
+}
+
+AbstractElement *AbstractElement::findMutualParent(AbstractElement *second) {
+    qDebug() << "find mutual";
+    std::vector<AbstractElement*> fParents;
+    std::vector<AbstractElement*> sParents;
+    AbstractElement *p = this;
+    while (p) {
+        fParents.push_back(p);
+        p = p->getLayoutParrent();
+    }
+    p = second;
+    while (p) {
+        sParents.push_back(p);
+        p = p->getLayoutParrent();
+    }
+    int si = sParents.size()-1;
+    int fi = fParents.size()-1;
+
+    AbstractElement *parent = NULL;
+    while (si >= 0 && fi >= 0
+           && sParents.at(si) == fParents.at(fi)) {
+        parent = sParents.at(si);
+        si--;
+        fi--;
+    }
+    if (NULL == parent) {
+        qDebug() << "WARNING findMutualParent: now one same parent!";
+    }
+    fParents.clear();
+    sParents.clear();
+    return parent;
+}
+
+AbstractElement *AbstractElement::getParsableParent() {
+    //qDebug() << "getParseble parent for: "<< getType() << "   " << textE();
+    AbstractElement *element = this;
+    while ( element->getLayoutParrent()
+            && !(element->styleE()->getIsParsable())) {
+        element = element->getLayoutParrent();
+        //qDebug() << " * new PP: "<< element->getType() << "   " << element->textE();
+    }
+    return element;
+}
+
+
 void AbstractElement::edited() {
     state()->edited(this);
 }
-
 
 // -- element observers ----------------------------
 
@@ -190,8 +279,13 @@ void AbstractElement::detach(ElementObserver *observer) {
 }
 
 void AbstractElement::notify() {
-    std::list<ElementObserver*>::iterator it;
-    for (it = _observers.begin(); it != _observers.end(); it++) {
-        (*it)->update(this);
+    //qDebug() << "NOTIFY for "<< textE();
+    std::list<ElementObserver*>::iterator it, itprev;
+    it = _observers.begin();
+    while (it != _observers.end()) {
+        itprev = it;
+        it++;
+        //qDebug() << "notify update " << textE();
+        (*itprev)->update(this);
     }
 }

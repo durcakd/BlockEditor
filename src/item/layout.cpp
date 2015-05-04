@@ -19,8 +19,6 @@ Layout::Layout(QGraphicsLayoutItem *parent)
     setVisible(true);
     setSpacing(0);
     //setOpacity(0.5);
-
-
 }
 
 // ----------------------------------------------------------
@@ -133,7 +131,6 @@ void Layout::setPaintEnable( bool enablePaint ) {
     update();
 }
 
-
 // ----------------------------------------------------------
 // -- class methods -----------------------------------------
 // ----------------------------------------------------------
@@ -143,7 +140,7 @@ void Layout::childItemChanged() {
 }
 
 void Layout::updateChildNeighbors() {
-    qDebug() << "  chids: " << count();
+    //qDebug() << "  chids: " << count();
     AbstractElement *previous = NULL;
     for (int i=0; i < count(); i++) {
         if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
@@ -163,23 +160,23 @@ void Layout::updateChildNeighbors() {
         }
     }
 
-    qDebug() << " Neighbors controll:";
+//    //qDebug() << " Neighbors controll:";
 
-    qDebug() << "  chids: " << count();
-    for (int i=0; i < count(); i++) {
-        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
-            if (myItem->getPrevius() != NULL) {
-                qDebug() << "previous " << myItem->getPrevius() << "   " << myItem->getPrevius()->getType() << "  " << myItem->getPrevius()->isLayoutE();}
-            if (myItem->getNext() != NULL) {
-                qDebug() << "next     " << myItem->getNext() << "   " << myItem->getNext()->getType() << "  " << myItem->getNext()->isLayoutE();}
+//    //qDebug() << "  chids: " << count();
+//    for (int i=0; i < count(); i++) {
+//        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
+//            if (myItem->getPrevius() != NULL) {
+//                qDebug() << "previous " << myItem->getPrevius() << "   " << myItem->getPrevius()->getType() << "  " << myItem->getPrevius()->isLayoutE();}
+//            if (myItem->getNext() != NULL) {
+//                qDebug() << "next     " << myItem->getNext() << "   " << myItem->getNext()->getType() << "  " << myItem->getNext()->isLayoutE();}
 
-        }
-    }
-    //qDebug() << "THIS  " << this << "   " << this->getType();
-    if( this->getLayoutParrent() != NULL){
-        //qDebug() << "THIS  " << this->getLayoutParrent();
-    }
-    qDebug() << "";
+//        }
+//    }
+//    //qDebug() << "THIS  " << this << "   " << this->getType();
+//    if( this->getLayoutParrent() != NULL){
+//        //qDebug() << "THIS  " << this->getLayoutParrent();
+//    }
+//    qDebug() << "";
 }
 
 int Layout::indexOf(AbstractElement *element) {

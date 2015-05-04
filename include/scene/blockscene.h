@@ -22,7 +22,8 @@ class BlockScene : public QGraphicsScene
 
 public:
     static BlockScene *instance( QObject *parent = 0);
-    void addItem(QGraphicsItem *graphicItem);
+    void addItem(QGraphicsItem *graphicItem, bool recursive = false);
+    void removeItem(QGraphicsItem *graphicItem, bool recursive = false);
 
 
     SceneState *getSceneState() const { return _sceneState;}

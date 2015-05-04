@@ -34,7 +34,7 @@ WriteItemCommand::WriteItemCommand(QGraphicsItem *watched, int pos, int charsRem
 
 void WriteItemCommand::execute() {
 
-    qDebug() << "EXE writeItemCommand";
+    qDebug() << "\n\n\n\nEXE writeItemCommand";
     qDebug() <<  pos <<"  "<< charsRemoved <<"  "<< charsAdded;
 
     //    QTextCursor cursor = _item->textCursor();
@@ -65,6 +65,8 @@ void WriteItemCommand::execute() {
 
 void WriteItemCommand::simpleRemove() {
     qDebug() << "  simple remove";
+    AbstractElement *parseble = NULL;
+
     if (_item->textLength() == 0) {
         qDebug() << "remove item";
         AbstractElement *toRemove = _item;
@@ -78,19 +80,23 @@ void WriteItemCommand::simpleRemove() {
 
         if (parent != NULL) {
             // select else one
-            AbstractElement *instead = findInsteadtoSelect();
-            dynamic_cast <Item*>(instead)->setFocus();
+            Item *instead = dynamic_cast <Item*>(findInsteadtoSelect());
+            instead->setFocus();
 
             // remove
+            parseble = getParsableForRemoved( toRemove, _item);
             parent->removeElement(toRemove);
+
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
 
-            parent->edited();
+            parseble->edited();
         } else {
-            _item->edited();
+            parseble = getParsable( _item);
+            parseble->edited();
         }
     } else {
-        _item->edited();
+        parseble = getParsable( _item);
+        parseble->edited();
     }
 }
 
@@ -152,8 +158,10 @@ void WriteItemCommand::simpleAdditionEnter() {
         vParent->removeElement(toReplace);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
 
-        leftItem->edited();
-        rightItem->edited();
+        AbstractElement *parseble = vParent->getParsableParent();
+        parseble->setCurPos( rightItem->cursorPositionIn(parseble));
+        parseble->edited();
+        // TODO ???  rightItem->edited(rightItem);  nieje zaznaceny ako editovany
     }
 }
 
@@ -169,7 +177,8 @@ void WriteItemCommand::simpleAddition() {
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        _item->edited();
+        AbstractElement *parseble = getParsable( _item);
+        parseble->edited();;
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
@@ -205,14 +214,19 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     cursor.movePosition(QTextCursor::End);
     second->setTextCursor(cursor);
 
-    _item->edited();
-    second->edited();
-    third->edited();
+    // TODO
+    ////    _item->edited(second);
+    ////    second->edited(second);
+    ////    third->edited(second);
+    AbstractElement *parseble = parent->getParsableParent();
+    parseble->setCurPos( second->cursorPositionIn(parseble));
+    parseble->edited();
 }
 
 
 void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
     qDebug() << ( inStart ? "add at start  new Item" : "add at end  new item");
+    AbstractElement *parsable = NULL;
     undoSimpleAddition();
     Layout *parent = _item->getLayoutParrent();
     Item *neighbor = dynamic_cast<Item*>(_item->nextPreviousAlsoHor( !inStart));
@@ -234,7 +248,9 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        neighbor->edited();
+        parsable = getParsable(neighbor);
+        parsable->edited();
+        //// neighbor->edited(neighbor);
     } else {
         qDebug() << "no merge";
         Item *newItem = createItemForInsert( newChar);
@@ -244,7 +260,9 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
             parent->insertBehind(_item, newItem);
         }
         BlockScene::instance()->addItem(newItem);
-        newItem->edited();
+        ///// newItem->edited(newItem);
+        parsable = getParsable(newItem);
+        parsable->edited();
     }
 }
 
@@ -294,6 +312,41 @@ AbstractElement *WriteItemCommand::findInsteadtoSelect() {
         instead = _item->nextPreviousAlsoVert(true);
     }
     return instead;
+}
+
+AbstractElement *WriteItemCommand::getParsable(Item *item) const {
+    AbstractElement *parseble = item->getParsableParent();
+    parseble->setCurPos( item->cursorPositionIn(parseble));
+    return parseble;
+}
+
+AbstractElement *WriteItemCommand::getParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const {
+    //qDebug() << "getParsableForRemoved";
+    AbstractElement *right = toRemove->nextPreviousAlsoVert(true);
+    while (right && right->state()->isSpaced()) {
+        right = right->nextPreviousAlsoVert(true);
+    }
+    //qDebug() << "finded right";
+    AbstractElement *left = toRemove->nextPreviousAlsoVert(false);
+    while (left && left->state()->isSpaced()) {
+        left = left->nextPreviousAlsoVert(false);
+    }
+    //qDebug() << "finded left";
+    AbstractElement *parseble = toRemove;
+    if (right && left) {
+        //qDebug() << " find PM for right&left";
+        parseble = left->findMutualParent(right);
+    } else  if (left) {
+        //qDebug() << " find PM for left";
+        parseble = toRemove->findMutualParent(left);
+    } else  if (right) {
+        //qDebug() << " find PM for right";
+        parseble = toRemove->findMutualParent(right);
+    }
+    //qDebug() << " mutual paren is finded";
+    parseble = parseble->getParsableParent();
+    parseble->setCurPos( focusItem->cursorPositionIn(parseble));
+    return parseble;
 }
 
 bool WriteItemCommand::hasSpace(const QString str) const {
