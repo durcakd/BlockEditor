@@ -2,6 +2,7 @@ local NORMAL_TEXT = {
     item = true,
     object = "text",
     grid = false,
+    parsable = false,
     text = {
         isColor = false
     }
@@ -11,6 +12,7 @@ local CHANGED_TEXT = {
     item = true,
     object = "text",
     grid = false,
+    parsable = false,
     text = {
         isColor = false
     }
@@ -20,6 +22,7 @@ local INVALID_TEXT = {
     item = true,
     object = "text",
     grid = false,
+    parsable = false,
     text = {
         isColor = false
     }
@@ -30,6 +33,7 @@ local function COLOR_TEXT(color)
         item = true,
         object = "text",
         grid = false,
+        parsable = false,
         text = {
             isColor = true,
             color = color
@@ -43,6 +47,7 @@ local function COLOR_BOLD_TEXT(color)
         item = true,
         object = "text",
         grid = false,
+        parsable = false,
         text = {
             isColor = true,
             isBold = true,
@@ -53,26 +58,37 @@ end
 
 local VERT_BLOCK = {
     grid = true,
+    parsable = true,
     object = "vertical"
 }
 
 local LINE = {
     grid = true,
+    parsable = false,
+    object = "horizontal"
+}
+
+local LINE_PARSABLE = {
+    grid = true,
+    parsable = true,
     object = "horizontal"
 }
 
 local FUNCTIONDEF = {
     grid = true,
+    parsable = false,
     object = "vertical"
 }
 
 local CYCLE = {
     item = true,
+    parsable = false,
     object = "vertical"
 }
 
 local FUNCTION_STAT = {
     grid = true,
+    parsable = false,
     object = "horizontal"
 }
 
@@ -89,12 +105,12 @@ return {
 	header = LINE,
 	par_list = LINE,
 	dot_comma = LINE,
-	assing_stat = LINE,
-	functioncall_stat = LINE,
-	label_stat = LINE,
-	break_stat = LINE,
-	goto_stat = LINE,
-	return_stat = LINE,
+        assing_stat = LINE_PARSABLE, --parsable
+        functioncall_stat = LINE_PARSABLE,
+        label_stat = LINE_PARSABLE,
+        break_stat = LINE_PARSABLE,
+        goto_stat = LINE_PARSABLE,
+        return_stat = LINE_PARSABLE,
         exp = LINE,
 
         keyword = COLOR_BOLD_TEXT({ 0, 0, 1 }),

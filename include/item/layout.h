@@ -1,14 +1,10 @@
 #ifndef LAYOUT_H
 #define LAYOUT_H
 
+#include "abstractelement.h"
 #include <QGraphicsLinearLayout>
 #include <QGraphicsItem>
-#include <QSizeF>
-#include <QList>
 #include <QObject>
-#include <QPainter>
-
-#include "abstractelement.h"
 
 class Style;
 
@@ -21,50 +17,39 @@ class Layout :
     Q_OBJECT
 
 public:
-
     explicit Layout(QGraphicsLayoutItem *parent = 0);
 
-    QSizeF elementSizeHint(Qt::SizeHint which) const;
+    // inherited from QGraphicsLinearLayout
+    QSizeF  sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
+    void    setGeometry(const QRectF &geom);
 
-    //QSizeF childrenSizeHint(Qt::SizeHint which) const;
-    //QList<AbstractElement*> getChildLayouts() const;
-    //void addLayoutChild(AbstractElement *child);
-    void updateChildNeighbors();
-    bool isLayoutE() const;
-    int textLength(bool length) const;
+    // inherited from QGraphicsItem
+    QRectF  boundingRect() const Q_DECL_OVERRIDE;
+    void    paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) Q_DECL_OVERRIDE;
+
+    // reimplemented from Abstract Element
+    QSizeF  elementSizeHint(Qt::SizeHint which) const;
+    bool    isLayoutE() const;
+    int     textLength(bool length) const;
     QString textE() const;
-    void setStyleE(Style *style);
+    QPixmap toPixmap();
+    void    setStyleE(Style *style);
+    void    setPaintEnable( bool enablePaint );
 
-    int indexOf(AbstractElement *element);
-
-    void insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
-    void insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
-    void removeElement( AbstractElement *element);
-
-
+    // class methods
+    void    updateChildNeighbors();
+    int     indexOf(AbstractElement *element);
+    void    insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
+    void    insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
+    void    removeElement( AbstractElement *element);
     QGraphicsLayoutItem  *firstLastChildrenElement(bool first) const;
 
-
-    void setGeometry(const QRectF &geom);
-
-    QSizeF sizeHint(Qt::SizeHint which, const QSizeF &constraint = QSizeF()) const;
-
-    // Inherited from AbstractElement
-    void setPaintEnable( bool enablePaint );
-
-    // Inherited from QGraphicsItem
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) Q_DECL_OVERRIDE;
-    QPixmap toPixmap();
-
 public slots:
-
     void childItemChanged();
 
 protected:
 
     QString _layoutType;
-    //QList<AbstractElement*> _childLayouts;
 
 };
 

@@ -28,6 +28,10 @@ protected:
     void simpleAdditionMiddle(QChar newChar);
     void simpleAdditionEnter();
 
+    AbstractElement *getParsable(Item *item) const;
+    //AbstractElement *WriteItemCommand::getParsable(Item *left, Item *right, Item *focused) const;
+    AbstractElement *getParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const;
+
     AbstractElement *findInsteadtoSelect();
     Item *createItemForInsert(QChar newChar);
     Item *createItemForInsert(bool stable, QString text);

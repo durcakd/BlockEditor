@@ -10,6 +10,7 @@ Style::Style( const QString styleType)
     _isItem = false;
     _isLayout = false;
     _isColor = false;
+    _isParsable = false;
 }
 
 
@@ -20,7 +21,8 @@ QString Style::toString() const
             + (getIsLayout() ? "\tisLayout":"\t") \
             + (getIsLayout() ?(getOrientation()==OrientationEnum::vertical \
                            ?"\tvertical":"\thorizontal"):"\t") \
-            + (getIsColor() ? "\tisColor":"\t");
+            + (getIsColor() ? "\tisColor":"\t") \
+            + (getIsParsable() ? "\tisParsable":"\t");
 }
 
 QString Style::getStyleType() const {
@@ -42,6 +44,11 @@ bool Style::getIsLayout() const {
 bool Style::getIsColor() const {
     return _isColor;
 }
+
+bool Style::getIsParsable() const {
+    return _isParsable;
+}
+
 
 void Style::setOrientation(OrientationEnum orientation) {
     _orientation = orientation;
@@ -65,4 +72,8 @@ void Style::setIsLayout(bool isLayout) {
 
 void Style::setIsColor(bool isColor) {
     _isColor = isColor;
+}
+
+void Style::setIsParsable(bool isParsable) {
+    _isParsable = isParsable;
 }

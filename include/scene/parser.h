@@ -12,6 +12,7 @@
 class Item;
 class Layout;
 class Style;
+class AbstractElement;
 class ElementBuilder;
 
 class Parser : public QObject {
@@ -21,7 +22,7 @@ public:
     static Parser *instance(QString type = "");
 
     void parse(QString text);
-    bool reparse(QString text);
+    bool reparse(QString text, AbstractElement **res, int &parsedChars);
 
     Item *createNewItem(Layout *parent, QString type, QString text);
     Item *createStableItem(Layout *parent, QString text);
@@ -47,6 +48,9 @@ private:
     QString _textType;
     QString _text;
     ElementBuilder *_elementBuilder;
+
+    AbstractElement *_retree;
+    int _parsedChars;
 
 };
 
