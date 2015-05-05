@@ -36,6 +36,19 @@ BlockScene::BlockScene( QObject *parent)
 
 }
 
+Layout *BlockScene::root() const {
+    return _root;
+}
+
+void  BlockScene::setRoot(Layout *root) {
+    _root = root;
+    _root->setLayoutParrent(NULL);
+    _root->setNext(NULL);
+    _root->setPrevius(NULL);
+    //_form->setLayout(_root);
+    //_form->layoutChanged();
+}
+
 void BlockScene::addItem(QGraphicsItem *graphicItem, bool recursive) {
     //qDebug() << "A  ";
     QGraphicsScene::addItem(graphicItem);

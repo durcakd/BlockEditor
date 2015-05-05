@@ -47,6 +47,7 @@ public:
     int posibleAbsoluteSkip(AbstractElement *child, int pos) const;
     AbstractElement *findMutualParent(AbstractElement *second);
     AbstractElement *getParsableParent();
+    AbstractElement *getSecondParsable();
 
     void edited();
     virtual void setStyleE(Style *style);

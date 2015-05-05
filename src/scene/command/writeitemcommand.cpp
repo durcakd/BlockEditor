@@ -84,18 +84,18 @@ void WriteItemCommand::simpleRemove() {
             instead->setFocus();
 
             // remove
-            parseble = getParsableForRemoved( toRemove, _item);
+            parseble = prepareParsableForRemoved( toRemove, _item);
             parent->removeElement(toRemove);
 
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
 
             parseble->edited();
         } else {
-            parseble = getParsable( _item);
+            parseble = prepareParsable( _item);
             parseble->edited();
         }
     } else {
-        parseble = getParsable( _item);
+        parseble = prepareParsable( _item);
         parseble->edited();
     }
 }
@@ -158,8 +158,7 @@ void WriteItemCommand::simpleAdditionEnter() {
         vParent->removeElement(toReplace);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
 
-        AbstractElement *parseble = vParent->getParsableParent();
-        parseble->setCurPos( rightItem->cursorPositionIn(parseble));
+        AbstractElement *parseble = prepareParsable(vParent, rightItem);
         parseble->edited();
         // TODO ???  rightItem->edited(rightItem);  nieje zaznaceny ako editovany
     }
@@ -177,8 +176,8 @@ void WriteItemCommand::simpleAddition() {
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        AbstractElement *parseble = getParsable( _item);
-        parseble->edited();;
+        AbstractElement *parseble = prepareParsable( _item);
+        parseble->edited();
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
@@ -218,8 +217,7 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     ////    _item->edited(second);
     ////    second->edited(second);
     ////    third->edited(second);
-    AbstractElement *parseble = parent->getParsableParent();
-    parseble->setCurPos( second->cursorPositionIn(parseble));
+    AbstractElement *parseble = prepareParsable(parent, second);
     parseble->edited();
 }
 
@@ -248,7 +246,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        parsable = getParsable(neighbor);
+        parsable = prepareParsable(neighbor);
         parsable->edited();
         //// neighbor->edited(neighbor);
     } else {
@@ -261,7 +259,7 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         }
         BlockScene::instance()->addItem(newItem);
         ///// newItem->edited(newItem);
-        parsable = getParsable(newItem);
+        parsable = prepareParsable(newItem);
         parsable->edited();
     }
 }
@@ -314,13 +312,20 @@ AbstractElement *WriteItemCommand::findInsteadtoSelect() {
     return instead;
 }
 
-AbstractElement *WriteItemCommand::getParsable(Item *item) const {
-    AbstractElement *parseble = item->getParsableParent();
+AbstractElement *WriteItemCommand::prepareParsable(Item *item) const {
+    AbstractElement *parseble = item->getSecondParsable();
     parseble->setCurPos( item->cursorPositionIn(parseble));
     return parseble;
 }
 
-AbstractElement *WriteItemCommand::getParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const {
+AbstractElement *WriteItemCommand::prepareParsable(AbstractElement *element, Item *focusItem) const {
+    AbstractElement *parseble = element->getSecondParsable();
+    parseble->setCurPos( focusItem->cursorPositionIn(parseble));
+    return parseble;
+}
+
+
+AbstractElement *WriteItemCommand::prepareParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const {
     //qDebug() << "getParsableForRemoved";
     AbstractElement *right = toRemove->nextPreviousAlsoVert(true);
     while (right && right->state()->isSpaced()) {
@@ -344,7 +349,7 @@ AbstractElement *WriteItemCommand::getParsableForRemoved(AbstractElement *toRemo
         parseble = toRemove->findMutualParent(right);
     }
     //qDebug() << " mutual paren is finded";
-    parseble = parseble->getParsableParent();
+    parseble = parseble->getSecondParsable();
     parseble->setCurPos( focusItem->cursorPositionIn(parseble));
     return parseble;
 }

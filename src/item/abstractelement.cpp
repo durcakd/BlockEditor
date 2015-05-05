@@ -251,6 +251,14 @@ AbstractElement *AbstractElement::getParsableParent() {
     return element;
 }
 
+AbstractElement *AbstractElement::getSecondParsable() {
+    AbstractElement *element = getParsableParent();
+    if (element->getLayoutParrent()) {
+        element = element->getLayoutParrent()->getParsableParent();
+    }
+    return element;
+}
+
 
 void AbstractElement::edited() {
     state()->edited(this);
