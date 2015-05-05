@@ -40,13 +40,8 @@ void Reparser::reparse(AbstractElement *element) {
 
     if (ok) {
         qDebug() << "Reparsing OK";
-        res = firstChild(res);
         qDebug() << "parsed c= "<< parsedChars;
-        qDebug() << "res = "<< res->getType();
-        Layout* layout = dynamic_cast<Layout*>(res);
-        if (layout) {
-            qDebug() << "count = "<< layout->count();
-        }
+
         replaceElement(element, res);
         res->setCursorPosition( element->getCurPos());
         //element->setState( new ElementValid);
@@ -114,8 +109,27 @@ void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem)
         // TODO ????? maybe new ROOT
         qDebug() << "WARNING !!! reparser: replace element with NULL parent!";
 
+        Layout *newRoot = dynamic_cast<Layout *>(newElem);
+        Layout *oldRoot = dynamic_cast<Layout *>(oldElem);
+        if (oldRoot && newRoot) {
+            BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(oldRoot->itemAt(0)), true);
+            oldRoot->removeAt(0);
+
+            QGraphicsLayoutItem *glItem = dynamic_cast<QGraphicsLayoutItem *>(newRoot->itemAt(0));
+            AbstractElement *element = dynamic_cast<AbstractElement *>(glItem);
+
+            oldRoot->addItem(glItem);
+            BlockScene::instance()->addItem( dynamic_cast<QGraphicsItem *>(glItem), true);
+            oldRoot->updateChildNeighbors();
+            element->setLayoutParrent(oldRoot);
+        } else {
+            qDebug() << "WARNING !!! reparser not new/old roots";
+        }
 
     } else {
+        newElem = firstChild(newElem);
+        qDebug() << "res = "<< newElem->getType();
+
         parent->insertBehind(oldElem, newElem);
         BlockScene::instance()->addItem( dynamic_cast<QGraphicsItem*>(newElem), true);
 
@@ -123,7 +137,7 @@ void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem)
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(oldElem), true);
         parent->updateChildNeighbors();
         qDebug() << "replaced";
-      }
+    }
 
 
 }
