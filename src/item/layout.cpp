@@ -3,6 +3,7 @@
 
 #include "style/style.h"
 #include "scene/blockscene.h"
+#include "item/state/elementstate.h"
 
 
 Layout::Layout(QGraphicsLayoutItem *parent)
@@ -48,6 +49,16 @@ void Layout::paint(QPainter *painter,
                    const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/) {
     Q_UNUSED(widget);
     Q_UNUSED(option);
+
+
+    if (state()->hasInvalidText()) {
+        QRectF frame(geometry());
+        frame.translate(3,20);
+        frame.adjust(-5,-5,3,3);
+        QBrush brush(Qt::red);
+        painter->setBrush(brush);
+        painter->drawRoundedRect(frame, 3.0, 3.0);
+    }
 
     if (isPaintEnabled()) {
         //qDebug() << "paint " << toString();
