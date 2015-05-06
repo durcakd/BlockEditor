@@ -44,6 +44,7 @@ public:
     AbstractElement *firstLastItemOf(AbstractElement *parent, bool first);
     bool isParent(AbstractElement *checkedParent);
     void setCursorPosition(int pos);
+    AbstractElement *findElementOnPosition(int pos);
     int posibleAbsoluteSkip(AbstractElement *child, int pos) const;
     AbstractElement *findMutualParent(AbstractElement *second);
     AbstractElement *getParsableParent();

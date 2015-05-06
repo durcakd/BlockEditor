@@ -4,6 +4,7 @@
 #include "item/state/elementchanged.h"
 #include "item/abstractelement.h"
 #include "item/item.h"
+#include "item/layout.h"
 
 ElementInvalid::ElementInvalid()
     : ElementState()
@@ -18,9 +19,14 @@ bool ElementInvalid::isSpaced() const {
 
 void ElementInvalid::entry(AbstractElement *element) const {
     Item *item = dynamic_cast<Item*>(element);
+    Layout *layout = dynamic_cast<Layout*>(element);
     if (item) {
         item->setDefaultTextColor(Qt::red);
     }
+    if (layout) {
+
+    }
+
 }
 
 void ElementInvalid::exit(AbstractElement *element) const {

@@ -178,6 +178,7 @@ function reparseNew(parser, text, addItemFnc, addGridFnc)
 
         local root = { type = 'root' , value = newTree }
         printTree(nil, root, " ")
+        sendRetree( root.instance, false, parsedCharacters)
         return nil, parsedCharacters
     end
 

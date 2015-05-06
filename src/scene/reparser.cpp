@@ -6,7 +6,7 @@
 #include "item/layout.h"
 #include "scene/parser.h"
 //#include "item/state/elementstate.h"
-//#include "item/state/elementinvalid.h"
+#include "item/state/elementinvalid.h"
 //#include "item/state/elementvalid.h"
 
 #include "scene/blockscene.h"
@@ -47,7 +47,21 @@ void Reparser::reparse(AbstractElement *element) {
         //element->setState( new ElementValid);
     } else {
         qDebug() << "Reparsing FAIL";
-        //element->setState( new ElementInvalid);
+        AbstractElement *okElement = element->findElementOnPosition(parsedChars-1);
+        qDebug() << "Element on pos -1="<< okElement->textE();
+        AbstractElement *wrongElement = element;
+
+        if (parsedChars > 1) {
+            // possible NULL pointer  TODO !!!
+//            while (NULL == okElement->getNext()) {
+//                okElement = okElement->getLayoutParrent();
+//            }
+//            wrongElement = okElement->getNext();
+            wrongElement = okElement->getLayoutParrent();
+
+        }
+        qDebug() << "WRONG element="<< wrongElement->textE();
+        wrongElement->setState( new ElementInvalid);
     }
 }
 
