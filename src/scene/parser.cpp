@@ -98,25 +98,56 @@ void Parser::init() {
         QString onlyText;
         QString afterText = "";
 
+        QStringList emptywords;
+
         QString::ConstIterator it;
+        bool wasEnter = false;
         for (it = text.constBegin(); it != text.constEnd(); it++) {
             if (it->isSpace()) {
                 if (it->unicode() != 10){
                     afterText += *it;
+                } else {
+                    wasEnter = true;
+                    emptywords.push_back(afterText);
+                    afterText = "";
                 }
             } else {
                 onlyText += *it;
             }
         }
-        Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
-        if( newItem->parentLayoutItem()){
-            newItem->getLayoutParrent()->addItem(newItem);
+        if (!wasEnter){
+            emptywords.push_back(afterText);
         }
 
-        if (!afterText.isEmpty()){
-            Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
+
+        Layout *parent = static_cast<Layout*>(parentPointer);
+        Item *newItem = NULL;
+        if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
+            newItem = createNewItem( parent, elementType, onlyText);
             if( newItem->parentLayoutItem()){
                 newItem->getLayoutParrent()->addItem(newItem);
+            }
+        } else {
+            Layout *horLayout= createNewLayout( parent, "aux_line");
+            if( horLayout->parentLayoutItem()){
+                horLayout->getLayoutParrent()->addItem(horLayout);
+            }
+
+            newItem = createNewItem( horLayout, elementType, onlyText);
+            horLayout->addItem(newItem);
+            Item *stableItem = createStableItem( horLayout, emptywords.at(0));
+            horLayout->addItem(stableItem);
+        }
+
+
+        if (emptywords.size() > 2) {
+            while (parent->orientation() != Qt::Vertical) {
+                parent = parent->getLayoutParrent();
+            }
+            for (int i=2; i<emptywords.size(); i++) {
+                Item *stableItem = createStableItem( parent, emptywords.at(i));
+                parent->addItem(stableItem);
+
             }
         }
 
