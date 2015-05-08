@@ -42,8 +42,7 @@ private:
     QString _text;
     ElementBuilder *_elementBuilder;
 
-    AbstractElement *_retree;
-    Layout *_root;
+    Layout *_retree;
     int _parsedChars;
 
 };

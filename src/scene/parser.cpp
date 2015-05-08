@@ -38,14 +38,31 @@ Parser::Parser(QString type)
 
 void Parser::init() {
 
-    _state.set("addBasicItem",
+    _state.set("createBasicLayout",
+               [this] (lua::String elementType,
+               lua::Pointer parentPointer,
+               lua::Integer elementIndex)
+            -> lua::Pointer
+    {
+
+        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
+        if( newLayout->parentLayoutItem()){
+            newLayout->getLayoutParrent()->addItem(newLayout);
+        } else {
+            //qDebug() << "ROOOOOOOOOOOOT";
+            _retree = newLayout;
+        }
+        //qDebug() << "parsing layout "<< elementType << "  " << dynamic_cast<AbstractElement*>(newLayout);
+        return newLayout;
+    });
+
+    _state.set("createBasicItem",
                [this] (lua::String elementType,
                lua::String elementText,
                lua::Pointer parentPointer,
                lua::Integer elementIndex)
             -> lua::Pointer
     {
-        //elementText.
         QString text = elementText;
         QString type = elementType;
         QString onlyText;
@@ -80,14 +97,15 @@ void Parser::init() {
             emptywords.pop_back();
         }
 
-        qDebug() << "------------------------";
-        qDebug() << text;
-        qDebug() << "0:" << onlyText;
-        for ( int ic=0; ic<emptywords.size();ic++) {
-            qDebug()<< ic+1 <<":"<< emptywords.at(ic);
+        if (0==type.compare("comment")){
+            qDebug() << "------------------------";
+            qDebug() << text;
+            qDebug() << "0:" << onlyText;
+            for ( int ic=0; ic<emptywords.size();ic++) {
+                qDebug()<< ic+1 <<":"<< emptywords.at(ic);
+            }
+            qDebug() << "------------------------";
         }
-        qDebug() << "------------------------";
-
         Item *newItem = NULL;
         Item *stableItem = NULL;
         Layout *parent = static_cast<Layout*>(parentPointer);
@@ -124,130 +142,11 @@ void Parser::init() {
             }
         }
 
-
         return newItem;
     });
 
 
-    _state.set("addBasicLayout",
-               [this] (lua::String elementType,
-               lua::Pointer parentPointer,
-               lua::Integer elementIndex)
-            -> lua::Pointer
-    {
-        //qDebug() << "parsing layout "<< elementType;
-        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
-        if( NULL != newLayout->parentLayoutItem()){
-            newLayout->getLayoutParrent()->addItem(newLayout);
-        } else {
-            newLayout->setLayoutParrent(NULL);
-            _root = newLayout;
-        }
-        return newLayout;
-    });
 
-    _state.set("createBasicItem",
-               [this] (lua::String elementType,
-               lua::String elementText,
-               lua::Pointer parentPointer,
-               lua::Integer elementIndex)
-            -> lua::Pointer
-    {
-        QString text = elementText;
-        QString type = elementType;
-        QString onlyText;
-        QString afterText = "";
-
-        QStringList emptywords;
-
-        QString::ConstIterator it;
-        bool wasEnter = false;
-        bool stillComment = 0==type.compare("comment");
-
-        for (it = text.constBegin(); it != text.constEnd(); it++) {
-            if (it->unicode() == 10){
-                stillComment = false;
-                wasEnter = true;
-                emptywords.push_back(afterText);
-                afterText = "";
-            } else {
-                wasEnter = false;
-                if (it->isSpace() && !stillComment) {
-                    afterText += *it;
-                } else {
-                    onlyText += *it;
-                }
-            }
-        }
-        if (!wasEnter){
-            emptywords.push_back(afterText);
-        }
-        int size = emptywords.size();
-        if (size > 1) {
-            emptywords[size-2] = emptywords[size-2]+emptywords[size-1];
-            emptywords.pop_back();
-        }
-
-        qDebug() << "------------------------";
-        qDebug() << text;
-        qDebug() << "0:" << onlyText;
-        for ( int ic=0; ic<emptywords.size();ic++) {
-            qDebug()<< ic+1 <<":"<< emptywords.at(ic);
-        }
-        qDebug() << "------------------------";
-
-
-        Layout *parent = static_cast<Layout*>(parentPointer);
-        Item *newItem = NULL;
-        if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
-            newItem = createNewItem( parent, elementType, onlyText);
-            if( newItem->parentLayoutItem()){
-                newItem->getLayoutParrent()->addItem(newItem);
-            }
-        } else {
-            Layout *horLayout= createNewLayout( parent, "aux_line");
-            if( horLayout->parentLayoutItem()){
-                horLayout->getLayoutParrent()->addItem(horLayout);
-            }
-
-            newItem = createNewItem( horLayout, elementType, onlyText);
-            horLayout->addItem(newItem);
-            Item *stableItem = createStableItem( horLayout, emptywords.at(0));
-            horLayout->addItem(stableItem);
-        }
-
-
-        if (emptywords.size() > 2) {
-            while (parent->orientation() != Qt::Vertical) {
-                parent = parent->getLayoutParrent();
-            }
-            for (int i=2; i<emptywords.size(); i++) {
-                Item *stableItem = createStableItem( parent, emptywords.at(i));
-                parent->addItem(stableItem);
-
-            }
-        }
-
-        return newItem;
-    });
-
-    _state.set("createBasicLayout",
-               [this] (lua::String elementType,
-               lua::Pointer parentPointer,
-               lua::Integer elementIndex)
-            -> lua::Pointer
-    {
-
-        Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
-        if( newLayout->parentLayoutItem()){
-            newLayout->getLayoutParrent()->addItem(newLayout);
-        } else {
-            //qDebug() << "ROOOOOOOOOOOOT";
-            _retree = newLayout;
-        }
-        //qDebug() << "parsing layout "<< elementType << "  " << dynamic_cast<AbstractElement*>(newLayout);
-        return newLayout;
-    });
 
     _state.set("sendRetree",
                [this] ( lua::Pointer pointer,
@@ -264,7 +163,7 @@ void Parser::init() {
             _parsedChars = parsedChars;
         } else {
             _parsedChars = parsedChars;
-            qDebug() << "sendRetree " << bool(ok) << "  " << _parsedChars << "  "<< _retree;
+            qDebug() << "sendRetree " << bool(ok) << "  " << _parsedChars;
         }
 
         return NULL;
@@ -327,11 +226,11 @@ void Parser::loadGrammar()
 }
 
 Layout *Parser::parse(QString text) {
-    _root = NULL;
+    _retree = NULL;
     qDebug() << "Request text reparse...";
     _state["parseTextNew"]( text.toStdString().c_str());
     qDebug() << "... parsing DONE";
-    return _root;
+    return _retree;
 }
 
 bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
