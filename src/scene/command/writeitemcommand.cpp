@@ -200,19 +200,39 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     _item->setPlainText(text.mid(0,pos));
     _item->blockSignals(false);
 
-    Item *second = createItemForInsert( newChar);
-    Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
+    Item *second = NULL;
+    Item *third = NULL;
+    if (parent->orientation() == Qt::Horizontal) {
+        second = createItemForInsert( newChar);
+        third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
 
-    parent->insertBehind(_item, second);
-    parent->insertBehind(second, third);
-    BlockScene::instance()->addItem(second);
-    BlockScene::instance()->addItem(third);
+        parent->insertBehind(_item, second);
+        parent->insertBehind(second, third);
+        BlockScene::instance()->addItem(second);
+        BlockScene::instance()->addItem(third);
+
+    } else {
+        Layout *horLayout = createLayoutForInsert( parent, "aux_line");
+        parent->insertBehind(_item, horLayout);
+        parent->removeElement(_item);
+
+        second = createItemForInsert( newChar, horLayout);
+        third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1), horLayout);
+
+        horLayout->insertOnStart(_item);
+        horLayout->insertBehind(_item, second);
+        horLayout->insertBehind(second, third);
+
+        horLayout->updateChildNeighbors();
+        BlockScene::instance()->addItem(horLayout);
+        BlockScene::instance()->addItem(second);
+        BlockScene::instance()->addItem(third);
+    }
 
     second->setFocus();
     QTextCursor cursor = second->textCursor();
     cursor.movePosition(QTextCursor::End);
     second->setTextCursor(cursor);
-
     // TODO
     ////    _item->edited(second);
     ////    second->edited(second);
