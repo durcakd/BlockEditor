@@ -74,7 +74,7 @@ void Parser::init() {
         bool stillComment = 0==type.compare("comment");
 
         for (it = text.constBegin(); it != text.constEnd(); it++) {
-            if (it->unicode() == 10){
+            if (it->unicode() == 10 || it->unicode() == 8233){
                 stillComment = false;
                 wasEnter = true;
                 emptywords.push_back(afterText);
@@ -90,27 +90,17 @@ void Parser::init() {
         }
         if (!wasEnter){
             emptywords.push_back(afterText);
-        }
-        int size = emptywords.size();
-        if (size > 1) {
-            emptywords[size-2] = emptywords[size-2]+emptywords[size-1];
-            emptywords.pop_back();
+
+            int size = emptywords.size();
+            if (size > 1) {
+                emptywords[size-2] = emptywords[size-2]+emptywords[size-1];
+                emptywords.pop_back();
+            }
         }
 
-        if (0==type.compare("comment")){
-            qDebug() << "------------------------";
-            qDebug() << text;
-            qDebug() << "0:" << onlyText;
-            for ( int ic=0; ic<emptywords.size();ic++) {
-                qDebug()<< ic+1 <<":"<< emptywords.at(ic);
-            }
-            qDebug() << "------------------------";
-        }
         Item *newItem = NULL;
         Item *stableItem = NULL;
         Layout *parent = static_cast<Layout*>(parentPointer);
-        /////////////
-        //qDebug()<<" >"<< onlyText <<"<>"<<afterText;
 
         if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
             newItem = createNewItem( parent, elementType, onlyText);
@@ -137,7 +127,8 @@ void Parser::init() {
                 parent = parent->getLayoutParrent();
             }
             for (int i=1; i<emptywords.size(); i++) {
-                stableItem = createStableItem( parent, emptywords.at(i));
+                QString spaceText = emptywords.at(i).isEmpty()?" ":emptywords.at(i);
+                stableItem = createStableItem( parent, spaceText);
                 parent->addItem(stableItem);
             }
         }
