@@ -21,7 +21,7 @@ class Parser : public QObject {
 public:
     static Parser *instance(QString type = "");
 
-    void parse(QString text);
+    Layout *parse(QString text);
     bool reparse(QString text, AbstractElement **res, int &parsedChars);
 
     Item *createNewItem(Layout *parent, QString type, QString text);
@@ -50,6 +50,7 @@ private:
     ElementBuilder *_elementBuilder;
 
     AbstractElement *_retree;
+    Layout *_root;
     int _parsedChars;
 
 };

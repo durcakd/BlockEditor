@@ -103,22 +103,10 @@ Item *BlockScene::addParserItem(Item *item)
 {
     //qDebug() << "-- added item " << item->toPlainText() << "   " << item->getType();
 
-    if( item->getLayoutParrent() == NULL){
-        //addItem(item);
-      //  qDebug() << "also in scene";
-
-    } else {
-        //qDebug() << "      with parrent: " << item->getLayoutParrent()->getType();
-
-        item->getLayoutParrent()->addItem(item);
-        //item->getLayoutParrent()->activate();
-        //item->getLayoutParrent()->updateGeometry();
-        //qDebug() << "islayout" << item->getLayoutParrent()->isLayout();
-
-        //Layout *parrent = dynamic_cast<Layout*>( item->getLayoutParrent());
-        //parrent->addLayoutChild(item);
-
-    }
+//    if( item->getLayoutParrent() == NULL){
+//    } else {
+//        item->getLayoutParrent()->addItem(item);
+//    }
     addItem( item);
     return item;
 }
@@ -129,7 +117,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
        // qDebug() << "also in scene";
         _form->setLayout(layout);
         _root = layout;
-        _root->setLayoutParrent(NULL);
+        //_root->setLayoutParrent(NULL);
 
         //setSceneRect(0, 0, 800, 600);
 
@@ -137,7 +125,7 @@ Layout* BlockScene::addParserLayout( Layout *layout) {
       //  qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();
         //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
         //parrent->addLayoutChild(layout);
-        layout->getLayoutParrent()->addItem(layout);
+        //layout->getLayoutParrent()->addItem(layout);
 
     }
     addItem( layout);

@@ -47,28 +47,98 @@ void Parser::init() {
     {
         //elementText.
         QString text = elementText;
+        QString type = elementType;
         QString onlyText;
         QString afterText = "";
+        QStringList emptywords;
 
         QString::ConstIterator it;
+        bool wasEnter = false;
+        bool stillComment = 0==type.compare("comment");
+
         for (it = text.constBegin(); it != text.constEnd(); it++) {
-            //qDebug() << "--------- " << *it << "  space:"<<it->isSpace() <<"  isLN:"<<it->isLetterOrNumber() <<"  isPrint:"<<it->isPrint() <<"  isSymbol:"<<it->isSymbol();
-            if (it->isSpace()) {
-                if (it->unicode() != 10){
-                    afterText += *it;
-                }
+            if (it->unicode() == 10){
+                stillComment = false;
+                wasEnter = true;
+                emptywords.push_back(afterText);
+                afterText = "";
             } else {
-                onlyText += *it;
+                wasEnter = false;
+                if (it->isSpace() && !stillComment) {
+                    afterText += *it;
+                } else {
+                    onlyText += *it;
+                }
             }
         }
+        if (!wasEnter){
+            emptywords.push_back(afterText);
+        }
+        int size = emptywords.size();
+        if (size > 1) {
+            emptywords[size-2] = emptywords[size-2]+emptywords[size-1];
+            emptywords.pop_back();
+        }
+
+        qDebug() << "------------------------";
+        qDebug() << text;
+        qDebug() << "0:" << onlyText;
+        for ( int ic=0; ic<emptywords.size();ic++) {
+            qDebug()<< ic+1 <<":"<< emptywords.at(ic);
+        }
+        qDebug() << "------------------------";
+
+        Item *newItem = NULL;
+        Item *stableItem = NULL;
+        Layout *parent = static_cast<Layout*>(parentPointer);
+        /////////////
         //qDebug()<<" >"<< onlyText <<"<>"<<afterText;
-        Item *newItem = createNewItem( static_cast<Layout*>(parentPointer), elementType, onlyText);
+
+
+        newItem = createNewItem( parent, elementType, onlyText);
+        if( NULL != newItem->getLayoutParrent()){
+            newItem->getLayoutParrent()->addItem(newItem);
+        }
         emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
-            Item *newItem = createStableItem( static_cast<Layout*>(parentPointer), afterText);
-            emit addElementItem(newItem);
+            stableItem = createStableItem( parent, afterText);
+            if( NULL != stableItem->getLayoutParrent()){
+                stableItem->getLayoutParrent()->addItem(stableItem);
+            }
+            emit addElementItem(stableItem);
         }
+        ////////////
+
+        //
+        //        if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
+        //            newItem = createNewItem( parent, elementType, onlyText);
+        //            if( newItem->parentLayoutItem()){
+        //                newItem->getLayoutParrent()->addItem(newItem);
+        //            }
+        //        } else {
+        //            Layout *horLayout= createNewLayout( parent, "aux_line");
+
+        //            newItem = createNewItem( horLayout, elementType, onlyText);
+        //            horLayout->addItem(newItem);
+        //            stableItem = createStableItem( horLayout, emptywords.at(0));
+        //            horLayout->addItem(stableItem);
+        //            if( horLayout->parentLayoutItem()){
+        //                horLayout->getLayoutParrent()->addItem(horLayout);
+        //            }
+        //        }
+
+        //        if (emptywords.size() > 1) {
+        //            while (parent->orientation() != Qt::Vertical) {
+        //                parent = parent->getLayoutParrent();
+        //            }
+        //            for (int i=2; i<emptywords.size(); i++) {
+        //                stableItem = createStableItem( parent, emptywords.at(i));
+        //                parent->addItem(stableItem);
+
+        //            }
+        //        }
+
 
         return newItem;
     });
@@ -82,6 +152,13 @@ void Parser::init() {
     {
         //qDebug() << "parsing layout "<< elementType;
         Layout *newLayout= createNewLayout( static_cast<Layout*>(parentPointer), elementType);
+        if( NULL != newLayout->parentLayoutItem()){
+            newLayout->getLayoutParrent()->addItem(newLayout);
+        } else {
+            newLayout->setLayoutParrent(NULL);
+            _root = newLayout;
+        }
+
         emit addElementLayout(newLayout);
         return newLayout;
     });
@@ -95,6 +172,7 @@ void Parser::init() {
             -> lua::Pointer
     {
         QString text = elementText;
+        QString type = elementType;
         QString onlyText;
         QString afterText = "";
 
@@ -102,22 +180,39 @@ void Parser::init() {
 
         QString::ConstIterator it;
         bool wasEnter = false;
+        bool stillComment = 0==type.compare("comment");
+
         for (it = text.constBegin(); it != text.constEnd(); it++) {
-            if (it->isSpace()) {
-                if (it->unicode() != 10){
+            if (it->unicode() == 10){
+                stillComment = false;
+                wasEnter = true;
+                emptywords.push_back(afterText);
+                afterText = "";
+            } else {
+                wasEnter = false;
+                if (it->isSpace() && !stillComment) {
                     afterText += *it;
                 } else {
-                    wasEnter = true;
-                    emptywords.push_back(afterText);
-                    afterText = "";
+                    onlyText += *it;
                 }
-            } else {
-                onlyText += *it;
             }
         }
         if (!wasEnter){
             emptywords.push_back(afterText);
         }
+        int size = emptywords.size();
+        if (size > 1) {
+            emptywords[size-2] = emptywords[size-2]+emptywords[size-1];
+            emptywords.pop_back();
+        }
+
+        qDebug() << "------------------------";
+        qDebug() << text;
+        qDebug() << "0:" << onlyText;
+        for ( int ic=0; ic<emptywords.size();ic++) {
+            qDebug()<< ic+1 <<":"<< emptywords.at(ic);
+        }
+        qDebug() << "------------------------";
 
 
         Layout *parent = static_cast<Layout*>(parentPointer);
@@ -249,11 +344,13 @@ void Parser::loadGrammar()
     }
 }
 
-void Parser::parse(QString text) {
+Layout *Parser::parse(QString text) {
+    _root = NULL;
     qDebug() << "Request text reparse...";
     _state["parseTextNew"]( text.toStdString().c_str());
     qDebug() << "... parsing DONE";
     emit parsingFinished();
+    return _root;
 }
 
 bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
