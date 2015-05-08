@@ -183,7 +183,8 @@ void Parser::init() {
         //_retree = static_cast<AbstractElement*>(pointer);
         if (!_retree) {
             qDebug() << "WARNING!!! sendRetree - _retree after conversion == NULL";
-            _parsedChars = 0;
+            qDebug() << "WARNING!!! sendRetree - _retree after conversion == NULL" << parsedChars;
+            _parsedChars = parsedChars;
         } else {
             _parsedChars = parsedChars;
             qDebug() << "sendRetree " << bool(ok) << "  " << _parsedChars << "  "<< _retree;
@@ -271,9 +272,9 @@ bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
     }
     blockSignals(false);
     qDebug() << "... parsing DONE";
+    parsedChars = _parsedChars;
     if (ok) {
         *res = _retree;
-        parsedChars = _parsedChars;
     }
 
     return ok;
