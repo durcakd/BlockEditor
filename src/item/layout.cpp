@@ -211,6 +211,13 @@ int Layout::indexOf(AbstractElement *element) {
     return -1;
 }
 
+void Layout::insertOnStart( AbstractElement *newElement) {
+    insertItem( 0, dynamic_cast<QGraphicsLayoutItem*>(newElement));
+    newElement->setLayoutParrent(this);
+    newElement->setNext(NULL);
+    newElement->setPrevius(NULL);
+}
+
 void Layout::insertBehind( AbstractElement *oldElement, AbstractElement *newElement) {
     int index = indexOf(oldElement);
     insertItem( index+1, dynamic_cast<QGraphicsLayoutItem*>(newElement));

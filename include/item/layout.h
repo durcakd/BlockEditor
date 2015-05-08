@@ -39,6 +39,7 @@ public:
     // class methods
     void    updateChildNeighbors();
     int     indexOf(AbstractElement *element);
+    void    insertOnStart( AbstractElement *newElement);
     void    insertBehind( AbstractElement *oldElement, AbstractElement *newElement);
     void    insertBefore( AbstractElement *oldElement, AbstractElement *newElement);
     void    removeElement( AbstractElement *element);

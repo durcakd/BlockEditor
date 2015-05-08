@@ -251,11 +251,31 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         //// neighbor->edited(neighbor);
     } else {
         qDebug() << "no merge";
-        Item *newItem = createItemForInsert( newChar);
-        if (inStart) {
-            parent->insertBefore(_item, newItem);
+        Item *newItem = NULL;
+
+        if (parent->orientation() == Qt::Horizontal) {
+            newItem = createItemForInsert( newChar);
+            if (inStart) {
+                parent->insertBefore(_item, newItem);
+            } else {
+                parent->insertBehind(_item, newItem);
+            }
         } else {
-            parent->insertBehind(_item, newItem);
+            Layout *horLayout = createLayoutForInsert( parent, "aux_line");
+
+            parent->insertBehind(_item, horLayout);
+            parent->removeElement(_item);
+            if (inStart) {
+                newItem = createItemForInsert(newChar, horLayout);
+                horLayout->insertOnStart(newItem);
+                horLayout->insertBehind(newItem, _item);
+            } else {
+                horLayout->insertOnStart(_item);
+                newItem = createItemForInsert(newChar, horLayout);
+                horLayout->insertBehind(_item, newItem);
+            }
+            parent->updateChildNeighbors();
+            BlockScene::instance()->addItem(horLayout);
         }
         BlockScene::instance()->addItem(newItem);
         ///// newItem->edited(newItem);
@@ -269,6 +289,10 @@ Item *WriteItemCommand::createItemForInsert(QChar newChar) {
     return createItemForInsert(newChar.isSpace(), QString(newChar));
 }
 
+Item *WriteItemCommand::createItemForInsert(QChar newChar, Layout *parent) {
+    return createItemForInsert(newChar.isSpace(), QString(newChar), parent);
+}
+
 Item *WriteItemCommand::createItemForInsert(bool stable, QString text) {
     return createItemForInsert(stable, text, _item->getLayoutParrent());
 }
@@ -280,6 +304,10 @@ Item *WriteItemCommand::createItemForInsert(bool stable, QString text, Layout *p
         //return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
         return Parser::instance()->createNewItem(parent, "changed_text", text);
     }
+}
+
+Layout *WriteItemCommand::createLayoutForInsert(Layout *parent, QString type) {
+    return Parser::instance()->createNewLayout(parent, type);
 }
 
 void WriteItemCommand::undoSimpleAddition() {

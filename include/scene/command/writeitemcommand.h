@@ -35,8 +35,10 @@ protected:
 
     AbstractElement *findInsteadtoSelect();
     Item *createItemForInsert(QChar newChar);
+    Item *createItemForInsert(QChar newChar, Layout *parent);
     Item *createItemForInsert(bool stable, QString text);
     Item *createItemForInsert(bool stable, QString text, Layout *parent);
+    Layout *createLayoutForInsert(Layout *parent, QString type);
 
 
     Item *_item;
