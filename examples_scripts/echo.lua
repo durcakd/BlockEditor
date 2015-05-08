@@ -1,5 +1,7 @@
 -- echo command line arguments
-m = io.read()
+
+ 
+ m = io.read()
 print(m)
 for i=0,table.getn(arg) do
  print(i,arg[i])

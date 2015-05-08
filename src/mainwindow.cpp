@@ -50,12 +50,12 @@ MainWindow::MainWindow()
     _textType = "lua";
     parser = Parser::instance(_textType);
 
-    QObject::connect( parser, &Parser::addElementItem,
-                     scene, &BlockScene::addParserItem );
-    QObject::connect( parser, &Parser::addElementLayout,
-                     scene, &BlockScene::addParserLayout );
-    QObject::connect( parser, &Parser::parsingFinished,
-                      scene, &BlockScene::updateTreeNeighbors);
+//    QObject::connect( parser, &Parser::addElementItem,
+//                     scene, &BlockScene::addParserItem );
+//    QObject::connect( parser, &Parser::addElementLayout,
+//                     scene, &BlockScene::addParserLayout );
+//    QObject::connect( parser, &Parser::parsingFinished,
+//                      scene, &BlockScene::updateTreeNeighbors);
 
     setGeometry(100, 100, 500, 400);
     scene->setSceneRect(0, 0, 470, 380);
@@ -112,7 +112,8 @@ void MainWindow::openFile(const QString &path)
             _text = in.readAll();
             lineEditor->setPlainText(_text);
             file.close();
-            parser->parse(_text);
+            scene->addNewRoot(parser->parse(_text));
+
         }
     }
 }

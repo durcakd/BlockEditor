@@ -62,6 +62,18 @@ local VERT_BLOCK = {
     object = "vertical"
 }
 
+local AUX_VERT = {
+    grid = true,
+    parsable = false,
+    object = "vertical"
+}
+
+local AUX_LINE = {
+    grid = true,
+    parsable = false,
+    object = "horizontal"
+}
+
 local LINE = {
     grid = true,
     parsable = false,
@@ -100,6 +112,8 @@ return {
         while_stat = VERT_BLOCK,
         repeat_stat = VERT_BLOCK,
         for_stat = VERT_BLOCK,
+        aux_vert = AUX_VERT,
+        aux_line = AUX_LINE,
 
 
 	header = LINE,
