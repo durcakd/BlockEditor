@@ -108,13 +108,18 @@ int Layout::textLength(bool length) const {
 
 QString Layout::textE() const {
     QString text;
-    for ( int i=0; i < count(); i++) {
+    bool vertical = orientation() == Qt::Vertical;
+    int size = count();
+    for ( int i=0; i < size; i++) {
+
         if (AbstractElement *element = dynamic_cast <AbstractElement*>(itemAt(i))) {
             text += element->textE();
-            if (orientation() == Qt::Vertical) {
+            if (vertical && i+1!=size) {
                 text += "\n";
             }
         }
+
+
     }
     return text;
 }

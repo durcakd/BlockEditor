@@ -41,6 +41,7 @@ void SelectItemCommand::execute() {
             state->setPaintedElement(dynamic_cast<AbstractElement*>(_item));
         }
     }
+    qDebug() << _item->toString();
 
     _item->mousePressEvent(_event);
 
