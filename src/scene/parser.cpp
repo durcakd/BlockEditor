@@ -25,8 +25,7 @@ Parser *Parser::instance(QString type) {
     return _instance;
 }
 
-Parser::Parser(QString type) :
-    QObject()
+Parser::Parser(QString type)
 {
     _textType = type;
     _elementBuilder = new StandardElementBuilder();
@@ -156,8 +155,6 @@ void Parser::init() {
             newLayout->setLayoutParrent(NULL);
             _root = newLayout;
         }
-
-        //emit addElementLayout(newLayout);
         return newLayout;
     });
 
@@ -357,14 +354,14 @@ bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
     bool ok = true;
 
     try {
-        blockSignals(true);
+
         qDebug() << "Request text reparse for:\n"<< text;
         ok = _state["reparseTextNew"]( text.toStdString().c_str());
         //emit parsingFinished()
     } catch (lua::RuntimeError ex) {
         ok = false;
     }
-    blockSignals(false);
+
     qDebug() << "... parsing DONE";
     parsedChars = _parsedChars;
     if (ok) {

@@ -18,8 +18,6 @@ class Reparser;
 
 class BlockScene : public QGraphicsScene
 {
-    Q_OBJECT
-
 public:
     static BlockScene *instance( QObject *parent = 0);
     void addItem(QGraphicsItem *graphicItem, bool recursive = false);
@@ -33,12 +31,6 @@ public:
     Layout *root() const;
     void  setRoot(Layout *root);
 
-
-//public slots:
-
-//    Item* addParserItem( Item *item);
-//    Layout* addParserLayout( Layout *layout);
-//    void updateTreeNeighbors();
 
 private:
     static BlockScene *inst;

@@ -99,27 +99,6 @@ void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
     QGraphicsScene::removeItem(graphicItem);
 }
 
-//Item *BlockScene::addParserItem(Item *item)
-//{
-
-//    //addItem( item);
-//    return item;
-//}
-
-//Layout* BlockScene::addParserLayout( Layout *layout) {
-
-//    //addItem( layout);
-//    return layout;
-//}
-
-//void BlockScene::updateTreeNeighbors()
-//{
-//    if (NULL == _root) {
-//        qDebug() << "Warning: BlockScene::updateTreeNeighbors(): _root is null.";
-//        return;
-//    }
-//    _root->updateChildNeighbors();
-//}
 
 void BlockScene::addNewRoot(Layout *root) {
     _form->setLayout(root);
