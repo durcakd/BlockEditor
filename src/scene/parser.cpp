@@ -37,6 +37,7 @@ Parser::Parser(QString type)
 
 
 void Parser::init() {
+
     _state.set("addBasicItem",
                [this] (lua::String elementType,
                lua::String elementText,
@@ -93,48 +94,35 @@ void Parser::init() {
         /////////////
         //qDebug()<<" >"<< onlyText <<"<>"<<afterText;
 
+        if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
+            newItem = createNewItem( parent, elementType, onlyText);
+            parent->addItem(newItem);
 
-        newItem = createNewItem( parent, elementType, onlyText);
-        if( NULL != newItem->getLayoutParrent()){
-            newItem->getLayoutParrent()->addItem(newItem);
-        }
-
-        if (!afterText.isEmpty()){
-            stableItem = createStableItem( parent, afterText);
-            if( NULL != stableItem->getLayoutParrent()){
-                stableItem->getLayoutParrent()->addItem(stableItem);
+        } else {
+            if (parent->orientation() != Qt::Horizontal) {
+                Layout *horLayout = createNewLayout( parent, "aux_line");
+                newItem = createNewItem( horLayout, elementType, onlyText);
+                horLayout->addItem(newItem);
+                stableItem = createStableItem( horLayout, emptywords.at(0));
+                horLayout->addItem(stableItem);
+                parent->addItem(horLayout);
+            } else {
+                newItem = createNewItem( parent, elementType, onlyText);
+                parent->addItem(newItem);
+                stableItem = createStableItem( parent, emptywords.at(0));
+                parent->addItem(stableItem);
             }
         }
-        ////////////
 
-        //
-        //        if (emptywords.isEmpty() || emptywords.at(0).isEmpty()) {
-        //            newItem = createNewItem( parent, elementType, onlyText);
-        //            if( newItem->parentLayoutItem()){
-        //                newItem->getLayoutParrent()->addItem(newItem);
-        //            }
-        //        } else {
-        //            Layout *horLayout= createNewLayout( parent, "aux_line");
-
-        //            newItem = createNewItem( horLayout, elementType, onlyText);
-        //            horLayout->addItem(newItem);
-        //            stableItem = createStableItem( horLayout, emptywords.at(0));
-        //            horLayout->addItem(stableItem);
-        //            if( horLayout->parentLayoutItem()){
-        //                horLayout->getLayoutParrent()->addItem(horLayout);
-        //            }
-        //        }
-
-        //        if (emptywords.size() > 1) {
-        //            while (parent->orientation() != Qt::Vertical) {
-        //                parent = parent->getLayoutParrent();
-        //            }
-        //            for (int i=2; i<emptywords.size(); i++) {
-        //                stableItem = createStableItem( parent, emptywords.at(i));
-        //                parent->addItem(stableItem);
-
-        //            }
-        //        }
+        if (emptywords.size() > 1) {
+            while (parent->orientation() != Qt::Vertical) {
+                parent = parent->getLayoutParrent();
+            }
+            for (int i=1; i<emptywords.size(); i++) {
+                stableItem = createStableItem( parent, emptywords.at(i));
+                parent->addItem(stableItem);
+            }
+        }
 
 
         return newItem;
@@ -157,7 +145,6 @@ void Parser::init() {
         }
         return newLayout;
     });
-
 
     _state.set("createBasicItem",
                [this] (lua::String elementType,
