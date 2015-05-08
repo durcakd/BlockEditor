@@ -4,6 +4,7 @@
 #include "style/style.h"
 #include "scene/blockscene.h"
 #include "item/state/elementstate.h"
+#include "QPainter"
 
 
 Layout::Layout(QGraphicsLayoutItem *parent)
@@ -50,23 +51,29 @@ void Layout::paint(QPainter *painter,
     Q_UNUSED(widget);
     Q_UNUSED(option);
 
-
+    QBrush brush(QColor(0,0,0,255));
     if (state()->hasInvalidText()) {
+        brush.setColor(QColor(255,0,0,70));
+        painter->setBrush(brush);
+        painter->setPen(QColor(255,0,0,70));
+        painter->setPen(QColor(0,0,0,0));
+
         QRectF frame(geometry());
         frame.translate(3,20);
-        frame.adjust(-5,-5,3,3);
-        QBrush brush(Qt::red);
-        painter->setBrush(brush);
+        frame.adjust(-2,-2,0,0);
         painter->drawRoundedRect(frame, 3.0, 3.0);
     }
 
     if (isPaintEnabled()) {
-        //qDebug() << "paint " << toString();
+        brush.setColor(QColor(0,0,255,20));
+        painter->setBrush(brush);
+        painter->setPen(Qt::blue);
 
 
         QRectF frame(geometry());
+
         frame.translate(3,20);
-        frame.adjust(-5,-5,3,3);
+        frame.adjust(-4,-4,2,2);
 
         painter->drawRoundedRect(frame, 3.0, 3.0);
     }

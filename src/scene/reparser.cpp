@@ -47,7 +47,7 @@ void Reparser::reparse(AbstractElement *element) {
         //element->setState( new ElementValid);
     } else {
         qDebug() << "Reparsing FAIL";
-        AbstractElement *okElement = element->findElementOnPosition(parsedChars-1);
+        AbstractElement *okElement = element->findElementOnPosition(parsedChars);
         qDebug() << "Element on pos -1="<< okElement->textE();
         AbstractElement *wrongElement = element;
 
