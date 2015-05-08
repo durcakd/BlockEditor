@@ -30,10 +30,10 @@ public:
     Layout *createNewLayout(Layout *parent, QString type);
 
 signals:
-    void addElementItem( Item* item);
-    void addElementLayout( Layout* layout);
+//    void addElementItem( Item* item);
+//    void addElementLayout( Layout* layout);
     void addElementStyle( Style* style);
-    void parsingFinished();
+//    void parsingFinished();
 
 private:
     static Parser *_instance;

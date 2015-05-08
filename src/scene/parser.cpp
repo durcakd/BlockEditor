@@ -99,14 +99,12 @@ void Parser::init() {
         if( NULL != newItem->getLayoutParrent()){
             newItem->getLayoutParrent()->addItem(newItem);
         }
-        emit addElementItem(newItem);
 
         if (!afterText.isEmpty()){
             stableItem = createStableItem( parent, afterText);
             if( NULL != stableItem->getLayoutParrent()){
                 stableItem->getLayoutParrent()->addItem(stableItem);
             }
-            emit addElementItem(stableItem);
         }
         ////////////
 
@@ -159,7 +157,7 @@ void Parser::init() {
             _root = newLayout;
         }
 
-        emit addElementLayout(newLayout);
+        //emit addElementLayout(newLayout);
         return newLayout;
     });
 
@@ -349,7 +347,6 @@ Layout *Parser::parse(QString text) {
     qDebug() << "Request text reparse...";
     _state["parseTextNew"]( text.toStdString().c_str());
     qDebug() << "... parsing DONE";
-    emit parsingFinished();
     return _root;
 }
 

@@ -99,48 +99,35 @@ void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
     QGraphicsScene::removeItem(graphicItem);
 }
 
-Item *BlockScene::addParserItem(Item *item)
-{
-    //qDebug() << "-- added item " << item->toPlainText() << "   " << item->getType();
+//Item *BlockScene::addParserItem(Item *item)
+//{
 
-//    if( item->getLayoutParrent() == NULL){
-//    } else {
-//        item->getLayoutParrent()->addItem(item);
+//    //addItem( item);
+//    return item;
+//}
+
+//Layout* BlockScene::addParserLayout( Layout *layout) {
+
+//    //addItem( layout);
+//    return layout;
+//}
+
+//void BlockScene::updateTreeNeighbors()
+//{
+//    if (NULL == _root) {
+//        qDebug() << "Warning: BlockScene::updateTreeNeighbors(): _root is null.";
+//        return;
 //    }
-    addItem( item);
-    return item;
-}
+//    _root->updateChildNeighbors();
+//}
 
-Layout* BlockScene::addParserLayout( Layout *layout) {
-    //qDebug() << "-- added layout " << layout->getType();
-    if( layout->parentLayoutItem() == NULL){
-       // qDebug() << "also in scene";
-        _form->setLayout(layout);
-        _root = layout;
-        //_root->setLayoutParrent(NULL);
-
-        //setSceneRect(0, 0, 800, 600);
-
-    } else {
-      //  qDebug() << "      with parrent: " << layout->getLayoutParrent()->getType();
-        //Layout *parrent = dynamic_cast<Layout*>( layout->getLayoutParrent());
-        //parrent->addLayoutChild(layout);
-        //layout->getLayoutParrent()->addItem(layout);
-
-    }
-    addItem( layout);
-    return layout;
-}
-
-void BlockScene::updateTreeNeighbors()
-{
-    if (NULL == _root) {
-        qDebug() << "Warning: BlockScene::updateTreeNeighbors(): _root is null.";
-        return;
-    }
+void BlockScene::addNewRoot(Layout *root) {
+    _form->setLayout(root);
+    _root = root;
     _root->updateChildNeighbors();
-
+    addItem(_root, true);
 }
+
 
 void BlockScene::addCommand(Command *command)
 {

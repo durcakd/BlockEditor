@@ -28,16 +28,17 @@ public:
 
     SceneState *getSceneState() const { return _sceneState;}
     void addCommand(Command *command);
+    void addNewRoot(Layout *root);
 
     Layout *root() const;
     void  setRoot(Layout *root);
 
 
-public slots:
+//public slots:
 
-    Item* addParserItem( Item *item);
-    Layout* addParserLayout( Layout *layout);
-    void updateTreeNeighbors();
+//    Item* addParserItem( Item *item);
+//    Layout* addParserLayout( Layout *layout);
+//    void updateTreeNeighbors();
 
 private:
     static BlockScene *inst;
