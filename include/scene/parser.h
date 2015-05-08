@@ -4,7 +4,6 @@
 
 #include <LuaState.h>
 #include <QString>
-#include <QObject>
 
 #include "style/styleutil.h"
 
@@ -15,25 +14,19 @@ class Style;
 class AbstractElement;
 class ElementBuilder;
 
-class Parser : public QObject {
-    Q_OBJECT
+class Parser {
+
 
 public:
     static Parser *instance(QString type = "");
 
-    void parse(QString text);
+    Layout *parse(QString text);
     bool reparse(QString text, AbstractElement **res, int &parsedChars);
 
     Item *createNewItem(Layout *parent, QString type, QString text);
     Item *createStableItem(Layout *parent, QString text);
     //Item *createChangedItem(Layout *parent, QString text);
     Layout *createNewLayout(Layout *parent, QString type);
-
-signals:
-    void addElementItem( Item* item);
-    void addElementLayout( Layout* layout);
-    void addElementStyle( Style* style);
-    void parsingFinished();
 
 private:
     static Parser *_instance;
@@ -49,7 +42,7 @@ private:
     QString _text;
     ElementBuilder *_elementBuilder;
 
-    AbstractElement *_retree;
+    Layout *_retree;
     int _parsedChars;
 
 };

@@ -39,13 +39,14 @@ function parseTextNew(newText)
         -- Add Item
         function(index, element, parent)
             --print('ADD ITEM: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
-            element.instance = addBasicItem( element.type, element.value, parent.instance, index)
+            --element.instance = addBasicItem( element.type, element.value, parent.instance, index)
+            element.instance = createBasicItem( element.type, element.value, parent.instance, index)
         end,
 
         -- Add Grid
         function(index, element, parent)
             --print('ADD GRID: ' .. element.type .. ' "' .. tostring(element.value) .. '" at index ' .. tostring(index) .. ' to parent[' .. tostring(parent) .. '] ')
-            element.instance = addBasicLayout( element.type, parent.instance, index)
+            element.instance = createBasicLayout( element.type, parent.instance, index)
         end
         )
     return newTree ~= nil
@@ -178,6 +179,7 @@ function reparseNew(parser, text, addItemFnc, addGridFnc)
 
         local root = { type = 'root' , value = newTree }
         printTree(nil, root, " ")
+        sendRetree( root.instance, false, parsedCharacters)
         return nil, parsedCharacters
     end
 

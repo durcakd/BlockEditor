@@ -15,6 +15,7 @@ public:
     void exit(AbstractElement *element) const;
     void edited(AbstractElement *element) const;
     bool isSpaced() const;
+    bool hasInvalidText() const {return true;}
 
 };
 

@@ -196,6 +196,26 @@ void AbstractElement::setCursorPosition(int pos) {
     item->setTextCursor(cursor);
 }
 
+AbstractElement *AbstractElement::findElementOnPosition(int pos) {
+    qDebug() << "findElementOnPosition:"<< pos;
+    AbstractElement *targed = this;
+    while (targed->isLayoutE()) {
+        qDebug() << "findElementOnPosition:"<< pos;
+        Layout *layout = dynamic_cast<Layout*>(targed);
+        AbstractElement *child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
+
+        int len = posibleAbsoluteSkip(child, pos);
+        while ( 0 < len) {
+            qDebug() << "skip:"<< pos;
+            pos -= len;
+            child = child->getNext();
+            len = posibleAbsoluteSkip(child, pos);
+        }
+        targed = child;
+    }
+    return targed;
+}
+
 int AbstractElement::posibleAbsoluteSkip(AbstractElement *child, int pos) const {
     if (child == NULL) {
         return 0;
@@ -247,6 +267,14 @@ AbstractElement *AbstractElement::getParsableParent() {
             && !(element->styleE()->getIsParsable())) {
         element = element->getLayoutParrent();
         //qDebug() << " * new PP: "<< element->getType() << "   " << element->textE();
+    }
+    return element;
+}
+
+AbstractElement *AbstractElement::getSecondParsable() {
+    AbstractElement *element = getParsableParent();
+    if (element->getLayoutParrent()) {
+        element = element->getLayoutParrent()->getParsableParent();
     }
     return element;
 }

@@ -84,18 +84,18 @@ void WriteItemCommand::simpleRemove() {
             instead->setFocus();
 
             // remove
-            parseble = getParsableForRemoved( toRemove, _item);
+            parseble = prepareParsableForRemoved( toRemove, _item);
             parent->removeElement(toRemove);
 
             BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toRemove));
 
             parseble->edited();
         } else {
-            parseble = getParsable( _item);
+            parseble = prepareParsable( _item);
             parseble->edited();
         }
     } else {
-        parseble = getParsable( _item);
+        parseble = prepareParsable( _item);
         parseble->edited();
     }
 }
@@ -158,8 +158,7 @@ void WriteItemCommand::simpleAdditionEnter() {
         vParent->removeElement(toReplace);
         BlockScene::instance()->removeItem( dynamic_cast<QGraphicsItem *>(toReplace));
 
-        AbstractElement *parseble = vParent->getParsableParent();
-        parseble->setCurPos( rightItem->cursorPositionIn(parseble));
+        AbstractElement *parseble = prepareParsable(vParent, rightItem);
         parseble->edited();
         // TODO ???  rightItem->edited(rightItem);  nieje zaznaceny ako editovany
     }
@@ -177,8 +176,8 @@ void WriteItemCommand::simpleAddition() {
     }
 
     if ( _item->state()->isSpaced() == newChar.isSpace()) {
-        AbstractElement *parseble = getParsable( _item);
-        parseble->edited();;
+        AbstractElement *parseble = prepareParsable( _item);
+        parseble->edited();
 
     } else {
         qDebug() << "  different item types, added:" << newChar;
@@ -201,25 +200,44 @@ void WriteItemCommand::simpleAdditionMiddle(QChar newChar) {
     _item->setPlainText(text.mid(0,pos));
     _item->blockSignals(false);
 
-    Item *second = createItemForInsert( newChar);
-    Item *third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
+    Item *second = NULL;
+    Item *third = NULL;
+    if (parent->orientation() == Qt::Horizontal) {
+        second = createItemForInsert( newChar);
+        third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1));
 
-    parent->insertBehind(_item, second);
-    parent->insertBehind(second, third);
-    BlockScene::instance()->addItem(second);
-    BlockScene::instance()->addItem(third);
+        parent->insertBehind(_item, second);
+        parent->insertBehind(second, third);
+        BlockScene::instance()->addItem(second);
+        BlockScene::instance()->addItem(third);
+
+    } else {
+        Layout *horLayout = createLayoutForInsert( parent, "aux_line");
+        parent->insertBehind(_item, horLayout);
+        parent->removeElement(_item);
+
+        second = createItemForInsert( newChar, horLayout);
+        third = createItemForInsert( !newChar.isSpace(), text.mid(pos+1), horLayout);
+
+        horLayout->insertOnStart(_item);
+        horLayout->insertBehind(_item, second);
+        horLayout->insertBehind(second, third);
+
+        horLayout->updateChildNeighbors();
+        BlockScene::instance()->addItem(horLayout);
+        BlockScene::instance()->addItem(second);
+        BlockScene::instance()->addItem(third);
+    }
 
     second->setFocus();
     QTextCursor cursor = second->textCursor();
     cursor.movePosition(QTextCursor::End);
     second->setTextCursor(cursor);
-
     // TODO
     ////    _item->edited(second);
     ////    second->edited(second);
     ////    third->edited(second);
-    AbstractElement *parseble = parent->getParsableParent();
-    parseble->setCurPos( second->cursorPositionIn(parseble));
+    AbstractElement *parseble = prepareParsable(parent, second);
     parseble->edited();
 }
 
@@ -248,20 +266,40 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
         neighbor->setTextCursor(cursor);
         neighbor->blockSignals(false);
 
-        parsable = getParsable(neighbor);
+        parsable = prepareParsable(neighbor);
         parsable->edited();
         //// neighbor->edited(neighbor);
     } else {
         qDebug() << "no merge";
-        Item *newItem = createItemForInsert( newChar);
-        if (inStart) {
-            parent->insertBefore(_item, newItem);
+        Item *newItem = NULL;
+
+        if (parent->orientation() == Qt::Horizontal) {
+            newItem = createItemForInsert( newChar);
+            if (inStart) {
+                parent->insertBefore(_item, newItem);
+            } else {
+                parent->insertBehind(_item, newItem);
+            }
         } else {
-            parent->insertBehind(_item, newItem);
+            Layout *horLayout = createLayoutForInsert( parent, "aux_line");
+
+            parent->insertBehind(_item, horLayout);
+            parent->removeElement(_item);
+            if (inStart) {
+                newItem = createItemForInsert(newChar, horLayout);
+                horLayout->insertOnStart(newItem);
+                horLayout->insertBehind(newItem, _item);
+            } else {
+                horLayout->insertOnStart(_item);
+                newItem = createItemForInsert(newChar, horLayout);
+                horLayout->insertBehind(_item, newItem);
+            }
+            parent->updateChildNeighbors();
+            BlockScene::instance()->addItem(horLayout);
         }
         BlockScene::instance()->addItem(newItem);
         ///// newItem->edited(newItem);
-        parsable = getParsable(newItem);
+        parsable = prepareParsable(newItem);
         parsable->edited();
     }
 }
@@ -269,6 +307,10 @@ void WriteItemCommand::simpleAdditionStartEnd(QChar newChar, bool inStart) {
 
 Item *WriteItemCommand::createItemForInsert(QChar newChar) {
     return createItemForInsert(newChar.isSpace(), QString(newChar));
+}
+
+Item *WriteItemCommand::createItemForInsert(QChar newChar, Layout *parent) {
+    return createItemForInsert(newChar.isSpace(), QString(newChar), parent);
 }
 
 Item *WriteItemCommand::createItemForInsert(bool stable, QString text) {
@@ -282,6 +324,10 @@ Item *WriteItemCommand::createItemForInsert(bool stable, QString text, Layout *p
         //return Parser::instance()->createChangedItem(_item->getLayoutParrent(), text);
         return Parser::instance()->createNewItem(parent, "changed_text", text);
     }
+}
+
+Layout *WriteItemCommand::createLayoutForInsert(Layout *parent, QString type) {
+    return Parser::instance()->createNewLayout(parent, type);
 }
 
 void WriteItemCommand::undoSimpleAddition() {
@@ -314,13 +360,20 @@ AbstractElement *WriteItemCommand::findInsteadtoSelect() {
     return instead;
 }
 
-AbstractElement *WriteItemCommand::getParsable(Item *item) const {
-    AbstractElement *parseble = item->getParsableParent();
+AbstractElement *WriteItemCommand::prepareParsable(Item *item) const {
+    AbstractElement *parseble = item->getSecondParsable();
     parseble->setCurPos( item->cursorPositionIn(parseble));
     return parseble;
 }
 
-AbstractElement *WriteItemCommand::getParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const {
+AbstractElement *WriteItemCommand::prepareParsable(AbstractElement *element, Item *focusItem) const {
+    AbstractElement *parseble = element->getSecondParsable();
+    parseble->setCurPos( focusItem->cursorPositionIn(parseble));
+    return parseble;
+}
+
+
+AbstractElement *WriteItemCommand::prepareParsableForRemoved(AbstractElement *toRemove, Item *focusItem) const {
     //qDebug() << "getParsableForRemoved";
     AbstractElement *right = toRemove->nextPreviousAlsoVert(true);
     while (right && right->state()->isSpaced()) {
@@ -344,7 +397,7 @@ AbstractElement *WriteItemCommand::getParsableForRemoved(AbstractElement *toRemo
         parseble = toRemove->findMutualParent(right);
     }
     //qDebug() << " mutual paren is finded";
-    parseble = parseble->getParsableParent();
+    parseble = parseble->getSecondParsable();
     parseble->setCurPos( focusItem->cursorPositionIn(parseble));
     return parseble;
 }
