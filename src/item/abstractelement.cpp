@@ -197,16 +197,16 @@ void AbstractElement::setCursorPosition(int pos) {
 }
 
 AbstractElement *AbstractElement::findElementOnPosition(int pos) {
-    qDebug() << "findElementOnPosition:"<< pos;
+    //qDebug() << "findElementOnPosition:"<< pos;
     AbstractElement *targed = this;
     while (targed->isLayoutE()) {
-        qDebug() << "findElementOnPosition:"<< pos;
+        //qDebug() << "findElementOnPosition:"<< pos;
         Layout *layout = dynamic_cast<Layout*>(targed);
         AbstractElement *child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
 
         int len = posibleAbsoluteSkip(child, pos);
         while ( 0 < len) {
-            qDebug() << "skip:"<< pos;
+            //qDebug() << "skip:"<< pos;
             pos -= len;
             child = child->getNext();
             len = posibleAbsoluteSkip(child, pos);

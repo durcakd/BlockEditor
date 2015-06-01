@@ -31,6 +31,9 @@ void Reparser::update(AbstractElement *element) {
 }
 
 void Reparser::reparse(AbstractElement *element) {
+    qDebug() << "--- start parsing time measure -------";
+    QTime time;
+    time.start();
     int parsedChars = 0;
     AbstractElement *res = NULL;
     QString text = element->textE();
@@ -62,7 +65,15 @@ void Reparser::reparse(AbstractElement *element) {
         }
         //qDebug() << "WRONG element="<< wrongElement->textE();
         wrongElement->setState( new ElementInvalid);
+
     }
+
+
+
+    double runTime = time.elapsed();// / 1000.0;
+    qDebug() << "--- parsing time= "<< QString::number(runTime, 'f', 2);
+    qDebug()<< "------ reparsed text len = " << text.length();
+
 }
 
 void Reparser::replaceElement(AbstractElement *oldElem, AbstractElement*newElem) {

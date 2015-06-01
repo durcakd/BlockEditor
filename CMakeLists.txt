@@ -29,7 +29,9 @@ endif()
 # Debug is default
 if( NOT CMAKE_BUILD_TYPE )
     set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE ) #MinSizeRel
+
 endif()
+set( CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE ) #MinSizeRel
 message("CMAKE_BUILD_TYPE ::" ${CMAKE_BUILD_TYPE})
 
 add_definitions(

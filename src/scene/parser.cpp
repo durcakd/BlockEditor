@@ -232,7 +232,7 @@ bool Parser::reparse(QString text, AbstractElement **res, int &parsedChars) {
 
     try {
 
-        qDebug() << "Request text reparse for:\n"<< text;
+        //qDebug() << "Request text reparse for:\n"<< text;
         ok = _state["reparseTextNew"]( text.toStdString().c_str());
         //emit parsingFinished()
     } catch (lua::RuntimeError ex) {

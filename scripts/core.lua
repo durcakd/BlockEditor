@@ -65,7 +65,7 @@ function parseNew(parser, text, addItemFnc, addGridFnc)
         parsedCharacters = newTree[#newTree].positionEnd
     end
 
-    print('text= '..text)
+    --print('text= '..text)
     print('#text+1      = '..(#text+1))
     print('persed chars = '..parsedCharacters)
 
@@ -168,7 +168,7 @@ function reparseNew(parser, text, addItemFnc, addGridFnc)
         parsedCharacters = newTree[#newTree].positionEnd
     end
 
-    print('text= '..text)
+    --print('text= '..text)
     print('#text+1      = '..(#text+1))
     print('persed chars = '..parsedCharacters)
 
@@ -178,7 +178,7 @@ function reparseNew(parser, text, addItemFnc, addGridFnc)
         print 'reparsing done with error!\n'
 
         local root = { type = 'root' , value = newTree }
-        printTree(nil, root, " ")
+        --printTree(nil, root, " ")
         sendRetree( root.instance, false, parsedCharacters)
         return nil, parsedCharacters
     end

@@ -24,27 +24,26 @@ CursorMoveCommand::CursorMoveCommand(QGraphicsItem *watched, QKeyEvent *event)
 void CursorMoveCommand::execute() {
     qDebug() << "EXE cursorMoveCommand";
 
-    QTextCursor cursor = _item->textCursor();
-
     switch (_event->key()){
     case Qt::Key_Left:
-        horCursorMovement(cursor, false);
+        horCursorMovement( false);
         break;
     case Qt::Key_Right:
-        horCursorMovement(cursor, true);
+        horCursorMovement( true);
         break;
     case Qt::Key_Up:
-        verCursorMovement(cursor, false);
+        verCursorMovement( false);
         break;
     case Qt::Key_Down:
-        verCursorMovement(cursor, true);
+        verCursorMovement( true);
         break;
     }
 }
 
 
-void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
+void CursorMoveCommand::horCursorMovement(bool toNext)
 {
+    QTextCursor cursor = _item->textCursor();
     AbstractElement *targed;
     if (_item->textLength(toNext) == cursor.position()) {
         targed = _item->nextPreviousAlsoVert(toNext);
@@ -68,15 +67,14 @@ void CursorMoveCommand::horCursorMovement(QTextCursor &cursor, bool toNext)
     }
 }
 
-void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
-    int linePos = cursor.position();
+void CursorMoveCommand::verCursorMovement(bool down) {
 
+    int linePos = _item->textCursor().position();
     Layout *parent = _item->getLayoutParrent();
     const AbstractElement *element = _item;
 
-    //qDebug() << "calculate position on line";
-    // calculate position on line
-    while (parent != NULL
+    // find proper parent and calculate position on line
+    while (parent
            && ( Qt::Horizontal == parent->orientation()
                 || (Qt::Vertical == parent->orientation() && element->nextPrevius(down) == NULL))) {
 
@@ -91,39 +89,21 @@ void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
         parent = parent->getLayoutParrent();
     }
 
-    if (parent == NULL) {
-        qDebug() << "WARNING!!! vertical cursor movement 1, parent=NULL";
+
+    if (!parent) {
+        // top / end
         return;
     }
 
-
-
-    // TODO this could be removed >>
-    // find vertical , that has neighbors
-    while (NULL != parent && NULL == element->nextPrevius(down)) {  // there can be more vertical
-        //qDebug() << "  - vertical wrong parent: "<< parent->getType()  << "  " << parent->textE();
-        element = parent;
-        parent = parent->getLayoutParrent();
-    }
-    if (parent == NULL) {
-        qDebug() << "WARNING!!! vertical cursor movement 2, parent=NULL";
-        return;
-    }
-    // TODO << below could be removed maybe
-
-
-
-    //qDebug() << "Up/Down";
+    // up / down movement
     AbstractElement *targed = element->nextPrevius(down);
+
+    // find proper position on new line
     AbstractElement *child = NULL;
 
-    // find position on new line
-    //qDebug() << "find position on new line   linePos= "  << linePos;
-    //qDebug() << "----- new targed: "<< targed->getType()  << "  " << targed->textE();
     while (targed->isLayoutE()) {
         Layout *layout = dynamic_cast <Layout*>(targed);
         if ( Qt::Vertical == layout->orientation()) {
-            //qDebug() << "   * is vertical layout";
             if (down) {
                 targed = dynamic_cast<AbstractElement *>(layout->itemAt(0));
             } else {
@@ -131,12 +111,9 @@ void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
             }
 
         } else {
-            //qDebug() << "   * is horizontal layout";
             child = dynamic_cast<AbstractElement *>(layout->itemAt(0));
             int len = skipChild( child, linePos);
-            //qDebug() << "first child: "<< len <<"  "<< child->getType() <<"   "<< child->textE();
             while ( 0 < len) {
-                //qDebug() << "skip child: "<<child->getType() <<"   "<< child->textE();
                 linePos -= len;
                 child = child->getNext();
                 len = skipChild(child, linePos);
@@ -145,17 +122,12 @@ void CursorMoveCommand::verCursorMovement(QTextCursor &cursor, bool down) {
         }
     }
 
-
     int len = targed->textLength();
-    qDebug() << "---- finito: " << targed->getType() <<"  "<< targed->textE();
-    qDebug() << "---- finito: " << linePos << " " << len;
-
     linePos = linePos < len ? linePos : len;
 
     Item *ite = dynamic_cast <Item*>(targed);
-    //qDebug() << "final:" << targed->getType() << "  " << ite->toPlainText();
     ite->setFocus();
-    cursor = ite->textCursor();
+    QTextCursor cursor = ite->textCursor();
     cursor.setPosition(linePos);
     ite->setTextCursor(cursor);
 }
@@ -171,7 +143,7 @@ int CursorMoveCommand::skipChild(AbstractElement *child, int linePos) {
         if ( Qt::Horizontal == layout->orientation()) {
             int len = child->textLength();
             if (len < linePos
-                    && NULL != child->getNext()) {
+                    && child->getNext()) {
                 return len;
             }
         }
@@ -181,7 +153,7 @@ int CursorMoveCommand::skipChild(AbstractElement *child, int linePos) {
     } else {
         int len = child->textLength();
         if (len < linePos
-                && NULL != child->getNext()) {
+                && child->getNext()) {
             return len;
         }
     }
