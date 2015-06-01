@@ -35,6 +35,8 @@ MainWindow::MainWindow()
     scene = BlockScene::instance(view);
     view->setScene(scene);
     view->showMaximized();
+    view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(view);
@@ -43,7 +45,6 @@ MainWindow::MainWindow()
     widget->setLayout(layout);
     setCentralWidget(widget);
     setWindowTitle(tr("BlockEditor"));
-    setUnifiedTitleAndToolBarOnMac(true);
 
     _textType = "lua";
     parser = Parser::instance(_textType);
@@ -55,6 +56,7 @@ MainWindow::MainWindow()
 //    QObject::connect( parser, &Parser::parsingFinished,
 //                      scene, &BlockScene::updateTreeNeighbors);
 
+    setMinimumSize(400,300);
     //setGeometry(100, 100, 500, 400);
     //scene->setSceneRect(0, 0, 470, 380);
 }
