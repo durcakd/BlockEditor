@@ -17,8 +17,8 @@ public:
     void undo();
 
 protected:
-    void horCursorMovement(QTextCursor &cursor, bool toNext);
-    void verCursorMovement(QTextCursor &cursor, bool down);
+    void horCursorMovement(bool toNext);
+    void verCursorMovement(bool down);
     int skipChild(AbstractElement *child, int linePos);
 
     Item *_item;

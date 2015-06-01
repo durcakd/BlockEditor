@@ -15,10 +15,10 @@
 #include <QWidget>
 #include <QMessageBox>
 #include <QDebug>
+#include <QAction>
+#include <QTime>
 
-#include "lineeditor.h"
 #include "scene/blockscene.h"
-#include "highlighter.h"
 #include "scene/parser.h"
 
 
@@ -28,8 +28,6 @@ MainWindow::MainWindow()
     createMenus();
     createToolbars();
 
-    lineEditor = new LineEditor(/*this*/);
-    highlighter = new Highlighter(lineEditor->document());
 
 
     view = new QGraphicsView();
@@ -57,20 +55,20 @@ MainWindow::MainWindow()
 //    QObject::connect( parser, &Parser::parsingFinished,
 //                      scene, &BlockScene::updateTreeNeighbors);
 
-    setGeometry(100, 100, 500, 400);
-    scene->setSceneRect(0, 0, 470, 380);
+    //setGeometry(100, 100, 500, 400);
+    //scene->setSceneRect(0, 0, 470, 380);
 }
 
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(tr("&New"), this, SLOT(newFile()), QKeySequence::New);
+    QAction *a = fileMenu->addAction(tr("&New"), this, SLOT(newFile()), QKeySequence::New);
     fileMenu->addAction(tr("&Open..."), this, SLOT(openFile()), QKeySequence::Open);
     //fileMenu->addAction(tr("E&xit"), qApp, SLOT(quit()), QKeySequence::Quit);
 
-    itemMenu = menuBar()->addMenu(tr("&Item"));
+    //itemMenu = menuBar()->addMenu(tr("&Item"));
     //itemMenu->addAction(deleteAction);
-    itemMenu->addSeparator();
+    //itemMenu->addSeparator();
 
     aboutMenu = menuBar()->addMenu(tr("&Help"));
     aboutMenu->addAction(tr("&About"), this, SLOT(about()));
@@ -90,7 +88,7 @@ void MainWindow::about()
 
 void MainWindow::newFile()
 {
-    lineEditor->clear();
+    //lineEditor->clear();
 }
 
 void MainWindow::openFile(const QString &path)
@@ -110,9 +108,14 @@ void MainWindow::openFile(const QString &path)
 
             QTextStream in(&file);
             _text = in.readAll();
-            lineEditor->setPlainText(_text);
+            //lineEditor->setPlainText(_text);
             file.close();
+            qDebug() << "--- start parsing time measure -------";
+            QTime time;
+            time.start();
             scene->addNewRoot(parser->parse(_text));
+            double runTime = time.elapsed();// / 1000.0;
+            qDebug() << "--- parsing time= "<< QString::number(runTime, 'f', 2);
 
         }
     }

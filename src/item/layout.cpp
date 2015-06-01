@@ -182,24 +182,36 @@ void Layout::updateChildNeighbors() {
             }
         }
     }
+    //    //qDebug() << " Neighbors controll:";
 
-//    //qDebug() << " Neighbors controll:";
+    //    //qDebug() << "  chids: " << count();
+    //    for (int i=0; i < count(); i++) {
+    //        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
+    //            if (myItem->getPrevius() != NULL) {
+    //                qDebug() << "previous " << myItem->getPrevius() << "   " << myItem->getPrevius()->getType() << "  " << myItem->getPrevius()->isLayoutE();}
+    //            if (myItem->getNext() != NULL) {
+    //                qDebug() << "next     " << myItem->getNext() << "   " << myItem->getNext()->getType() << "  " << myItem->getNext()->isLayoutE();}
 
-//    //qDebug() << "  chids: " << count();
-//    for (int i=0; i < count(); i++) {
-//        if (AbstractElement *myItem = dynamic_cast <AbstractElement*>(itemAt(i))) {
-//            if (myItem->getPrevius() != NULL) {
-//                qDebug() << "previous " << myItem->getPrevius() << "   " << myItem->getPrevius()->getType() << "  " << myItem->getPrevius()->isLayoutE();}
-//            if (myItem->getNext() != NULL) {
-//                qDebug() << "next     " << myItem->getNext() << "   " << myItem->getNext()->getType() << "  " << myItem->getNext()->isLayoutE();}
+    //        }
+    //    }
+    //    //qDebug() << "THIS  " << this << "   " << this->getType();
+    //    if( this->getLayoutParrent() != NULL){
+    //        //qDebug() << "THIS  " << this->getLayoutParrent();
+    //    }
+    //    qDebug() << "";
+}
 
-//        }
-//    }
-//    //qDebug() << "THIS  " << this << "   " << this->getType();
-//    if( this->getLayoutParrent() != NULL){
-//        //qDebug() << "THIS  " << this->getLayoutParrent();
-//    }
-//    qDebug() << "";
+int Layout::elementCount() {
+    int sum = 1;
+    for (int i=0; i < count(); i++) {
+        // recursively update children
+        if (Layout *layout = dynamic_cast <Layout*>(itemAt(i))) {
+            sum += layout->elementCount();
+        } else {
+            sum++;
+        }
+    }
+    return sum;
 }
 
 int Layout::indexOf(AbstractElement *element) {

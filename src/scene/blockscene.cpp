@@ -101,10 +101,14 @@ void BlockScene::removeItem(QGraphicsItem *graphicItem, bool recursive) {
 
 
 void BlockScene::addNewRoot(Layout *root) {
+
+
     _form->setLayout(root);
     _root = root;
     _root->updateChildNeighbors();
     addItem(_root, true);
+    qDebug() << "elements count="<<_root->elementCount();
+
 }
 
 

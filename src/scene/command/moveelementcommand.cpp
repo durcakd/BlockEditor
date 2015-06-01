@@ -4,6 +4,7 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
+#include <QDrag>
 
 
 

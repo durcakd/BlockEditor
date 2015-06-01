@@ -2,6 +2,8 @@
 #include <QDebug>
 
 #include <QGraphicsItem>
+#include <QFontDatabase>
+#include <QStyleOptionGraphicsItem>
 #include <item/layout.h>
 #include "style/style.h"
 #include "scene/blockscene.h"
