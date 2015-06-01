@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 
-#include <QTextEdit>
-#include <QGraphicsView>
-#include <QGraphicsScene>
+
 #include <QHBoxLayout>
 #include <QMenu>
 #include <QMenuBar>
@@ -12,14 +10,13 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
-#include <QWidget>
+
 #include <QMessageBox>
 #include <QDebug>
 #include <QAction>
-#include <QTime>
 
-#include "scene/blockscene.h"
-#include "scene/parser.h"
+
+#include "blockeditorwidget.h"
 
 
 MainWindow::MainWindow()
@@ -28,37 +25,10 @@ MainWindow::MainWindow()
     createMenus();
     createToolbars();
 
+    _blockEditorWidged = new BlockEditorWidget();
 
-
-    view = new QGraphicsView();
-    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    scene = BlockScene::instance(view);
-    view->setScene(scene);
-    view->showMaximized();
-    view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(view);
-    //layout->addWidget(lineEditor);
-    QWidget *widget = new QWidget;
-    widget->setLayout(layout);
-    setCentralWidget(widget);
+    setCentralWidget(_blockEditorWidged);
     setWindowTitle(tr("BlockEditor"));
-
-    _textType = "lua";
-    parser = Parser::instance(_textType);
-
-//    QObject::connect( parser, &Parser::addElementItem,
-//                     scene, &BlockScene::addParserItem );
-//    QObject::connect( parser, &Parser::addElementLayout,
-//                     scene, &BlockScene::addParserLayout );
-//    QObject::connect( parser, &Parser::parsingFinished,
-//                      scene, &BlockScene::updateTreeNeighbors);
-
-    setMinimumSize(400,300);
-    //setGeometry(100, 100, 500, 400);
-    //scene->setSceneRect(0, 0, 470, 380);
 }
 
 void MainWindow::createMenus()
@@ -103,22 +73,12 @@ void MainWindow::openFile(const QString &path)
     if (!fileName.isEmpty()) {
         QFile file(fileName);
         if (file.open(QFile::ReadOnly | QFile::Text)) {
-
             //QFileInfo fileInfo(file);
-
             //_textType = fileInfo.suffix();
-
             QTextStream in(&file);
             _text = in.readAll();
-            //lineEditor->setPlainText(_text);
             file.close();
-            qDebug() << "--- start parsing time measure -------";
-            QTime time;
-            time.start();
-            scene->addNewRoot(parser->parse(_text));
-            double runTime = time.elapsed();// / 1000.0;
-            qDebug() << "--- parsing time= "<< QString::number(runTime, 'f', 2);
-
+            _blockEditorWidged->editText(_text);
         }
     }
 }

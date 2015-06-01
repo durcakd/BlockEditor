@@ -3,12 +3,7 @@
 
 #include <QMainWindow>
 
-class BlockScene;
-class QGraphicsView;
-class QTextEdit;
-class QGraphicsScene;
-class LineNumberArea;
-class Parser;
+class BlockEditorWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -31,15 +26,10 @@ private:
     void createMenus();
     void createToolbars();
 
-    QTextEdit *textEdit;
-    BlockScene *scene;
-    QGraphicsView *view;
-    LineNumberArea *lineNumberArea;
-    Parser *parser;
-
 
     QString _textType;
     QString _text;
+    BlockEditorWidget *_blockEditorWidged;
 
     QMenu *fileMenu;
     QMenu *itemMenu;
