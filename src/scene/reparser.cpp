@@ -13,7 +13,8 @@
 #include "item/abstractelement.h"
 #include "item/layout.h"
 #include "item/item.h"
-#include "QTextCursor"
+#include <QTextCursor>
+#include <QTime>
 
 
 Reparser::Reparser()

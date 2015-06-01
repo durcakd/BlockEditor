@@ -8,8 +8,6 @@ class QGraphicsView;
 class QTextEdit;
 class QGraphicsScene;
 class LineNumberArea;
-class LineEditor;
-class Highlighter;
 class Parser;
 
 class MainWindow : public QMainWindow
@@ -37,8 +35,6 @@ private:
     BlockScene *scene;
     QGraphicsView *view;
     LineNumberArea *lineNumberArea;
-    LineEditor *lineEditor;
-    Highlighter *highlighter;
     Parser *parser;
 
 

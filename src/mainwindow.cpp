@@ -16,10 +16,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QAction>
+#include <QTime>
 
-#include "lineeditor.h"
 #include "scene/blockscene.h"
-#include "highlighter.h"
 #include "scene/parser.h"
 
 
@@ -29,8 +28,6 @@ MainWindow::MainWindow()
     createMenus();
     createToolbars();
 
-    lineEditor = new LineEditor(/*this*/);
-    highlighter = new Highlighter(lineEditor->document());
 
 
     view = new QGraphicsView();
@@ -91,7 +88,7 @@ void MainWindow::about()
 
 void MainWindow::newFile()
 {
-    lineEditor->clear();
+    //lineEditor->clear();
 }
 
 void MainWindow::openFile(const QString &path)
@@ -111,7 +108,7 @@ void MainWindow::openFile(const QString &path)
 
             QTextStream in(&file);
             _text = in.readAll();
-            lineEditor->setPlainText(_text);
+            //lineEditor->setPlainText(_text);
             file.close();
             qDebug() << "--- start parsing time measure -------";
             QTime time;
