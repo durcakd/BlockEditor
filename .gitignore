@@ -4,3 +4,4 @@ _qbuild
 -build
 _install
 CMakeLists.txt.user
+CMakeLists.txt.user*
